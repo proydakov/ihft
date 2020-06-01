@@ -8,7 +8,7 @@ set(BUILD_INFO_BAR "============================================================
 set(NOOP_STRING "")
 
 set(RUNTIME_MODE "shared")
-if(I_STATIC_LINK)
+if(IHFT_STATIC_LINK)
     set(RUNTIME_MODE "static")
 endif()
 
