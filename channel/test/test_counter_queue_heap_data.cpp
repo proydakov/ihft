@@ -1,6 +1,6 @@
 #include <main.h>
 #include <test_heap_data.h>
-#include <one2many_counter_queue.h>
+#include <channel/one2many_counter_queue.h>
 
 int main(int argc, char* argv[])
 {

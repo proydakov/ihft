@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <iostream>
 
-#include "common.h"
+#include "channel/common.h"
 
 struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) stat_local_t
 {

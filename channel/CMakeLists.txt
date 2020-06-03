@@ -1,1 +1,4 @@
-add_subdirectory(one2many_queue)
+add_library(ihft_channel INTERFACE)
+target_include_directories(ihft_channel INTERFACE include)
+
+add_subdirectory(test)

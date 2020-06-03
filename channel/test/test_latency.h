@@ -5,7 +5,7 @@
 #include <vector>
 #include <fstream>
 
-#include "common.h"
+#include "channel/common.h"
 
 struct data_t
 {

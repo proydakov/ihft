@@ -6,7 +6,7 @@
 #include <optional>
 #include <type_traits>
 
-#include "common.h"
+#include "channel/common.h"
 
 template<typename T>
 struct one2many_bitmask_queue_impl

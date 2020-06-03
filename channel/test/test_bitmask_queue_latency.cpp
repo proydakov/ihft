@@ -1,6 +1,6 @@
 #include <main.h>
 #include <test_latency.h>
-#include <one2many_bitmask_queue.h>
+#include <channel/one2many_bitmask_queue.h>
 
 int main(int argc, char* argv[])
 {
