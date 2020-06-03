@@ -122,7 +122,13 @@ int test_main(int argc, char* argv[],
         std::vector<typename Q::reader_type> readers;
         for (std::size_t i = 0; i < NUM_READERS; i++)
         {
-            readers.push_back(std::move(queue.create_reader()));
+            auto reader = queue.create_reader();
+            if (not reader)
+            {
+                std::cerr << "Can't create reader." << std::endl;
+                exit(EXIT_FAILURE);
+            }
+            readers.push_back(std::move(*reader));
         }
 
         auto const mask = queue.get_alive_mask();

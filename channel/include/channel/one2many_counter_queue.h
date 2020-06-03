@@ -216,7 +216,7 @@ public:
 public:
     one2many_counter_queue(std::size_t n, allocator_t&& allocator = allocator_t())
         : m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_storage_mask(calc_mask(n))
+        , m_storage_mask(0)
         , m_next_seq_num(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_next_reader_id(one2many_counter_queue_impl<counter_t>::MIN_READER_ID)
     {
@@ -224,9 +224,11 @@ public:
 
         m_allocator = std::make_shared<allocator_t>(std::move(allocator));
 
+        n = to2pow(n);
         m_storage.reset(new bucket_type[n], [](bucket_type* ptr){
             delete [] ptr;
         });
+        m_storage_mask = calc_mask(n);
     }
 
     one2many_counter_queue(const one2many_counter_queue&) = delete;
@@ -235,14 +237,14 @@ public:
     one2many_counter_queue(one2many_counter_queue&&) noexcept = default;
     one2many_counter_queue& operator=(one2many_counter_queue&&) noexcept = default;
 
-    reader_type create_reader()
+    std::optional<reader_type> create_reader()
     {
         auto const next_id = m_next_reader_id++;
         if (next_id == one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
         {
-            throw std::runtime_error("Next reader id overflow: " + std::to_string(next_id) + " > " + std::to_string(one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID));
+            return std::nullopt;
         }
-        return reader_type(m_allocator, m_storage, m_storage_mask, m_next_seq_num, next_id);
+        return std::make_optional<reader_type>(m_allocator, m_storage, m_storage_mask, m_next_seq_num, next_id);
     }
 
     bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
@@ -287,13 +289,24 @@ public:
     }
 
 private:
+    static std::size_t to2pow(std::size_t n)
+    {
+        if (0 == n)
+        {
+            return 1;
+        }
+
+        std::size_t power = 1;
+        while(power < n)
+        {
+            power *= 2;
+        }
+        return power;
+    }
+
     static std::size_t calc_mask(std::size_t n)
     {
-        if (n > 0 && 0 == ((n - 1) & n))
-        {
-            return n - 1;
-        }
-        throw std::invalid_argument("queue size should be pow of 2.");
+        return n - 1;
     }
 
 private:

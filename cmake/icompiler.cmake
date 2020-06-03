@@ -1,10 +1,6 @@
 macro(ihft_compiler_set_max_warning_level)
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -pedantic -pedantic-errors -Wunused -Wconversion -Wsign-conversion")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic -pedantic-errors -Wunused -Wconversion -Wsign-conversion")
-
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-attributes -Wno-unknown-pragmas -Wno-deprecated-declarations")
-    endif()
 endmacro()
 
 ###############################################################################
@@ -25,6 +21,8 @@ MACRO(ihft_setup_compiler_flags)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
     endif()
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
 
     ihft_compiler_set_max_warning_level()
 ENDMACRO()
