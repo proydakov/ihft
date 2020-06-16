@@ -8,6 +8,9 @@
 
 #include "channel/common.h"
 
+namespace ihft
+{
+
 template<typename T>
 struct one2many_bitmask_queue_impl
 {
@@ -318,3 +321,5 @@ private:
     counter_t m_next_seq_num;
     counter_t m_next_reader_id;
 };
+
+} // ihft

@@ -15,6 +15,8 @@
 
 #include <sys/prctl.h>
 
+using namespace ihft;
+
 void set_thread_name(std::string const& name)
 {
     prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);
