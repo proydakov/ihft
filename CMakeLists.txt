@@ -10,5 +10,6 @@ message(STATUS "create IHFT")
 include(cmake/icmake.cmake)
 
 add_subdirectory(channel)
+add_subdirectory(platform)
 
 ihft_build_report()
