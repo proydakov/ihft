@@ -10,5 +10,8 @@ namespace ihft
             // (If the length of the string, including the terminating null byte,
             // exceeds 16 bytes, the string is silently truncated.)
             static void set_current_thread_name(const char* name);
+
+            // Change current thread cpu.
+            static void set_current_thread_cpu(unsigned long cpu);
     };
 }
