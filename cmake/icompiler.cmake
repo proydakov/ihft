@@ -5,7 +5,7 @@ endmacro()
 
 ###############################################################################
 
-MACRO(ihft_setup_compiler_flags)
+macro(ihft_setup_compiler_flags)
     set(CMAKE_C_STANDARD 11)
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_EXTENSIONS 0)
@@ -25,11 +25,11 @@ MACRO(ihft_setup_compiler_flags)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
 
     ihft_compiler_set_max_warning_level()
-ENDMACRO()
+endmacro()
 
 ###############################################################################
 
-MACRO(ihft_setup_tools_flags)
+macro(ihft_setup_tools_flags)
     # colors =)
     set (CMAKE_BUILD_COLOR_MAKEFILE ON)
 
@@ -42,4 +42,4 @@ MACRO(ihft_setup_tools_flags)
             set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
         endif()
     endif()
-ENDMACRO()
+endmacro()
