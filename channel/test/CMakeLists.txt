@@ -6,6 +6,7 @@ ADD_EXECUTABLE(one2many_bitmask_queue_perf_plain
     test_bitmask_queue_plain_data.cpp
 )
 target_link_libraries(one2many_bitmask_queue_perf_plain ihft_channel)
+target_link_libraries(one2many_bitmask_queue_perf_plain ihft_platform)
 
 ADD_EXECUTABLE(one2many_bitmask_queue_perf_heap
     main.h
@@ -13,6 +14,7 @@ ADD_EXECUTABLE(one2many_bitmask_queue_perf_heap
     test_bitmask_queue_heap_data.cpp
 )
 target_link_libraries(one2many_bitmask_queue_perf_heap ihft_channel)
+target_link_libraries(one2many_bitmask_queue_perf_heap ihft_platform)
 
 ADD_EXECUTABLE(one2many_bitmask_queue_latency
     main.h
@@ -20,6 +22,7 @@ ADD_EXECUTABLE(one2many_bitmask_queue_latency
     test_bitmask_queue_latency.cpp
 )
 target_link_libraries(one2many_bitmask_queue_latency ihft_channel)
+target_link_libraries(one2many_bitmask_queue_latency ihft_platform)
 
 ADD_EXECUTABLE(one2many_counter_queue_perf_plain
     main.h
@@ -27,6 +30,7 @@ ADD_EXECUTABLE(one2many_counter_queue_perf_plain
     test_counter_queue_plain_data.cpp
 )
 target_link_libraries(one2many_counter_queue_perf_plain ihft_channel)
+target_link_libraries(one2many_counter_queue_perf_plain ihft_platform)
 
 ADD_EXECUTABLE(one2many_counter_queue_perf_heap
     main.h
@@ -34,6 +38,7 @@ ADD_EXECUTABLE(one2many_counter_queue_perf_heap
     test_counter_queue_heap_data.cpp
 )
 target_link_libraries(one2many_counter_queue_perf_heap ihft_channel)
+target_link_libraries(one2many_counter_queue_perf_heap ihft_platform)
 
 ADD_EXECUTABLE(one2many_counter_queue_latency
     main.h
@@ -41,3 +46,4 @@ ADD_EXECUTABLE(one2many_counter_queue_latency
     test_counter_queue_latency.cpp
 )
 target_link_libraries(one2many_counter_queue_latency ihft_channel)
+target_link_libraries(one2many_counter_queue_latency ihft_platform)

@@ -10,17 +10,11 @@
 #include <iostream>
 
 #include <channel/common.h>
+#include <platform/platform.h>
 
 #include <x86intrin.h>
 
-#include <sys/prctl.h>
-
 using namespace ihft;
-
-void set_thread_name(std::string const& name)
-{
-    prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);
-}
 
 #define NOINLINE  __attribute__((noinline))
 
@@ -50,7 +44,8 @@ void NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, wai
 template<typename reader_t, typename controller_t>
 void reader_method(std::size_t total_events, reader_t reader, wait_t& stat, std::atomic<std::uint64_t>& waitinig_readers_counter, controller_t& controller)
 {
-    set_thread_name("reader_" + std::to_string(reader.get_id()));
+    auto const name = "reader_" + std::to_string(reader.get_id());
+    platform::set_current_thread_name(name.c_str());
 
     waitinig_readers_counter--;
 
@@ -81,7 +76,7 @@ void NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, contr
 template<typename queue_t, typename controller_t>
 void writer_method(std::size_t total_events, queue_t& queue, wait_t& stat, std::atomic<std::uint64_t>& waitinig_readers_counter, controller_t& controller)
 {
-    set_thread_name("writer");
+    platform::set_current_thread_name("writer");
 
     while(waitinig_readers_counter > 0);
 
