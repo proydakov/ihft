@@ -83,3 +83,4 @@ script:
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DIHFT_STATIC_LINK=${STATIC_LINK} ..
   - cmake --build .
+  - ctest -R

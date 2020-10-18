@@ -9,6 +9,8 @@ message(STATUS "create IHFT")
 
 include(cmake/icmake.cmake)
 
+enable_testing()
+
 add_subdirectory(channel)
 add_subdirectory(platform)
 

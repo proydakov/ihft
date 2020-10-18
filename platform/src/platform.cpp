@@ -1,7 +1,13 @@
 #include <platform/platform.h>
+#include <platform/private/isolation.h>
 
 #include <sched.h>
 #include <sys/prctl.h>
+
+namespace
+{
+    static const ihft::impl::isolation g_isolation("/proc/cmdline");
+}
 
 namespace ihft
 {
@@ -17,5 +23,10 @@ namespace ihft
         CPU_SET(cpu, &cpuset);
 
         sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
+    }
+
+    bool platform::get_isolation_status(unsigned long cpu)
+    {
+        return g_isolation.is_isolated(cpu);
     }
 }

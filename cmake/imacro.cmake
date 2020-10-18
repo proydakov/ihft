@@ -2,7 +2,7 @@
 # Copyright (c) 2020 Evgeny Proydakov <lord.tiran@gmail.com>
 ###############################################################################
 
-macro(ihft_build_report)
+function(ihft_build_report)
 
 set(BUILD_INFO_BAR "====================================================================================")
 set(NOOP_STRING "")
@@ -40,4 +40,9 @@ message(STATUS "CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 message(STATUS ${BUILD_INFO_BAR})
 message(STATUS ${NOOP_STRING})
 
-endmacro()
+endfunction()
+
+function(ihft_add_test NAME)
+    add_executable(${NAME} ${NAME}.cpp)
+    add_test(NAME ${NAME} COMMAND ${NAME})
+endfunction()

@@ -1,5 +1,16 @@
+# manual test apps
 add_executable(platform_set_thread_name set_thread_name.cpp)
 target_link_libraries(platform_set_thread_name ihft_platform)
 
 add_executable(platform_set_thread_cpu set_thread_cpu.cpp)
 target_link_libraries(platform_set_thread_cpu ihft_platform)
+
+add_executable(platform_get_isolated_cpu get_isolated_cpu.cpp)
+target_link_libraries(platform_get_isolated_cpu ihft_platform)
+
+# unit test apps
+ihft_add_test(test_cpu_isolation)
+target_link_libraries(test_cpu_isolation ihft_platform)
+
+ihft_add_test(test_platform)
+target_link_libraries(test_platform ihft_platform)
