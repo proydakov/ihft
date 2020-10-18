@@ -1,5 +1,5 @@
-add_executable(set_thread_name set_thread_name.cpp)
-target_link_libraries(set_thread_name ihft_platform)
+add_executable(platform_set_thread_name set_thread_name.cpp)
+target_link_libraries(platform_set_thread_name ihft_platform)
 
-add_executable(set_thread_cpu set_thread_cpu.cpp)
-target_link_libraries(set_thread_cpu ihft_platform)
+add_executable(platform_set_thread_cpu set_thread_cpu.cpp)
+target_link_libraries(platform_set_thread_cpu ihft_platform)
