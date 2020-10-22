@@ -5,8 +5,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 include(idetectos)
 
-if(NOT (PROJECT_OS_LINUX AND PROJECT_PROC_64BIT))
-    message(FATAL_ERROR "Only Linux 64bit supported.")
+if(NOT ((PROJECT_OS_LINUX OR PROJECT_OS_OSX) AND PROJECT_PROC_64BIT))
+    message(FATAL_ERROR "Only Linux/MacOS x64bit supported.")
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)

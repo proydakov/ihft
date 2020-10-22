@@ -1,6 +1,8 @@
 #include <platform/platform.h>
 #include <platform/private/isolation.h>
 
+#ifdef __linux__
+
 #include <sched.h>
 #include <sys/prctl.h>
 
@@ -30,3 +32,23 @@ namespace ihft
         return g_isolation.is_isolated(cpu);
     }
 }
+
+#else
+
+namespace ihft
+{
+    void platform::set_current_thread_name(const char*)
+    {
+    }
+
+    void platform::set_current_thread_cpu(unsigned long)
+    {
+    }
+
+    bool platform::get_cpu_isolation_status(unsigned long)
+    {
+        return false;
+    }
+}
+
+#endif

@@ -5,28 +5,23 @@ macro(ihft_setup_linker_flags)
     find_program(LLD_PATH NAMES "lld-${MAJOR_CXX_VERSION}" "lld")
     find_program(GOLD_PATH NAMES "gold")
 
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        # by default gcc and clang use stdc++
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CXX_RUNTIME_LIBRARY "libstdc++")
-        # try to use gold instead of ld
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND GOLD_PATH)
+        if(GOLD_PATH)
             set(LINKER_NAME "gold")
             set(CMAKE_LINKER ${GOLD_PATH})
         endif()
-
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND LLD_PATH)
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(CXX_RUNTIME_LIBRARY "libstdc++")
+        if(LLD_PATH)
             set(LINKER_NAME "lld")
             set(CMAKE_LINKER ${LLD_PATH})
         endif()
-
-        if(IHFT_STATIC_LINK)
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
-            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
-        endif()
-
-        if(IHFT_STRIP_LINK)
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s")
-            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -s")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+        set(CXX_RUNTIME_LIBRARY "libc++")
+        if(LLD_PATH)
+            set(LINKER_NAME "lld")
+            set(CMAKE_LINKER ${LLD_PATH})
         endif()
     else()
         message(FATAL_ERROR "Unknown compiler")
@@ -38,13 +33,15 @@ macro(ihft_setup_linker_flags)
         get_filename_component(TEST_CLANG_ROOT ${TEST_CLANG_ROOT} DIRECTORY)
         get_filename_component(TEST_CLANG_ROOT ${TEST_CLANG_ROOT} DIRECTORY)
 
-        if(EXISTS "${TEST_CLANG_ROOT}/include/c++/v1/" AND EXISTS "${TEST_CLANG_ROOT}/lib/libc++.a" AND EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.a")
+        if(EXISTS "${TEST_CLANG_ROOT}/include/c++/v1/" AND
+           EXISTS "${TEST_CLANG_ROOT}/lib/libc++.a" AND
+           EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.a" AND
+           EXISTS "${TEST_CLANG_ROOT}/lib/libc++.so" AND
+           EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.so")
+
             message(STATUS "Detected clang root: ${TEST_CLANG_ROOT}")
             set(CLANG_ROOT ${TEST_CLANG_ROOT})
-        endif()
 
-        # try to use libc++
-        if (CLANG_ROOT)
             add_compile_options(-nostdinc++ -I${CLANG_ROOT}/include/c++/v1)
             #add_compile_options(--sysroot ${MUSL_ROOT} -nostdinc -I${MUSL_ROOT}/include -nostdinc++ -I${CLANG_ROOT}/include/c++/v1)
             if(IHFT_STATIC_LINK)
@@ -59,19 +56,31 @@ macro(ihft_setup_linker_flags)
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CLANG_EXTRA_LINKS}")
             set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CLANG_EXTRA_LINKS}")
             set(CXX_RUNTIME_LIBRARY "libc++")
-        endif ()
+        else()
+            message(FATAL_ERROR "Please install libc++ & libc++abi for compilation")
+        endif()
     endif()
 
     if(CXX_RUNTIME_LIBRARY STREQUAL "libstdc++")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=1")
+
+        if(IHFT_STATIC_LINK)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
+            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
+        else()
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread")
+            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lpthread")
+        endif()
     endif()
 
-    if(IHFT_STATIC_LINK AND CXX_RUNTIME_LIBRARY STREQUAL "libstdc++")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
-        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
-    elseif(CXX_RUNTIME_LIBRARY STREQUAL "libstdc++")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread")
-        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lpthread")
+    if(IHFT_STATIC_LINK)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
+    endif()
+
+    if(IHFT_STRIP_LINK)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s")
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -s")
     endif()
 
     if(LINKER_NAME)
