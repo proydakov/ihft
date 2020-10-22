@@ -25,7 +25,7 @@ namespace ihft
         sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
     }
 
-    bool platform::get_isolation_status(unsigned long cpu)
+    bool platform::get_cpu_isolation_status(unsigned long cpu)
     {
         return g_isolation.is_isolated(cpu);
     }

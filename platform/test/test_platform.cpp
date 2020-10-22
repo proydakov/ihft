@@ -6,7 +6,7 @@ int test_1()
 {
     for(unsigned int i = 0; i < std::thread::hardware_concurrency(); i++)
     {
-        ihft::platform::get_isolation_status(i);
+        ihft::platform::get_cpu_isolation_status(i);
     }
 
     return 0;

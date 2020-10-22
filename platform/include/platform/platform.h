@@ -21,7 +21,7 @@ public:
     static void set_current_thread_cpu(unsigned long cpu);
 
     // Check cpu isolation
-    static bool get_isolation_status(unsigned long cpu);
+    static bool get_cpu_isolation_status(unsigned long cpu);
 };
 
 }
