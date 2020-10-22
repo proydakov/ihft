@@ -217,7 +217,7 @@ public:
     using event_type = event_t;
 
 public:
-    one2many_counter_queue(std::size_t n, allocator_t&& allocator = allocator_t())
+    one2many_counter_queue(std::size_t n, allocator_t allocator = allocator_t())
         : m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(0)
         , m_next_seq_num(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
@@ -240,7 +240,7 @@ public:
     one2many_counter_queue(one2many_counter_queue&&) noexcept = default;
     one2many_counter_queue& operator=(one2many_counter_queue&&) noexcept = default;
 
-    std::optional<reader_type> create_reader()
+    std::optional<reader_type> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
         if (next_id == one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
@@ -292,7 +292,7 @@ public:
     }
 
 private:
-    static std::size_t to2pow(std::size_t n)
+    static std::size_t to2pow(std::size_t n) noexcept
     {
         if (0 == n)
         {
@@ -307,7 +307,7 @@ private:
         return power;
     }
 
-    static std::size_t calc_mask(std::size_t n)
+    static std::size_t calc_mask(std::size_t n) noexcept
     {
         return n - 1;
     }
