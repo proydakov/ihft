@@ -1,5 +1,11 @@
 # IHFT
 
+<span style="display: inline-block;">
+
+[![Travis CI Status](https://travis-ci.org/proydakov/ihft.svg?branch=master)](https://travis-ci.org/proydakov/ihft)
+[![BSD 3 License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/proydakov/ihft/blob/master/LICENSE)
+</span>
+
 IHFT is microframework for low latency applications.
 
 # Links
