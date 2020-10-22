@@ -175,19 +175,6 @@ public:
         }
     }
 
-    one2many_bitmask_guard<event_t, counter_t> read() noexcept
-    {
-        read_mark:
-
-        auto opt = try_read();
-        if (opt)
-        {
-            return std::move(*opt);
-        }
-
-        goto read_mark;
-    }
-
     counter_t get_id() const noexcept
     {
         return static_cast<counter_t>(std::log2(m_reader_mask));
@@ -273,11 +260,6 @@ public:
         {
             return false;
         }
-    }
-
-    void write(event_t&& obj) noexcept
-    {
-        while (!try_write(std::move(obj)));
     }
 
     std::size_t size() const noexcept
