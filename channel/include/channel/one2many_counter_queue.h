@@ -243,11 +243,14 @@ public:
     std::optional<reader_type> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
-        if (next_id == one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        if (next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        {
+            return std::make_optional<reader_type>(m_allocator, m_storage, m_storage_mask, m_next_seq_num, next_id);
+        }
+        else
         {
             return std::nullopt;
         }
-        return std::make_optional<reader_type>(m_allocator, m_storage, m_storage_mask, m_next_seq_num, next_id);
     }
 
     bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
