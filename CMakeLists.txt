@@ -7,7 +7,7 @@ project(IHFT)
 
 message(STATUS "create IHFT")
 
-include(cmake/icmake.cmake)
+include(.cmake/icmake.cmake)
 
 enable_testing()
 
