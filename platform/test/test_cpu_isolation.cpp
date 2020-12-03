@@ -50,7 +50,7 @@ int test_impl(temp_file const& file, std::vector<unsigned long> result)
 
     ihft::impl::isolation isolation(file.path());
 
-    for(unsigned long cpu = 0; cpu < 36; cpu++)
+    for(unsigned long cpu = 0; cpu < 64; cpu++)
     {
         if(isolation.is_isolated(cpu))
         {
@@ -83,7 +83,15 @@ int test_2()
     return test_impl(file, {2,9,17});
 }
 
+int test_3()
+{
+    temp_file file("cmdline_3.txt",
+        "BOOT_IMAGE=/boot/vmlinuz-3.16.0-44-generic auto noprompt priority=critical quiet isolcpus=8-11,17 locale=en_US\r\n");
+
+    return test_impl(file, {8,9,10,11,17});
+}
+
 int main(int, char const*[])
 {
-    return test_1() + test_2();
+    return test_1() + test_2() + test_3();
 }

@@ -32,7 +32,24 @@ isolation::isolation(const char* file)
                 unsigned long result;
                 if(auto [p, ec] = std::from_chars(cpu.begin(), cpu.end(), result); ec == std::errc())
                 {
-                    m_isolated.emplace_back(result);
+                    // only 1 cpu in section
+                    if (p == cpu.end())
+                    {
+                        m_isolated.emplace_back(result);
+                    }
+                    // range cpu in section
+                    else
+                    {
+                        unsigned long to_result;
+                        if(auto [to_p, to_ec] = std::from_chars(p + 1, cpu.end(), to_result); to_ec == std::errc())
+                        {
+                            for(auto i = result; i <= to_result; i++)
+                            {
+                                m_isolated.emplace_back(i);
+                            }
+                        }
+
+                    }
                 }
             }
             while(next != std::string_view::npos);
