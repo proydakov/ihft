@@ -59,7 +59,7 @@ void NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, contr
 {
     for (std::size_t j = 0; j < total_events;)
     {
-        typename queue_t::event_type data(controller.create_data(j));
+        auto data = controller.create_data(j);
         if (queue.try_write(std::move(data), std::memory_order_seq_cst))
         {
             j++;

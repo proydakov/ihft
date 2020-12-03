@@ -90,5 +90,4 @@ macro(ihft_setup_linker_flags)
     else()
         message(STATUS "Use default linker")
     endif()
-
 endmacro()
