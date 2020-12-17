@@ -1,6 +1,6 @@
 #include <platform/private/isolation.h>
 
-#include <string.h>
+#include <cstring>
 #include <fstream>
 #include <charconv>
 #include <algorithm>

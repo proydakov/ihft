@@ -27,17 +27,6 @@ struct data_t
 {
     using value_type = typename allocator_t::value_type;
 
-    ~data_t() noexcept
-    {
-        if (m_ptr != nullptr)
-        {
-            m_ptr->~value_type();
-            m_allocator.deallocate(m_ptr, 1);
-            m_ptr = nullptr;
-            g_local_released.counter++;
-        }
-    }
-
     data_t(std::uint64_t val, allocator_t& allocator) noexcept
         : m_ptr(allocator.allocate(sizeof val))
         , m_allocator(allocator)
@@ -55,7 +44,18 @@ struct data_t
 
     data_t& operator=(data_t&& data) = delete;
     data_t(const data_t&) = delete;
-    void operator=(const data_t&) = delete;
+    data_t& operator=(const data_t&) = delete;
+
+    ~data_t() noexcept
+    {
+        if (m_ptr != nullptr)
+        {
+            m_ptr->~value_type();
+            m_allocator.deallocate(m_ptr, 1);
+            m_ptr = nullptr;
+            g_local_released.counter++;
+        }
+    }
 
     typename std::allocator_traits<allocator_t>::pointer m_ptr;
     allocator_t& m_allocator;

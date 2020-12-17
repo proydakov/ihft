@@ -9,11 +9,8 @@
 
 struct data_t
 {
-    data_t(std::chrono::time_point<std::chrono::high_resolution_clock> start) noexcept : m_start(start)
-    {
-    }
-
-    ~data_t() noexcept
+    data_t(std::chrono::time_point<std::chrono::high_resolution_clock> start) noexcept
+        : m_start(start)
     {
     }
 
@@ -24,7 +21,11 @@ struct data_t
 
     data_t& operator=(data_t&& data) = delete;
     data_t(const data_t&) = delete;
-    void operator=(const data_t&) = delete;
+    data_t& operator=(const data_t&) = delete;
+
+    ~data_t() noexcept
+    {
+    }
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start;
 };

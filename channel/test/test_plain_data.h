@@ -4,26 +4,29 @@
 
 struct data_t
 {
-    data_t() noexcept : m_value(0)
+    data_t() noexcept
+        : m_value(0)
     {
     }
 
-    ~data_t() noexcept
+    data_t(std::uint64_t value) noexcept
+        : m_value(value)
     {
     }
 
-    data_t(std::uint64_t value) noexcept : m_value(value)
-    {
-    }
-
-    data_t(data_t&& data) noexcept : m_value(data.m_value)
+    data_t(data_t&& data) noexcept
+        : m_value(data.m_value)
     {
         data.m_value = 0;
     }
 
     data_t& operator=(data_t&& data) = delete;
     data_t(const data_t&) = delete;
-    void operator=(const data_t&) = delete;
+    data_t& operator=(const data_t&) = delete;
+
+    ~data_t() noexcept
+    {
+    }
 
     std::uint64_t m_value;
 };
