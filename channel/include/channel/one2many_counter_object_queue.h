@@ -12,7 +12,7 @@ namespace ihft
 {
 
 template<typename T>
-struct one2many_counter_queue_impl
+struct one2many_counter_object_queue_impl
 {
     enum : T { MIN_EVENT_SEQ_NUM = 1 };
     enum : T { DUMMY_EVENT_SEQ_NUM = 0 };
@@ -26,49 +26,49 @@ struct one2many_counter_queue_impl
 
 // bucket
 template<class event_t, typename counter_t>
-struct one2many_counter_bucket;
+struct one2many_counter_object_bucket;
 
 // guard
 template<class event_t, typename counter_t>
-class one2many_counter_guard;
+class one2many_counter_object_guard;
 
 // reader
 template<class event_t, typename counter_t, typename content_allocator_t>
-class one2many_counter_reader;
+class one2many_counter_object_reader;
 
 // queue
 template<class event_t, typename counter_t, typename content_allocator_t>
-class one2many_counter_queue;
+class one2many_counter_object_queue;
 
 // buffer
 template<class event_t, typename counter_t>
-using one2many_counter_ring_buffer_t = std::shared_ptr<one2many_counter_bucket<event_t, counter_t>>;
+using one2many_counter_object_ring_buffer_t = std::shared_ptr<one2many_counter_object_bucket<event_t, counter_t>>;
 
 // implementation
 
 // bucket
 template<class event_t, typename counter_t>
-struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_bucket
+struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_bucket
 {
     using storage_t = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
 
-    one2many_counter_bucket() noexcept
-        : m_seqn(one2many_counter_queue_impl<counter_t>::DUMMY_EVENT_SEQ_NUM)
-        , m_counter(one2many_counter_queue_impl<counter_t>::EMPTY_DATA_MARK)
+    one2many_counter_object_bucket() noexcept
+        : m_seqn(one2many_counter_object_queue_impl<counter_t>::DUMMY_EVENT_SEQ_NUM)
+        , m_counter(one2many_counter_object_queue_impl<counter_t>::EMPTY_DATA_MARK)
     {
     }
 
-    one2many_counter_bucket(const one2many_counter_bucket&) = delete;
-    one2many_counter_bucket& operator=(const one2many_counter_bucket&) = delete;
-    one2many_counter_bucket(one2many_counter_bucket&&) = delete;
-    one2many_counter_bucket& operator=(one2many_counter_bucket&&) = delete;
+    one2many_counter_object_bucket(const one2many_counter_object_bucket&) = delete;
+    one2many_counter_object_bucket& operator=(const one2many_counter_object_bucket&) = delete;
+    one2many_counter_object_bucket(one2many_counter_object_bucket&&) = delete;
+    one2many_counter_object_bucket& operator=(one2many_counter_object_bucket&&) = delete;
 
-    ~one2many_counter_bucket() noexcept
+    ~one2many_counter_object_bucket() noexcept
     {
-        if (m_counter != one2many_counter_queue_impl<counter_t>::EMPTY_DATA_MARK)
+        if (m_counter != one2many_counter_object_queue_impl<counter_t>::EMPTY_DATA_MARK)
         {
             get_event().~event_t();
-            m_counter.store(one2many_counter_queue_impl<counter_t>::EMPTY_DATA_MARK, std::memory_order_relaxed);
+            m_counter.store(one2many_counter_object_queue_impl<counter_t>::EMPTY_DATA_MARK, std::memory_order_relaxed);
         }
     }
 
@@ -84,37 +84,37 @@ struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_bucket
 
 // guard
 template<class event_t, typename counter_t>
-class one2many_counter_guard
+class one2many_counter_object_guard
 {
 public:
-    one2many_counter_guard(one2many_counter_bucket<event_t, counter_t>& bucket, counter_t owner) noexcept
+    one2many_counter_object_guard(one2many_counter_object_bucket<event_t, counter_t>& bucket, counter_t owner) noexcept
         : m_bucket(bucket)
         , m_owner(owner)
     {
     }
 
-    one2many_counter_guard(one2many_counter_guard&& data) noexcept
+    one2many_counter_object_guard(one2many_counter_object_guard&& data) noexcept
         : m_bucket(data.m_bucket)
         , m_owner(data.m_owner)
     {
-        data.m_owner = one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID;
+        data.m_owner = one2many_counter_object_queue_impl<counter_t>::DUMMY_READER_ID;
     }
 
-    one2many_counter_guard& operator=(one2many_counter_guard&& data) = delete;
-    one2many_counter_guard(const one2many_counter_guard&) = delete;
-    one2many_counter_guard& operator=(const one2many_counter_guard&) = delete;
+    one2many_counter_object_guard& operator=(one2many_counter_object_guard&& data) = delete;
+    one2many_counter_object_guard(const one2many_counter_object_guard&) = delete;
+    one2many_counter_object_guard& operator=(const one2many_counter_object_guard&) = delete;
 
-    ~one2many_counter_guard() noexcept
+    ~one2many_counter_object_guard() noexcept
     {
-        if (m_owner != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        if (m_owner != one2many_counter_object_queue_impl<counter_t>::DUMMY_READER_ID)
         {
-            auto constexpr release_etalon(one2many_counter_queue_impl<counter_t>::CONSTRUCTED_DATA_MARK + 1);
+            auto constexpr release_etalon(one2many_counter_object_queue_impl<counter_t>::CONSTRUCTED_DATA_MARK + 1);
             auto const before = m_bucket.m_counter.fetch_sub(1, std::memory_order_relaxed);
 
             if (before == release_etalon)
             {
                 m_bucket.get_event().~event_t();
-                m_bucket.m_counter.store(one2many_counter_queue_impl<counter_t>::EMPTY_DATA_MARK, std::memory_order_release);
+                m_bucket.m_counter.store(one2many_counter_object_queue_impl<counter_t>::EMPTY_DATA_MARK, std::memory_order_release);
             }
         }
     }
@@ -125,22 +125,22 @@ public:
     }
 
 private:
-    one2many_counter_bucket<event_t, counter_t>& m_bucket;
+    one2many_counter_object_bucket<event_t, counter_t>& m_bucket;
     counter_t m_owner;
 };
 
 // reader
 template<class event_t, typename counter_t, typename content_allocator_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_reader
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_reader
 {
 public:
-    using guard_type = one2many_counter_guard<event_t, counter_t>;
-    using ring_buffer_t = one2many_counter_ring_buffer_t<event_t, counter_t>;
     using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
+    using guard_type = one2many_counter_object_guard<event_t, counter_t>;
+    using ring_buffer_t = one2many_counter_object_ring_buffer_t<event_t, counter_t>;
 
 public:
     // ctor
-    one2many_counter_reader(content_allocator_ptr content_allocator, ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+    one2many_counter_object_reader(content_allocator_ptr content_allocator, ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
         : m_content_allocator(content_allocator)
         , m_storage(std::move(storage))
         , m_next_bucket(read_from & storage_mask)
@@ -148,16 +148,16 @@ public:
         , m_next_read_index(read_from)
         , m_id(id)
     {
-        static_assert(sizeof(one2many_counter_reader<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_counter_object_reader<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
-    one2many_counter_reader(one2many_counter_reader&&) noexcept = default;
+    one2many_counter_object_reader(one2many_counter_object_reader&&) noexcept = default;
 
-    one2many_counter_reader& operator=(one2many_counter_reader&&) noexcept = delete;
-    one2many_counter_reader(const one2many_counter_reader&) = delete;
-    one2many_counter_reader& operator=(const one2many_counter_reader&) = delete;
+    one2many_counter_object_reader& operator=(one2many_counter_object_reader&&) noexcept = delete;
+    one2many_counter_object_reader(const one2many_counter_object_reader&) = delete;
+    one2many_counter_object_reader& operator=(const one2many_counter_object_reader&) = delete;
 
-    ~one2many_counter_reader() noexcept
+    ~one2many_counter_object_reader() noexcept
     {
     }
 
@@ -192,26 +192,26 @@ private:
 
 // queue
 template<class event_t, typename counter_t, typename content_allocator_t = empty_allocator>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_queue
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_queue
 {
 public:
-    using writer_type = one2many_counter_queue<event_t, counter_t, content_allocator_t>;
-    using reader_type = one2many_counter_reader<event_t, counter_t, content_allocator_t>;
-    using ring_buffer_t = one2many_counter_ring_buffer_t<event_t, counter_t>;
     using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
-    using bucket_type = one2many_counter_bucket<event_t, counter_t>;
-    using guard_type = one2many_counter_guard<event_t, counter_t>;
+    using writer_type = one2many_counter_object_queue<event_t, counter_t, content_allocator_t>;
+    using reader_type = one2many_counter_object_reader<event_t, counter_t, content_allocator_t>;
+    using ring_buffer_t = one2many_counter_object_ring_buffer_t<event_t, counter_t>;
+    using bucket_type = one2many_counter_object_bucket<event_t, counter_t>;
+    using guard_type = one2many_counter_object_guard<event_t, counter_t>;
     using event_type = event_t;
 
 public:
-    one2many_counter_queue(std::size_t n, content_allocator_t content_allocator = content_allocator_t())
+    one2many_counter_object_queue(std::size_t n, content_allocator_t content_allocator = content_allocator_t())
         : m_content_allocator(std::make_shared<content_allocator_t>(std::move(content_allocator)))
-        , m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_bucket(one2many_counter_object_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(0)
-        , m_next_seq_num(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_next_reader_id(one2many_counter_queue_impl<counter_t>::MIN_READER_ID)
+        , m_next_seq_num(one2many_counter_object_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_reader_id(one2many_counter_object_queue_impl<counter_t>::MIN_READER_ID)
     {
-        static_assert(sizeof(one2many_counter_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_counter_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
 
         n = to2pow(n);
         m_storage.reset(new bucket_type[n], [](bucket_type* ptr){
@@ -220,16 +220,16 @@ public:
         m_storage_mask = n - 1;
     }
 
-    one2many_counter_queue(const one2many_counter_queue&) = delete;
-    one2many_counter_queue& operator=(const one2many_counter_queue&) = delete;
+    one2many_counter_object_queue(one2many_counter_object_queue&&) noexcept = default;
 
-    one2many_counter_queue(one2many_counter_queue&&) noexcept = default;
-    one2many_counter_queue& operator=(one2many_counter_queue&&) noexcept = default;
+    one2many_counter_object_queue& operator=(one2many_counter_object_queue&&) noexcept = delete;
+    one2many_counter_object_queue(const one2many_counter_object_queue&) = delete;
+    one2many_counter_object_queue& operator=(const one2many_counter_object_queue&) = delete;
 
     std::optional<reader_type> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
-        if (next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        if (next_id != one2many_counter_object_queue_impl<counter_t>::DUMMY_READER_ID)
         {
             return std::make_optional<reader_type>(m_content_allocator, m_storage, m_storage_mask, m_next_seq_num, next_id);
         }
@@ -244,9 +244,9 @@ public:
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
 
         auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_counter.load(std::memory_order_acquire) == one2many_counter_queue_impl<counter_t>::EMPTY_DATA_MARK)
+        if (bucket.m_counter.load(std::memory_order_acquire) == one2many_counter_object_queue_impl<counter_t>::EMPTY_DATA_MARK)
         {
-            auto const counter = m_next_reader_id + one2many_counter_queue_impl<counter_t>::CONSTRUCTED_DATA_MARK;
+            auto const counter = m_next_reader_id + one2many_counter_object_queue_impl<counter_t>::CONSTRUCTED_DATA_MARK;
             auto const seqn = m_next_seq_num++;
             m_next_bucket = m_next_seq_num & m_storage_mask;
             new (&bucket.m_storage) event_t(std::move(event));
