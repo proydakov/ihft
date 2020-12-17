@@ -112,7 +112,7 @@ int test_main(int argc, char* argv[],
         //std::clog.setstate(std::ios_base::failbit);
 
         Q queue(QUEUE_SIZE);
-        T controller(NUM_READERS, TOTAL_EVENTS, queue.get_allocator());
+        T controller(NUM_READERS, TOTAL_EVENTS, queue.get_content_allocator());
 
         std::atomic<std::uint64_t> waitinig_readers_counter{ NUM_READERS };
 
