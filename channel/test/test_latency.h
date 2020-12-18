@@ -14,32 +14,24 @@ struct data_t
     {
     }
 
-    data_t(data_t&& data) noexcept
-        : m_start(data.m_start)
-    {
-    }
-
-    data_t& operator=(data_t&& data) = delete;
-    data_t(const data_t&) = delete;
-    data_t& operator=(const data_t&) = delete;
-
-    ~data_t() noexcept
-    {
-    }
-
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start;
 };
 
 struct latency_test
 {
-    template<typename allocator_t>
-    latency_test(std::size_t NUM_READERS, std::size_t TOTAL_EVENTS, allocator_t&) noexcept
+    latency_test(std::size_t NUM_READERS, std::size_t TOTAL_EVENTS) noexcept
     {
         m_lines.resize(NUM_READERS);
         for(auto & line : m_lines)
         {
             line.m_delta.reserve(TOTAL_EVENTS);
         }
+    }
+
+    template<typename allocator_t>
+    latency_test(std::size_t NUM_READERS, std::size_t TOTAL_EVENTS, allocator_t&) noexcept
+        : latency_test(NUM_READERS, TOTAL_EVENTS)
+    {
     }
 
     ~latency_test() noexcept

@@ -8,6 +8,7 @@
 #include <thread>
 #include <vector>
 #include <iostream>
+#include <type_traits>
 
 #include <channel/common.h>
 #include <platform/platform.h>
@@ -85,6 +86,30 @@ void writer_method(std::size_t total_events, queue_t& queue, wait_t& stat, std::
     controller.writer_done();
 }
 
+// SFINAE test
+template <typename T>
+class has_get_content_allocator
+{
+    template <typename C> static std::true_type test( decltype(&C::get_content_allocator) );
+    template <typename C> static std::false_type test( ... );
+
+public:
+    enum { value = std::is_same<decltype(test<T>(0)), std::true_type >::value };
+};
+
+template<typename C, typename Q>
+auto make_controller(Q& queue, std::size_t NUM_READERS, std::size_t TOTAL_EVENTS)
+{
+    if constexpr(has_get_content_allocator<Q>::value)
+    {
+        return C{NUM_READERS, TOTAL_EVENTS, queue.get_content_allocator()};
+    }
+    else
+    {
+        return C{NUM_READERS, TOTAL_EVENTS};
+    }
+}
+
 template<class Q, class T>
 int test_main(int argc, char* argv[],
     std::uint64_t total_events = 64, std::uint64_t num_readers = (std::thread::hardware_concurrency() - 1), std::uint64_t queue_size = 4096)
@@ -112,7 +137,7 @@ int test_main(int argc, char* argv[],
         //std::clog.setstate(std::ios_base::failbit);
 
         Q queue(QUEUE_SIZE);
-        T controller(NUM_READERS, TOTAL_EVENTS, queue.get_content_allocator());
+        T controller = make_controller<T>(queue, NUM_READERS, TOTAL_EVENTS);
 
         std::atomic<std::uint64_t> waitinig_readers_counter{ NUM_READERS };
 

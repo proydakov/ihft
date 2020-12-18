@@ -14,25 +14,15 @@ struct data_t
     {
     }
 
-    data_t(data_t&& data) noexcept
-        : m_value(data.m_value)
-    {
-        data.m_value = 0;
-    }
-
-    data_t& operator=(data_t&& data) = delete;
-    data_t(const data_t&) = delete;
-    data_t& operator=(const data_t&) = delete;
-
-    ~data_t() noexcept
-    {
-    }
-
     std::uint64_t m_value;
 };
 
 struct perf_plain_test
 {
+    perf_plain_test(std::uint64_t, std::uint64_t) noexcept
+    {
+    }
+
     template<typename allocator_t>
     perf_plain_test(std::uint64_t, std::uint64_t, allocator_t&) noexcept
     {
