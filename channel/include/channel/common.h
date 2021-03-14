@@ -13,7 +13,7 @@ struct empty_allocator
 
 struct queue_helper
 {
-	static std::size_t to2pow(std::size_t n) noexcept
+    constexpr static std::size_t to2pow(std::size_t n) noexcept
     {
         if (0 == n)
         {
