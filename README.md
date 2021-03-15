@@ -8,6 +8,35 @@
 
 IHFT is microframework for low latency applications.
 
+# Goals
+
+- [x] platform module
+  - [x] set cpu for current thread
+  - [x] set name for current thread
+  - [x] verification for cpu isolation
+- [x] channel module
+  - [ ] one 2 one pod data queue
+  - [ ] one 2 one moveable object queue
+  - [ ] one 2 one moveable intrusive object queue 
+  - [x] one 2 many pod data queue
+  - [x] one 2 many moveable object queue
+  - [ ] one 2 many moveable intrusive object queue
+  - [ ] batch reader for one 2 many queue
+- [ ] logger module
+  - [ ] non reliable delivery
+  - [ ] lock-free implementation
+  - [ ] simple client usage
+- [ ] task module
+  - [ ] logical thread
+  - [ ] logical task
+  - [ ] cpu settings
+- [ ] configuration module
+  - [ ] simple human-readable csv-based config system
+- [x] CI & DevOps
+  - [x] travis CI
+  - [x] static binary
+  - [x] address sanitizer
+
 # Dev Links
 
 [What every programmer should know about memory (pdf version)](https://people.freebsd.org/~lstewart/articles/cpumemory.pdf)
