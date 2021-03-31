@@ -118,7 +118,7 @@ int test_main(int argc, char* argv[],
 
     // TEST details
     auto const NUM_READERS = static_cast<std::size_t>(argc > 1 ? std::stoul(argv[1]) : num_readers);
-    auto const TOTAL_EVENTS = static_cast<std::size_t>( (argc > 2 ? std::stoul(argv[2]) : total_events) * std::mega::num);
+    auto const TOTAL_EVENTS = static_cast<std::size_t>((argc > 2 ? std::stoul(argv[2]) : total_events) * std::mega::num);
     auto const QUEUE_SIZE = static_cast<std::size_t>(argc > 3 ? std::stoul(argv[3]) : queue_size);
 
     std::cout << "TEST: 1 writer, "
@@ -148,7 +148,7 @@ int test_main(int argc, char* argv[],
             if (not reader)
             {
                 std::cerr << "Can't create reader." << std::endl;
-                exit(EXIT_FAILURE);
+                return EXIT_FAILURE;
             }
             readers.push_back(std::move(*reader));
         }

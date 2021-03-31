@@ -93,8 +93,6 @@ public:
     using bucket_type = one2many_counter_bucket<event_t, counter_t>;
     using event_type = event_t;
 
-    static constexpr bool has_allocator = false;
-
 public:
     one2many_counter_pod_queue(std::size_t n)
         : m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)

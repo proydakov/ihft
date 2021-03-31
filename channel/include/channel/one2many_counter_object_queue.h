@@ -78,7 +78,7 @@ private:
 };
 
 // reader
-template<class event_t, typename counter_t, typename content_allocator_t>
+template<class event_t, typename counter_t, typename content_allocator_t = empty_allocator>
 class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_reader final
 {
 public:
@@ -146,8 +146,6 @@ public:
     using bucket_type = one2many_counter_bucket<event_t, counter_t>;
     using guard_type = one2many_counter_object_guard<event_t, counter_t>;
     using event_type = event_t;
-
-    static constexpr bool has_allocator = true;
 
 public:
     one2many_counter_object_queue(std::size_t n, content_allocator_t content_allocator = content_allocator_t())
