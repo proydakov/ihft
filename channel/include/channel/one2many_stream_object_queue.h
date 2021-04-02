@@ -164,7 +164,7 @@ struct one2many_stream_object_queue_impl final
         return m_storage_mask + 1;
     }
 
-    counter_t get_alive_mask() const noexcept
+    counter_t get_readers_mask() const noexcept
     {
         return (~((~counter_t(0)) << m_next_reader_id));
     }
@@ -316,9 +316,9 @@ public:
         return m_impl.size();
     }
 
-    counter_t get_alive_mask() const noexcept
+    counter_t get_readers_mask() const noexcept
     {
-        return m_impl.get_alive_mask();
+        return m_impl.get_readers_mask();
     }
 
 private:

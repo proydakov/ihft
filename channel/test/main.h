@@ -110,14 +110,16 @@ auto make_controller(Q& queue, std::size_t NUM_READERS, std::size_t TOTAL_EVENTS
     }
 }
 
-template<class Q, class T>
+template<class Q, class T, bool SINGLE_READER = false>
 int test_main(int argc, char* argv[],
-    std::uint64_t total_events = 64, std::uint64_t num_readers = (std::thread::hardware_concurrency() - 1), std::uint64_t queue_size = 4096)
+    std::uint64_t total_events = 64,
+    std::uint64_t num_readers = (std::thread::hardware_concurrency() - 1),
+    std::uint64_t queue_size = 4096)
 {
     std::cout << "usage: app <num readers> <events> * 10^6 <queue_size>" << std::endl;
 
     // TEST details
-    auto const NUM_READERS = static_cast<std::size_t>(argc > 1 ? std::stoul(argv[1]) : num_readers);
+    auto const NUM_READERS = SINGLE_READER ? 1 : static_cast<std::size_t>(argc > 1 ? std::stoul(argv[1]) : num_readers);
     auto const TOTAL_EVENTS = static_cast<std::size_t>((argc > 2 ? std::stoul(argv[2]) : total_events) * std::mega::num);
     auto const QUEUE_SIZE = static_cast<std::size_t>(argc > 3 ? std::stoul(argv[3]) : queue_size);
 
@@ -153,7 +155,7 @@ int test_main(int argc, char* argv[],
             readers.push_back(std::move(*reader));
         }
 
-        auto const mask = queue.get_alive_mask();
+        auto const mask = queue.get_readers_mask();
         std::cout << "alive mask: " << std::bitset<sizeof(mask) * 8>(mask) << " [" << mask << "]" << std::endl;;
 
         rdtsc_start = __rdtsc();
