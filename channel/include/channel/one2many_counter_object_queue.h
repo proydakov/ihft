@@ -174,11 +174,35 @@ struct one2many_counter_object_queue_impl final
     counter_t m_next_reader_id;
 };
 
+template<typename content_allocator_t>
+struct one2many_counter_object_allocator_holder
+{
+public:
+    using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
+
+    one2many_counter_object_allocator_holder(content_allocator_ptr ptr)
+        : m_content_allocator(std::move(ptr))
+    {
+    }
+
+    content_allocator_t& get_content_allocator() noexcept
+    {
+        return *m_content_allocator;
+    }
+
+    content_allocator_ptr m_content_allocator;
+};
+
+template<>
+struct one2many_counter_object_allocator_holder<empty_allocator>
+{
+};
+
 }
 
 // reader with content allocator
 template<class event_t, typename content_allocator_t, typename counter_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_reader final
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_reader final : private impl::one2many_counter_object_allocator_holder<content_allocator_t>
 {
 public:
     using guard_type = one2many_counter_object_guard<event_t, counter_t>;
@@ -188,9 +212,16 @@ private:
     using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
 
 public:
-    // ctor
+    template <bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
+    one2many_counter_object_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+        : m_impl(std::move(storage), storage_mask, read_from, id)
+    {
+        static_assert(sizeof(one2many_counter_object_reader<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+    }
+
+    template <bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
     one2many_counter_object_reader(content_allocator_ptr content_allocator, ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
-        : m_content_allocator(content_allocator)
+        : impl::one2many_counter_object_allocator_holder<content_allocator_t>(std::move(content_allocator))
         , m_impl(std::move(storage), storage_mask, read_from, id)
     {
         static_assert(sizeof(one2many_counter_object_reader<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
@@ -213,13 +244,12 @@ public:
     }
 
 private:
-    content_allocator_ptr m_content_allocator;
     impl::one2many_counter_object_reader_impl<event_t, counter_t> m_impl;
 };
 
 // queue with content allocator
 template<class event_t, typename content_allocator_t = empty_allocator, typename counter_t = std::uint32_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_queue final
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_queue final : public impl::one2many_counter_object_allocator_holder<content_allocator_t>
 {
 public:
     using writer_type = one2many_counter_object_queue<event_t, content_allocator_t, counter_t>;
@@ -230,11 +260,19 @@ public:
     using event_type = event_t;
 
 private:
-    using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
+    using base_type = impl::one2many_counter_object_allocator_holder<content_allocator_t>;
 
 public:
+    template <bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
+    one2many_counter_object_queue(std::size_t n)
+        : m_impl(n)
+    {
+        static_assert(sizeof(one2many_counter_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+    }
+
+    template <bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
     one2many_counter_object_queue(std::size_t n, content_allocator_t content_allocator = content_allocator_t())
-        : m_content_allocator(std::make_shared<content_allocator_t>(std::move(content_allocator)))
+        : impl::one2many_counter_object_allocator_holder<content_allocator_t>(std::make_shared<content_allocator_t>(std::move(content_allocator)))
         , m_impl(n)
     {
         static_assert(sizeof(one2many_counter_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
@@ -251,7 +289,14 @@ public:
         auto const next_id = m_impl.m_next_reader_id++;
         if (next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
         {
-            return std::make_optional<reader_type>(m_content_allocator, m_impl.m_storage, m_impl.m_storage_mask, m_impl.m_next_seq_num, next_id);
+            if constexpr(std::is_same_v<content_allocator_t, empty_allocator>)
+            {
+                return std::make_optional<reader_type>(m_impl.m_storage, m_impl.m_storage_mask, m_impl.m_next_seq_num, next_id);
+            }
+            else
+            {
+                return std::make_optional<reader_type>(base_type::m_content_allocator, m_impl.m_storage, m_impl.m_storage_mask, m_impl.m_next_seq_num, next_id);
+            }
         }
         else
         {
@@ -274,13 +319,7 @@ public:
         return m_impl.get_alive_mask();
     }
 
-    content_allocator_t& get_content_allocator() noexcept
-    {
-        return *m_content_allocator;
-    }
-
 private:
-    content_allocator_ptr m_content_allocator;
     impl::one2many_counter_object_queue_impl<event_t, counter_t> m_impl;
 };
 

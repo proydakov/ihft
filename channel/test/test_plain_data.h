@@ -23,11 +23,6 @@ struct perf_plain_test
     {
     }
 
-    template<typename allocator_t>
-    perf_plain_test(std::uint64_t, std::uint64_t, allocator_t&) noexcept
-    {
-    }
-
     ~perf_plain_test() noexcept
     {
     }
