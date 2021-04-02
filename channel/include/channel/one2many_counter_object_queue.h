@@ -77,33 +77,22 @@ private:
     counter_t m_owner;
 };
 
-// reader
-template<class event_t, typename counter_t, typename content_allocator_t = empty_allocator>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_reader final
+namespace impl
 {
-public:
-    using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
+template<class event_t, typename counter_t>
+struct one2many_counter_object_reader_impl final
+{
     using guard_type = one2many_counter_object_guard<event_t, counter_t>;
     using ring_buffer_t = one2many_counter_object_ring_buffer_t<event_t, counter_t>;
 
-public:
-    // ctor
-    one2many_counter_object_reader(content_allocator_ptr content_allocator, ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
-        : m_content_allocator(content_allocator)
-        , m_storage(std::move(storage))
+    one2many_counter_object_reader_impl(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+        : m_storage(std::move(storage))
         , m_next_bucket(read_from & storage_mask)
         , m_storage_mask(storage_mask)
         , m_next_read_index(read_from)
         , m_id(id)
     {
-        static_assert(sizeof(one2many_counter_object_reader<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
-
-    one2many_counter_object_reader(one2many_counter_object_reader&&) noexcept = default;
-
-    one2many_counter_object_reader& operator=(one2many_counter_object_reader&&) noexcept = delete;
-    one2many_counter_object_reader(const one2many_counter_object_reader&) = delete;
-    one2many_counter_object_reader& operator=(const one2many_counter_object_reader&) = delete;
 
     std::optional<guard_type> try_read() noexcept
     {
@@ -120,13 +109,6 @@ public:
         }
     }
 
-    counter_t get_id() const noexcept
-    {
-        return m_id;
-    }
-
-private:
-    content_allocator_ptr m_content_allocator;
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
     std::size_t m_storage_mask;
@@ -134,53 +116,23 @@ private:
     counter_t m_id;
 };
 
-// queue
-template<class event_t, typename counter_t, typename content_allocator_t = empty_allocator>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_queue final
+template<class event_t, typename counter_t>
+struct one2many_counter_object_queue_impl final
 {
-public:
-    using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
-    using writer_type = one2many_counter_object_queue<event_t, counter_t, content_allocator_t>;
-    using reader_type = one2many_counter_object_reader<event_t, counter_t, content_allocator_t>;
     using ring_buffer_t = one2many_counter_object_ring_buffer_t<event_t, counter_t>;
     using bucket_type = one2many_counter_bucket<event_t, counter_t>;
-    using guard_type = one2many_counter_object_guard<event_t, counter_t>;
-    using event_type = event_t;
 
-public:
-    one2many_counter_object_queue(std::size_t n, content_allocator_t content_allocator = content_allocator_t())
-        : m_content_allocator(std::make_shared<content_allocator_t>(std::move(content_allocator)))
-        , m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+    one2many_counter_object_queue_impl(std::size_t n)
+        : m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(0)
         , m_next_seq_num(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_next_reader_id(one2many_counter_queue_impl<counter_t>::MIN_READER_ID)
     {
-        static_assert(sizeof(one2many_counter_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
-
         n = queue_helper::to2pow(n);
         m_storage.reset(new bucket_type[n], [](bucket_type* ptr){
             delete [] ptr;
         });
         m_storage_mask = n - 1;
-    }
-
-    one2many_counter_object_queue(one2many_counter_object_queue&&) noexcept = default;
-
-    one2many_counter_object_queue& operator=(one2many_counter_object_queue&&) noexcept = delete;
-    one2many_counter_object_queue(const one2many_counter_object_queue&) = delete;
-    one2many_counter_object_queue& operator=(const one2many_counter_object_queue&) = delete;
-
-    std::optional<reader_type> create_reader() noexcept
-    {
-        auto const next_id = m_next_reader_id++;
-        if (next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
-        {
-            return std::make_optional<reader_type>(m_content_allocator, m_storage, m_storage_mask, m_next_seq_num, next_id);
-        }
-        else
-        {
-            return std::nullopt;
-        }
     }
 
     bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
@@ -214,6 +166,113 @@ public:
         return (~((~counter_t(0)) << m_next_reader_id));
     }
 
+    ring_buffer_t m_storage;
+    std::size_t m_next_bucket;
+    std::size_t m_storage_mask;
+    counter_t m_next_seq_num;
+    counter_t m_next_reader_id;
+};
+
+}
+
+// reader with content allocator
+template<class event_t, typename counter_t, typename content_allocator_t = empty_allocator>
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_reader final
+{
+public:
+    using guard_type = one2many_counter_object_guard<event_t, counter_t>;
+    using ring_buffer_t = one2many_counter_object_ring_buffer_t<event_t, counter_t>;
+
+private:
+    using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
+
+public:
+    // ctor
+    one2many_counter_object_reader(content_allocator_ptr content_allocator, ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+        : m_content_allocator(content_allocator)
+        , m_impl(std::move(storage), storage_mask, read_from, id)
+    {
+        static_assert(sizeof(one2many_counter_object_reader<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+    }
+
+    one2many_counter_object_reader(one2many_counter_object_reader&&) noexcept = default;
+
+    one2many_counter_object_reader& operator=(one2many_counter_object_reader&&) noexcept = delete;
+    one2many_counter_object_reader(const one2many_counter_object_reader&) = delete;
+    one2many_counter_object_reader& operator=(const one2many_counter_object_reader&) = delete;
+
+    std::optional<guard_type> try_read() noexcept
+    {
+        return m_impl.try_read();
+    }
+
+    counter_t get_id() const noexcept
+    {
+        return m_impl.m_id;
+    }
+
+private:
+    content_allocator_ptr m_content_allocator;
+    impl::one2many_counter_object_reader_impl<event_t, counter_t> m_impl;
+};
+
+// queue with content allocator
+template<class event_t, typename counter_t, typename content_allocator_t = empty_allocator>
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_queue final
+{
+public:
+    using writer_type = one2many_counter_object_queue<event_t, counter_t, content_allocator_t>;
+    using reader_type = one2many_counter_object_reader<event_t, counter_t, content_allocator_t>;
+    using ring_buffer_t = one2many_counter_object_ring_buffer_t<event_t, counter_t>;
+    using bucket_type = one2many_counter_bucket<event_t, counter_t>;
+    using guard_type = one2many_counter_object_guard<event_t, counter_t>;
+    using event_type = event_t;
+
+private:
+    using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
+
+public:
+    one2many_counter_object_queue(std::size_t n, content_allocator_t content_allocator = content_allocator_t())
+        : m_content_allocator(std::make_shared<content_allocator_t>(std::move(content_allocator)))
+        , m_impl(n)
+    {
+        static_assert(sizeof(one2many_counter_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+    }
+
+    one2many_counter_object_queue(one2many_counter_object_queue&&) noexcept = default;
+
+    one2many_counter_object_queue& operator=(one2many_counter_object_queue&&) noexcept = delete;
+    one2many_counter_object_queue(const one2many_counter_object_queue&) = delete;
+    one2many_counter_object_queue& operator=(const one2many_counter_object_queue&) = delete;
+
+    std::optional<reader_type> create_reader() noexcept
+    {
+        auto const next_id = m_impl.m_next_reader_id++;
+        if (next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        {
+            return std::make_optional<reader_type>(m_content_allocator, m_impl.m_storage, m_impl.m_storage_mask, m_impl.m_next_seq_num, next_id);
+        }
+        else
+        {
+            return std::nullopt;
+        }
+    }
+
+    bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
+    {
+        return m_impl.try_write(std::move(event), store_order);
+    }
+
+    std::size_t size() const noexcept
+    {
+        return m_impl.size();
+    }
+
+    counter_t get_alive_mask() const noexcept
+    {
+        return m_impl.get_alive_mask();
+    }
+
     content_allocator_t& get_content_allocator() noexcept
     {
         return *m_content_allocator;
@@ -221,11 +280,7 @@ public:
 
 private:
     content_allocator_ptr m_content_allocator;
-    ring_buffer_t m_storage;
-    std::size_t m_next_bucket;
-    std::size_t m_storage_mask;
-    counter_t m_next_seq_num;
-    counter_t m_next_reader_id;
+    impl::one2many_counter_object_queue_impl<event_t, counter_t> m_impl;
 };
 
 } // ihft
