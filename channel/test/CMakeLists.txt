@@ -1,41 +1,41 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(channel_one2many_counter_object_queue_perf_plain
+add_executable(channel_one2many_stream_object_queue_perf_plain
     main.h
     test_plain_data.h
-    test_counter_object_queue_plain_data.cpp
+    test_one2many_stream_object_queue_plain_data.cpp
 )
-target_link_libraries(channel_one2many_counter_object_queue_perf_plain ihft_channel)
-target_link_libraries(channel_one2many_counter_object_queue_perf_plain ihft_platform)
+target_link_libraries(channel_one2many_stream_object_queue_perf_plain ihft_channel)
+target_link_libraries(channel_one2many_stream_object_queue_perf_plain ihft_platform)
 
-add_executable(channel_one2many_counter_object_queue_perf_heap
+add_executable(channel_one2many_stream_object_queue_perf_heap
     main.h
     test_heap_data.h
-    test_counter_object_queue_heap_data.cpp
+    test_one2many_stream_object_queue_heap_data.cpp
 )
-target_link_libraries(channel_one2many_counter_object_queue_perf_heap ihft_channel)
-target_link_libraries(channel_one2many_counter_object_queue_perf_heap ihft_platform)
+target_link_libraries(channel_one2many_stream_object_queue_perf_heap ihft_channel)
+target_link_libraries(channel_one2many_stream_object_queue_perf_heap ihft_platform)
 
-add_executable(channel_one2many_counter_object_queue_latency
+add_executable(channel_one2many_stream_object_queue_latency
     main.h
     test_latency.h
-    test_counter_object_queue_latency.cpp
+    test_one2many_stream_object_queue_latency.cpp
 )
-target_link_libraries(channel_one2many_counter_object_queue_latency ihft_channel)
-target_link_libraries(channel_one2many_counter_object_queue_latency ihft_platform)
+target_link_libraries(channel_one2many_stream_object_queue_latency ihft_channel)
+target_link_libraries(channel_one2many_stream_object_queue_latency ihft_platform)
 
-add_executable(channel_one2many_counter_pod_queue_perf_plain
+add_executable(channel_one2many_stream_pod_queue_perf_plain
     main.h
     test_plain_data.h
-    test_counter_pod_queue_plain_data.cpp
+    test_one2many_stream_pod_queue_plain_data.cpp
 )
-target_link_libraries(channel_one2many_counter_pod_queue_perf_plain ihft_channel)
-target_link_libraries(channel_one2many_counter_pod_queue_perf_plain ihft_platform)
+target_link_libraries(channel_one2many_stream_pod_queue_perf_plain ihft_channel)
+target_link_libraries(channel_one2many_stream_pod_queue_perf_plain ihft_platform)
 
-add_executable(channel_one2many_counter_pod_queue_latency
+add_executable(channel_one2many_stream_pod_queue_latency
     main.h
     test_latency.h
-    test_counter_pod_queue_latency.cpp
+    test_one2many_stream_pod_queue_latency.cpp
 )
-target_link_libraries(channel_one2many_counter_pod_queue_latency ihft_channel)
-target_link_libraries(channel_one2many_counter_pod_queue_latency ihft_platform)
+target_link_libraries(channel_one2many_stream_pod_queue_latency ihft_channel)
+target_link_libraries(channel_one2many_stream_pod_queue_latency ihft_platform)

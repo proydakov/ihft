@@ -14,43 +14,43 @@ namespace ihft
 
 // reader
 template<class event_t, typename counter_t>
-class one2many_counter_pod_reader;
+class one2many_stream_pod_reader;
 
 // queue
 template<class event_t, typename counter_t>
-class one2many_counter_pod_queue;
+class one2many_stream_pod_queue;
 
 // buffer
 template<class event_t, typename counter_t>
-using one2many_counter_pod_ring_buffer_t = std::shared_ptr<one2many_counter_bucket<event_t, counter_t>>;
+using one2many_stream_pod_ring_buffer_t = std::shared_ptr<one2many_counter_bucket<event_t, counter_t>>;
 
 // implementation
 
 // reader
 template<class event_t, typename counter_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_pod_reader final
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_stream_pod_reader final
 {
 public:
-    using ring_buffer_t = one2many_counter_pod_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_t = one2many_stream_pod_ring_buffer_t<event_t, counter_t>;
     using event_type = event_t;
 
 public:
     // ctor
-    one2many_counter_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+    one2many_stream_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
         : m_storage(std::move(storage))
         , m_next_bucket(read_from & storage_mask)
         , m_storage_mask(storage_mask)
         , m_next_read_index(read_from)
         , m_id(id)
     {
-        static_assert(sizeof(one2many_counter_pod_reader<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_stream_pod_reader<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
-    one2many_counter_pod_reader(one2many_counter_pod_reader&&) noexcept = default;
+    one2many_stream_pod_reader(one2many_stream_pod_reader&&) noexcept = default;
 
-    one2many_counter_pod_reader& operator=(one2many_counter_pod_reader&&) noexcept = delete;
-    one2many_counter_pod_reader(const one2many_counter_pod_reader&) = delete;
-    one2many_counter_pod_reader& operator=(const one2many_counter_pod_reader&) = delete;
+    one2many_stream_pod_reader& operator=(one2many_stream_pod_reader&&) noexcept = delete;
+    one2many_stream_pod_reader(const one2many_stream_pod_reader&) = delete;
+    one2many_stream_pod_reader& operator=(const one2many_stream_pod_reader&) = delete;
 
     std::optional<event_t> try_read() noexcept
     {
@@ -84,23 +84,23 @@ private:
 
 // queue
 template<class event_t, typename counter_t = std::uint32_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_pod_queue final
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_stream_pod_queue final
 {
 public:
-    using writer_type = one2many_counter_pod_queue<event_t, counter_t>;
-    using reader_type = one2many_counter_pod_reader<event_t, counter_t>;
-    using ring_buffer_t = one2many_counter_pod_ring_buffer_t<event_t, counter_t>;
+    using writer_type = one2many_stream_pod_queue<event_t, counter_t>;
+    using reader_type = one2many_stream_pod_reader<event_t, counter_t>;
+    using ring_buffer_t = one2many_stream_pod_ring_buffer_t<event_t, counter_t>;
     using bucket_type = one2many_counter_bucket<event_t, counter_t>;
     using event_type = event_t;
 
 public:
-    one2many_counter_pod_queue(std::size_t n)
+    one2many_stream_pod_queue(std::size_t n)
         : m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(0)
         , m_next_seq_num(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_next_reader_id(one2many_counter_queue_impl<counter_t>::MIN_READER_ID)
     {
-        static_assert(sizeof(one2many_counter_pod_queue<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_stream_pod_queue<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
         static_assert(std::is_trivially_copyable<event_t>::value);
 
         n = queue_helper::to2pow(n);
@@ -110,11 +110,11 @@ public:
         m_storage_mask = n - 1;
     }
 
-    one2many_counter_pod_queue(one2many_counter_pod_queue&&) noexcept = default;
+    one2many_stream_pod_queue(one2many_stream_pod_queue&&) noexcept = default;
 
-    one2many_counter_pod_queue& operator=(one2many_counter_pod_queue&&) noexcept = delete;
-    one2many_counter_pod_queue(const one2many_counter_pod_queue&) = delete;
-    one2many_counter_pod_queue& operator=(const one2many_counter_pod_queue&) = delete;
+    one2many_stream_pod_queue& operator=(one2many_stream_pod_queue&&) noexcept = delete;
+    one2many_stream_pod_queue(const one2many_stream_pod_queue&) = delete;
+    one2many_stream_pod_queue& operator=(const one2many_stream_pod_queue&) = delete;
 
     std::optional<reader_type> create_reader() noexcept
     {
