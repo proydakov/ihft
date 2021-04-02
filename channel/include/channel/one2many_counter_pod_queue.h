@@ -83,7 +83,7 @@ private:
 };
 
 // queue
-template<class event_t, typename counter_t>
+template<class event_t, typename counter_t = std::uint32_t>
 class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_pod_queue final
 {
 public:

@@ -16,17 +16,17 @@ namespace ihft
 template<class event_t, typename counter_t>
 class one2many_counter_object_guard;
 
-// reader
-template<class event_t, typename counter_t, typename content_allocator_t>
-class one2many_counter_object_reader;
-
-// queue
-template<class event_t, typename counter_t, typename content_allocator_t>
-class one2many_counter_object_queue;
-
 // buffer
 template<class event_t, typename counter_t>
 using one2many_counter_object_ring_buffer_t = std::shared_ptr<one2many_counter_bucket<event_t, counter_t>>;
+
+// reader
+template<class event_t, typename content_allocator_t, typename counter_t>
+class one2many_counter_object_reader;
+
+// queue
+template<class event_t, typename content_allocator_t, typename counter_t>
+class one2many_counter_object_queue;
 
 // implementation
 
@@ -79,6 +79,7 @@ private:
 
 namespace impl
 {
+
 template<class event_t, typename counter_t>
 struct one2many_counter_object_reader_impl final
 {
@@ -176,7 +177,7 @@ struct one2many_counter_object_queue_impl final
 }
 
 // reader with content allocator
-template<class event_t, typename counter_t, typename content_allocator_t = empty_allocator>
+template<class event_t, typename content_allocator_t, typename counter_t>
 class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_reader final
 {
 public:
@@ -217,12 +218,12 @@ private:
 };
 
 // queue with content allocator
-template<class event_t, typename counter_t, typename content_allocator_t = empty_allocator>
+template<class event_t, typename content_allocator_t = empty_allocator, typename counter_t = std::uint32_t>
 class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_object_queue final
 {
 public:
-    using writer_type = one2many_counter_object_queue<event_t, counter_t, content_allocator_t>;
-    using reader_type = one2many_counter_object_reader<event_t, counter_t, content_allocator_t>;
+    using writer_type = one2many_counter_object_queue<event_t, content_allocator_t, counter_t>;
+    using reader_type = one2many_counter_object_reader<event_t, content_allocator_t, counter_t>;
     using ring_buffer_t = one2many_counter_object_ring_buffer_t<event_t, counter_t>;
     using bucket_type = one2many_counter_bucket<event_t, counter_t>;
     using guard_type = one2many_counter_object_guard<event_t, counter_t>;

@@ -4,5 +4,5 @@
 
 int main(int argc, char* argv[])
 {
-    return test_main<one2many_counter_pod_queue<data_t, std::uint64_t>, perf_plain_test>(argc, argv);
+    return test_main<one2many_counter_pod_queue<data_t>, perf_plain_test>(argc, argv);
 }
