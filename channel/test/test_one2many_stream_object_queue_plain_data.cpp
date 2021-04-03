@@ -1,5 +1,5 @@
 #include <main.h>
-#include <test_plain_data.h>
+#include <plain_data.h>
 #include <channel/one2many_stream_object_queue.h>
 
 int main(int argc, char* argv[])
