@@ -16,17 +16,17 @@ namespace ihft
 template<class event_t, typename counter_t>
 class one2many_stream_object_guard;
 
-// buffer
-template<class event_t, typename counter_t>
-using one2many_stream_object_ring_buffer_t = std::shared_ptr<one2many_counter_bucket<event_t, counter_t>>;
-
 // reader
-template<class event_t, typename content_allocator_t, typename counter_t>
+template<class event_t, typename counter_t>
 class one2many_stream_object_reader;
 
 // queue
 template<class event_t, typename content_allocator_t, typename counter_t>
 class one2many_stream_object_queue;
+
+// buffer
+template<class event_t, typename counter_t>
+using one2many_stream_object_ring_buffer_t = std::shared_ptr<one2many_counter_bucket<event_t, counter_t>>;
 
 // implementation
 
@@ -82,60 +82,80 @@ private:
 namespace impl
 {
 
-template<class event_t, typename counter_t>
-struct one2many_stream_object_reader_impl final
+template<typename content_allocator_t>
+struct one2many_stream_object_allocator_holder
 {
-    using guard_type = one2many_stream_object_guard<event_t, counter_t>;
-    using ring_buffer_t = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
-
-    one2many_stream_object_reader_impl(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
-        : m_storage(std::move(storage))
-        , m_next_bucket(read_from & storage_mask)
-        , m_storage_mask(storage_mask)
-        , m_next_read_index(read_from)
-        , m_id(id)
+public:
+    one2many_stream_object_allocator_holder(content_allocator_t* ptr)
+        : m_content_allocator(ptr)
     {
     }
 
-    std::optional<guard_type> try_read() noexcept
+    ~one2many_stream_object_allocator_holder()
     {
-        auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_seqn.load(std::memory_order_acquire) == m_next_read_index)
+        m_content_allocator = nullptr;
+    }
+
+    content_allocator_t& get_content_allocator() noexcept
+    {
+        return *m_content_allocator;
+    }
+
+    content_allocator_t* m_content_allocator;
+};
+
+template<>
+struct one2many_stream_object_allocator_holder<empty_allocator>
+{
+};
+
+template<class event_t, typename counter_t>
+class one2many_stream_object_queue_impl final
+{
+public:
+    using bucket_type = one2many_counter_bucket<event_t, counter_t>;
+    using reader_type = one2many_stream_object_reader<event_t, counter_t>;
+    using ring_buffer_t = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
+
+    template<typename T, typename D>
+    one2many_stream_object_queue_impl(std::size_t n, T content_allocator, D content_allocator_deleter)
+        : m_storage(new bucket_type[n], [allocator = std::move(content_allocator), deleter = std::move(content_allocator_deleter)](bucket_type* ptr) {
+            delete [] ptr;
+            // data removed. now we ready to cleanup allocator memory
+            deleter(allocator);
+        })
+        , m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_storage_mask(0)
+        , m_next_seq_num(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_reader_id(one2many_counter_queue_impl<counter_t>::MIN_READER_ID)
+    {
+
+        m_storage_mask = n - 1;
+    }
+
+    one2many_stream_object_queue_impl(std::size_t n)
+        : m_storage(new bucket_type[n], [](bucket_type* ptr){
+            delete [] ptr;
+        })
+        , m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_storage_mask(0)
+        , m_next_seq_num(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_reader_id(one2many_counter_queue_impl<counter_t>::MIN_READER_ID)
+    {
+        m_storage_mask = n - 1;
+    }
+
+    std::optional<reader_type> create_reader() noexcept
+    {
+        auto const next_id = m_next_reader_id++;
+        if (next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
         {
-            m_next_read_index++;
-            m_next_bucket = m_next_read_index & m_storage_mask;
-            return std::optional<guard_type>(guard_type(bucket, m_id));
+            return std::make_optional<reader_type>(m_storage, m_storage_mask, m_next_seq_num, next_id);
         }
         else
         {
             return std::nullopt;
         }
-    }
-
-    ring_buffer_t m_storage;
-    std::size_t m_next_bucket;
-    std::size_t m_storage_mask;
-    counter_t m_next_read_index;
-    counter_t m_id;
-};
-
-template<class event_t, typename counter_t>
-struct one2many_stream_object_queue_impl final
-{
-    using ring_buffer_t = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
-    using bucket_type = one2many_counter_bucket<event_t, counter_t>;
-
-    one2many_stream_object_queue_impl(std::size_t n)
-        : m_next_bucket(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_storage_mask(0)
-        , m_next_seq_num(one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_next_reader_id(one2many_counter_queue_impl<counter_t>::MIN_READER_ID)
-    {
-        n = queue_helper::to2pow(n);
-        m_storage.reset(new bucket_type[n], [](bucket_type* ptr){
-            delete [] ptr;
-        });
-        m_storage_mask = n - 1;
     }
 
     bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
@@ -176,57 +196,25 @@ struct one2many_stream_object_queue_impl final
     counter_t m_next_reader_id;
 };
 
-template<typename content_allocator_t>
-struct one2many_stream_object_allocator_holder
-{
-public:
-    using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
-
-    one2many_stream_object_allocator_holder(content_allocator_ptr ptr)
-        : m_content_allocator(std::move(ptr))
-    {
-    }
-
-    content_allocator_t& get_content_allocator() noexcept
-    {
-        return *m_content_allocator;
-    }
-
-    content_allocator_ptr m_content_allocator;
-};
-
-template<>
-struct one2many_stream_object_allocator_holder<empty_allocator>
-{
-};
-
 }
 
 // reader with content allocator
-template<class event_t, typename content_allocator_t, typename counter_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_stream_object_reader final : private impl::one2many_stream_object_allocator_holder<content_allocator_t>
+template<class event_t, typename counter_t>
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_stream_object_reader final
 {
 public:
     using guard_type = one2many_stream_object_guard<event_t, counter_t>;
     using ring_buffer_t = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
 
-private:
-    using content_allocator_ptr = std::shared_ptr<content_allocator_t>;
-
 public:
-    template <bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
     one2many_stream_object_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
-        : m_impl(std::move(storage), storage_mask, read_from, id)
+        : m_storage(std::move(storage))
+        , m_next_bucket(read_from & storage_mask)
+        , m_storage_mask(storage_mask)
+        , m_next_read_index(read_from)
+        , m_id(id)
     {
-        static_assert(sizeof(one2many_stream_object_reader<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
-    }
-
-    template <bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
-    one2many_stream_object_reader(content_allocator_ptr content_allocator, ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
-        : impl::one2many_stream_object_allocator_holder<content_allocator_t>(std::move(content_allocator))
-        , m_impl(std::move(storage), storage_mask, read_from, id)
-    {
-        static_assert(sizeof(one2many_stream_object_reader<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_stream_object_reader<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
     one2many_stream_object_reader(one2many_stream_object_reader&&) noexcept = default;
@@ -237,16 +225,30 @@ public:
 
     std::optional<guard_type> try_read() noexcept
     {
-        return m_impl.try_read();
+        auto& bucket = m_storage.get()[m_next_bucket];
+        if (bucket.m_seqn.load(std::memory_order_acquire) == m_next_read_index)
+        {
+            m_next_read_index++;
+            m_next_bucket = m_next_read_index & m_storage_mask;
+            return std::optional<guard_type>(guard_type(bucket, m_id));
+        }
+        else
+        {
+            return std::nullopt;
+        }
     }
 
     counter_t get_id() const noexcept
     {
-        return m_impl.m_id;
+        return m_id;
     }
 
 private:
-    impl::one2many_stream_object_reader_impl<event_t, counter_t> m_impl;
+    ring_buffer_t m_storage;
+    std::size_t m_next_bucket;
+    std::size_t m_storage_mask;
+    counter_t m_next_read_index;
+    counter_t m_id;
 };
 
 // queue with content allocator
@@ -254,28 +256,22 @@ template<class event_t, typename content_allocator_t = empty_allocator, typename
 class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_stream_object_queue final : public impl::one2many_stream_object_allocator_holder<content_allocator_t>
 {
 public:
-    using writer_type = one2many_stream_object_queue<event_t, content_allocator_t, counter_t>;
-    using reader_type = one2many_stream_object_reader<event_t, content_allocator_t, counter_t>;
-    using ring_buffer_t = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
-    using bucket_type = one2many_counter_bucket<event_t, counter_t>;
-    using guard_type = one2many_stream_object_guard<event_t, counter_t>;
-    using event_type = event_t;
-
-private:
-    using base_type = impl::one2many_stream_object_allocator_holder<content_allocator_t>;
+    using reader_type = one2many_stream_object_reader<event_t, counter_t>;
 
 public:
-    template <bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
+    // empty_allocator ctor
+    template<bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
     one2many_stream_object_queue(std::size_t n)
-        : m_impl(n)
+        : m_impl(queue_helper::to2pow(n))
     {
         static_assert(sizeof(one2many_stream_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
-    template <bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
-    one2many_stream_object_queue(std::size_t n, content_allocator_t content_allocator = content_allocator_t())
-        : impl::one2many_stream_object_allocator_holder<content_allocator_t>(std::make_shared<content_allocator_t>(std::move(content_allocator)))
-        , m_impl(n)
+    // custom content allocator ctor
+    template<typename Deleter = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, empty_allocator>), int> = 0>
+    one2many_stream_object_queue(std::size_t n, content_allocator_t* content_allocator = new content_allocator_t(), Deleter deleter = Deleter())
+        : impl::one2many_stream_object_allocator_holder<content_allocator_t>(content_allocator)
+        , m_impl(queue_helper::to2pow(n), content_allocator, std::move(deleter))
     {
         static_assert(sizeof(one2many_stream_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
@@ -288,22 +284,7 @@ public:
 
     std::optional<reader_type> create_reader() noexcept
     {
-        auto const next_id = m_impl.m_next_reader_id++;
-        if (next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
-        {
-            if constexpr(std::is_same_v<content_allocator_t, empty_allocator>)
-            {
-                return std::make_optional<reader_type>(m_impl.m_storage, m_impl.m_storage_mask, m_impl.m_next_seq_num, next_id);
-            }
-            else
-            {
-                return std::make_optional<reader_type>(base_type::m_content_allocator, m_impl.m_storage, m_impl.m_storage_mask, m_impl.m_next_seq_num, next_id);
-            }
-        }
-        else
-        {
-            return std::nullopt;
-        }
+        return m_impl.create_reader();
     }
 
     bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept

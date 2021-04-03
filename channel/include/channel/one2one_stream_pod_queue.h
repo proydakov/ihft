@@ -87,11 +87,9 @@ template<class event_t, typename counter_t = std::uint32_t>
 class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_stream_pod_queue final
 {
 public:
-    using writer_type = one2one_stream_pod_queue<event_t, counter_t>;
     using reader_type = one2one_stream_pod_reader<event_t, counter_t>;
     using ring_buffer_t = one2one_stream_pod_ring_buffer_t<event_t, counter_t>;
     using bucket_type = one2one_counter_bucket<event_t, counter_t>;
-    using event_type = event_t;
 
 public:
     one2one_stream_pod_queue(std::size_t n)
