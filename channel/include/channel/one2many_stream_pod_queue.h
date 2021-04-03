@@ -101,7 +101,7 @@ public:
         static_assert(sizeof(one2many_stream_pod_queue<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
         static_assert(std::is_trivially_copyable<event_t>::value);
 
-        n = queue_helper::to2pow(n);
+        n = impl::queue_helper::to2pow(n);
         m_storage.reset(new bucket_type[n], [](bucket_type* ptr){
             delete [] ptr;
         });
