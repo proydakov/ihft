@@ -47,7 +47,7 @@ public:
         : m_bucket(data.m_bucket)
         , m_owner(data.m_owner)
     {
-        data.m_owner = one2one_counter_queue_impl<counter_t>::DUMMY_READER_ID;
+        data.m_owner = impl::one2one_counter_queue_constant<counter_t>::DUMMY_READER_ID;
     }
 
     one2one_stream_object_guard& operator=(one2one_stream_object_guard&& data) = delete;
@@ -56,10 +56,10 @@ public:
 
     ~one2one_stream_object_guard() noexcept
     {
-        if (m_owner != one2one_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        if (m_owner != impl::one2one_counter_queue_constant<counter_t>::DUMMY_READER_ID)
         {
             m_bucket.get_event().~event_t();
-            m_bucket.m_seqn.store(one2one_counter_queue_impl<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_relaxed);
+            m_bucket.m_seqn.store(impl::one2one_counter_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_relaxed);
         }
     }
 
@@ -143,10 +143,10 @@ public:
             // data removed. now we ready to cleanup allocator memory
             deleter(allocator);
         })
-        , m_next_bucket(one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_bucket(impl::one2one_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(0)
-        , m_next_seq_num(one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_next_reader_id(one2one_counter_queue_impl<counter_t>::MIN_READER_ID)
+        , m_next_seq_num(impl::one2one_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_reader_id(impl::one2one_counter_queue_constant<counter_t>::MIN_READER_ID)
     {
         m_storage_mask = n - 1;
     }
@@ -155,10 +155,10 @@ public:
         : m_storage(new bucket_type[n], [](bucket_type* ptr){
             delete [] ptr;
         })
-        , m_next_bucket(one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_bucket(impl::one2one_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(0)
-        , m_next_seq_num(one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_next_reader_id(one2one_counter_queue_impl<counter_t>::MIN_READER_ID)
+        , m_next_seq_num(impl::one2one_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_reader_id(impl::one2one_counter_queue_constant<counter_t>::MIN_READER_ID)
     {
         m_storage_mask = n - 1;
     }
@@ -166,7 +166,7 @@ public:
     std::optional<reader_type> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
-        if (m_next_seq_num == one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM and next_id != one2one_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        if (m_next_seq_num == impl::one2one_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM and next_id != impl::one2one_counter_queue_constant<counter_t>::DUMMY_READER_ID)
         {
             return std::make_optional<reader_type>(m_storage, m_storage_mask, m_next_seq_num, next_id);
         }
@@ -182,7 +182,7 @@ public:
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
 
         auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_seqn.load(std::memory_order_acquire) == one2one_counter_queue_impl<counter_t>::EMPTY_DATA_MARK)
+        if (bucket.m_seqn.load(std::memory_order_acquire) == impl::one2one_counter_queue_constant<counter_t>::EMPTY_DATA_MARK)
         {
             auto const seqn = m_next_seq_num++;
             m_next_bucket = m_next_seq_num & m_storage_mask;

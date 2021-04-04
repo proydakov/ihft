@@ -15,8 +15,8 @@ struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_bucket final
     using storage_t = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
 
     one2many_counter_bucket() noexcept
-        : m_seqn(one2many_counter_queue_impl<counter_t>::DUMMY_EVENT_SEQ_NUM)
-        , m_counter(one2many_counter_queue_impl<counter_t>::EMPTY_DATA_MARK)
+        : m_seqn(impl::one2many_counter_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
+        , m_counter(impl::one2many_counter_queue_constant<counter_t>::EMPTY_DATA_MARK)
     {
     }
 
@@ -27,10 +27,10 @@ struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_counter_bucket final
 
     ~one2many_counter_bucket() noexcept
     {
-        if (m_counter != one2many_counter_queue_impl<counter_t>::EMPTY_DATA_MARK)
+        if (m_counter != impl::one2many_counter_queue_constant<counter_t>::EMPTY_DATA_MARK)
         {
             get_event().~event_t();
-            m_counter.store(one2many_counter_queue_impl<counter_t>::EMPTY_DATA_MARK, std::memory_order_relaxed);
+            m_counter.store(impl::one2many_counter_queue_constant<counter_t>::EMPTY_DATA_MARK, std::memory_order_relaxed);
         }
     }
 

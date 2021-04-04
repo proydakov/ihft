@@ -15,7 +15,7 @@ struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_counter_bucket final
     using storage_t = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
 
     one2one_counter_bucket() noexcept
-        : m_seqn(one2one_counter_queue_impl<counter_t>::DUMMY_EVENT_SEQ_NUM)
+        : m_seqn(impl::one2one_counter_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
     {
     }
 
@@ -26,10 +26,10 @@ struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_counter_bucket final
 
     ~one2one_counter_bucket() noexcept
     {
-        if (m_seqn != one2one_counter_queue_impl<counter_t>::DUMMY_EVENT_SEQ_NUM)
+        if (m_seqn != impl::one2one_counter_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
         {
             get_event().~event_t();
-            m_seqn.store(one2one_counter_queue_impl<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_relaxed);
+            m_seqn.store(impl::one2one_counter_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_relaxed);
         }
     }
 

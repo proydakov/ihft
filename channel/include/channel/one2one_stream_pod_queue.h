@@ -60,7 +60,7 @@ public:
             m_next_read_index++;
             m_next_bucket = m_next_read_index & m_storage_mask;
             std::optional<event_t> opt(std::in_place, bucket.get_event());
-            bucket.m_seqn.store(one2one_counter_queue_impl<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
+            bucket.m_seqn.store(impl::one2one_counter_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
             return opt;
         }
         else
@@ -93,10 +93,10 @@ public:
 
 public:
     one2one_stream_pod_queue(std::size_t n)
-        : m_next_bucket(one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
+        : m_next_bucket(impl::one2one_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(0)
-        , m_next_seq_num(one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_next_reader_id(one2one_counter_queue_impl<counter_t>::MIN_READER_ID)
+        , m_next_seq_num(impl::one2one_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_reader_id(impl::one2one_counter_queue_constant<counter_t>::MIN_READER_ID)
     {
         static_assert(sizeof(one2one_stream_pod_queue<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
         static_assert(std::is_trivially_copyable<event_t>::value);
@@ -117,7 +117,7 @@ public:
     std::optional<reader_type> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
-        if (m_next_seq_num == one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM and next_id != one2one_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        if (m_next_seq_num == impl::one2one_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM and next_id != impl::one2one_counter_queue_constant<counter_t>::DUMMY_READER_ID)
         {
             return std::make_optional<reader_type>(m_storage, m_storage_mask, m_next_seq_num, next_id);
         }
@@ -133,7 +133,7 @@ public:
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
 
         auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_seqn.load(std::memory_order_acquire) == one2one_counter_queue_impl<counter_t>::EMPTY_DATA_MARK)
+        if (bucket.m_seqn.load(std::memory_order_acquire) == impl::one2one_counter_queue_constant<counter_t>::EMPTY_DATA_MARK)
         {
             auto const seqn = m_next_seq_num++;
             m_next_bucket = m_next_seq_num & m_storage_mask;

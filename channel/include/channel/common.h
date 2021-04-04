@@ -7,8 +7,11 @@ namespace ihft
 
 constexpr std::size_t QUEUE_CPU_CACHE_LINE_SIZE = 64;
 
+namespace impl
+{
+
 template<typename T>
-struct one2one_counter_queue_impl
+struct one2one_counter_queue_constant
 {
     enum : T { MIN_EVENT_SEQ_NUM = 1 };
     enum : T { DUMMY_EVENT_SEQ_NUM = 0 };
@@ -18,7 +21,7 @@ struct one2one_counter_queue_impl
 };
 
 template<typename T>
-struct one2many_counter_queue_impl
+struct one2many_counter_queue_constant
 {
     enum : T { MIN_EVENT_SEQ_NUM = 1 };
     enum : T { DUMMY_EVENT_SEQ_NUM = 0 };
@@ -27,9 +30,6 @@ struct one2many_counter_queue_impl
     enum : T { EMPTY_DATA_MARK = 0 };
     enum : T { CONSTRUCTED_DATA_MARK = 1 };
 };
-
-namespace impl
-{
 
 struct queue_helper
 {
@@ -86,6 +86,6 @@ struct stream_object_allocator_holder<empty_allocator>
 {
 };
 
-}
+} // impl
 
 } // ihft
