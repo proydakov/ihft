@@ -63,6 +63,12 @@ add_executable(channel_one2one_stream_object_queue_perf_heap
 )
 target_link_libraries(channel_one2one_stream_object_queue_perf_heap ihft_queue_test_main)
 
+add_executable(channel_one2one_stream_object_queue_perf_heap_stream_allocator
+    plain_data.h
+    test_one2one_stream_object_queue_heap_stream_allocator.cpp
+)
+target_link_libraries(channel_one2one_stream_object_queue_perf_heap_stream_allocator ihft_queue_test_main)
+
 add_executable(channel_one2one_stream_object_queue_latency
     plain_data.h
     test_one2one_stream_object_queue_latency.cpp

@@ -84,10 +84,10 @@ class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_stream_object_reader final
 {
 public:
     using guard_type = one2many_stream_object_guard<event_t, counter_t>;
-    using ring_buffer_t = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_type = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
 
 public:
-    one2many_stream_object_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+    one2many_stream_object_reader(ring_buffer_type storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
         : m_storage(std::move(storage))
         , m_next_bucket(read_from & storage_mask)
         , m_storage_mask(storage_mask)
@@ -124,7 +124,7 @@ public:
     }
 
 private:
-    ring_buffer_t m_storage;
+    ring_buffer_type m_storage;
     std::size_t m_next_bucket;
     std::size_t m_storage_mask;
     counter_t m_next_read_index;
@@ -140,7 +140,7 @@ class one2many_stream_object_queue_impl final
 public:
     using bucket_type = one2many_counter_bucket<event_t, counter_t>;
     using reader_type = one2many_stream_object_reader<event_t, counter_t>;
-    using ring_buffer_t = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_type = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
 
     template<typename T, typename D>
     one2many_stream_object_queue_impl(std::size_t n, T content_allocator, D content_allocator_deleter)
@@ -220,7 +220,7 @@ public:
     }
 
 private:
-    ring_buffer_t m_storage;
+    ring_buffer_type m_storage;
     std::size_t m_next_bucket;
     std::size_t m_storage_mask;
     counter_t m_next_seq_num;
@@ -234,6 +234,7 @@ class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_stream_object_queue final : pu
 {
 public:
     using reader_type = one2many_stream_object_reader<event_t, counter_t>;
+    using allocator_type = content_allocator_t;
 
 public:
     // empty_allocator ctor
@@ -246,7 +247,7 @@ public:
 
     // custom content allocator ctor
     template<typename Deleter = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, impl::empty_allocator>), int> = 0>
-    one2many_stream_object_queue(std::size_t n, content_allocator_t* content_allocator = new content_allocator_t(), Deleter deleter = Deleter())
+    one2many_stream_object_queue(std::size_t n, content_allocator_t* content_allocator, Deleter deleter)
         : impl::stream_object_allocator_holder<content_allocator_t>(content_allocator)
         , m_impl(impl::queue_helper::to2pow(n), content_allocator, std::move(deleter))
     {

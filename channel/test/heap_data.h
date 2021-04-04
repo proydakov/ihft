@@ -28,7 +28,7 @@ struct data_t
     using value_type = typename allocator_t::value_type;
 
     data_t(std::uint64_t val, allocator_t& allocator) noexcept
-        : m_ptr(allocator.allocate(sizeof val))
+        : m_ptr(allocator.allocate(1))
         , m_allocator(allocator)
     {
         new (m_ptr) value_type(val);

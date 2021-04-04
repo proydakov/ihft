@@ -61,7 +61,10 @@ void NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, contr
     for (std::size_t j = 0; j < total_events;)
     {
         auto data = controller.create_data(j);
-        if (queue.try_write(std::move(data), std::memory_order_seq_cst))
+
+label:
+
+        if(queue.try_write(std::move(data), std::memory_order_seq_cst))
         {
             j++;
         }
@@ -69,8 +72,9 @@ void NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, contr
         {
             stat.waitCounter++;
             _mm_pause();
-        }
 
+            goto label;
+        }
     }
 }
 
@@ -110,7 +114,30 @@ auto make_controller(Q& queue, std::size_t NUM_READERS, std::size_t TOTAL_EVENTS
     }
 }
 
-template<class Q, class T, bool SINGLE_READER = false>
+template<typename Q>
+auto make_queue(std::size_t QUEUE_SIZE)
+{
+    if constexpr(has_get_content_allocator<Q>::value)
+    {
+        using A = typename Q::allocator_type;
+        std::unique_ptr<A> allocator;
+        if constexpr(std::is_constructible_v<A, std::size_t>)
+        {
+            allocator = std::make_unique<A>(QUEUE_SIZE + 1);
+        }
+        else
+        {
+            allocator = std::make_unique<A>();
+        }
+        return Q(QUEUE_SIZE, allocator.release(), allocator.get_deleter());
+    }
+    else
+    {
+        return Q(QUEUE_SIZE);
+    }
+}
+
+template<typename Q, typename T, bool SINGLE_READER = false>
 int test_main(int argc, char* argv[],
     std::uint64_t total_events = 64,
     std::uint64_t num_readers = (std::thread::hardware_concurrency() - 1),
@@ -138,7 +165,7 @@ int test_main(int argc, char* argv[],
     {
         //std::clog.setstate(std::ios_base::failbit);
 
-        Q queue(QUEUE_SIZE);
+        Q queue = make_queue<Q>(QUEUE_SIZE);
         T controller = make_controller<T>(queue, NUM_READERS, TOTAL_EVENTS);
 
         std::atomic<std::uint64_t> waitinig_readers_counter{ NUM_READERS };
