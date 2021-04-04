@@ -208,9 +208,9 @@ public:
         return m_storage_mask + 1;
     }
 
-    counter_t get_readers_mask() const noexcept
+    std::size_t readers_mask() const noexcept
     {
-        return (~((~counter_t(0)) << m_next_reader_id));
+        return (~((~std::size_t(0)) << m_next_reader_id));
     }
 
     ring_buffer_t m_storage;
@@ -267,9 +267,9 @@ public:
         return m_impl.size();
     }
 
-    counter_t get_readers_mask() const noexcept
+    std::size_t readers_mask() const noexcept
     {
-        return m_impl.get_readers_mask();
+        return m_impl.readers_mask();
     }
 
 private:

@@ -151,9 +151,14 @@ public:
         return m_storage_mask + 1;
     }
 
-    counter_t get_readers_mask() const noexcept
+    std::size_t readers_mask() const noexcept
     {
-        return (~((~counter_t(0)) << m_next_reader_id));
+        return (~((~std::size_t(0)) << m_next_reader_id));
+    }
+
+    std::size_t readers_count() const noexcept
+    {
+        return m_next_reader_id;
     }
 
 private:

@@ -64,7 +64,9 @@ int test_impl(temp_file const& file, std::vector<unsigned long> result)
         return 1;
     }
     else
+    {
         return 0;
+    }
 }
 
 int test_1()

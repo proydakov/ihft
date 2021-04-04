@@ -155,7 +155,7 @@ int test_main(int argc, char* argv[],
             readers.push_back(std::move(*reader));
         }
 
-        auto const mask = queue.get_readers_mask();
+        auto const mask = queue.readers_mask();
         std::cout << "alive mask: " << std::bitset<sizeof(mask) * 8>(mask) << " [" << mask << "]" << std::endl;;
 
         rdtsc_start = __rdtsc();

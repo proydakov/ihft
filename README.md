@@ -15,26 +15,26 @@ IHFT is microframework for low latency applications.
   - [x] set name for current thread
   - [x] verification for cpu isolation
 - [x] channel module
-  - [ ] one 2 one pod data queue
-  - [ ] one 2 one moveable object queue
+  - [x] one 2 one pod data queue
+  - [x] one 2 one moveable object queue
   - [ ] one 2 one moveable intrusive object queue 
   - [x] one 2 many pod data queue
   - [x] one 2 many moveable object queue
   - [ ] one 2 many moveable intrusive object queue
-  - [ ] batch reader for one 2 many queue
+  - [ ] batch reader for one 2 one & one 2 many moveabel object queue
 - [ ] memory module
   - [ ] stream data allocator
-  - [ ] 4KB, 2MB & 1GB page allocator 
+  - [ ] 4KB, 2MB & 1GB page allocator
 - [ ] task module
   - [ ] logical task
   - [ ] logical thread
   - [ ] cpu settings
-- [ ] configuration module
-  - [ ] simple human-readable csv-based config system
 - [ ] logger module
   - [ ] simple client usage
   - [ ] non reliable delivery
   - [ ] lock-free implementation
+- [ ] configuration module
+  - [ ] simple human-readable csv-based config system
 - [x] CI & DevOps
   - [x] travis CI
   - [x] static binary
