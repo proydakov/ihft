@@ -4,6 +4,10 @@ ihft_add_test(test_one2one_stream_queue)
 target_link_libraries(test_one2one_stream_queue PRIVATE ihft_channel)
 target_link_libraries(test_one2one_stream_queue PRIVATE Catch2::Catch2)
 
+ihft_add_test(test_one2many_stream_queue)
+target_link_libraries(test_one2many_stream_queue PRIVATE ihft_channel)
+target_link_libraries(test_one2many_stream_queue PRIVATE Catch2::Catch2)
+
 # manual unit tests
 
 # test main library

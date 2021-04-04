@@ -172,12 +172,13 @@ public:
     std::optional<reader_type> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
-        if (next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        if (m_next_seq_num == one2many_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM and next_id != one2many_counter_queue_impl<counter_t>::DUMMY_READER_ID)
         {
             return std::make_optional<reader_type>(m_storage, m_storage_mask, m_next_seq_num, next_id);
         }
         else
         {
+            m_next_reader_id--;
             return std::nullopt;
         }
     }
@@ -213,6 +214,12 @@ public:
         return (~((~std::size_t(0)) << m_next_reader_id));
     }
 
+    std::size_t readers_count() const noexcept
+    {
+        return m_next_reader_id;
+    }
+
+private:
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
     std::size_t m_storage_mask;
@@ -270,6 +277,11 @@ public:
     std::size_t readers_mask() const noexcept
     {
         return m_impl.readers_mask();
+    }
+
+    std::size_t readers_count() const noexcept
+    {
+        return m_impl.readers_count();
     }
 
 private:

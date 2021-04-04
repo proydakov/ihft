@@ -211,6 +211,7 @@ public:
         return m_next_reader_id;
     }
 
+private:
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
     std::size_t m_storage_mask;
