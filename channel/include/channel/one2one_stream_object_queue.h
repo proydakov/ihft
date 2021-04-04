@@ -166,12 +166,13 @@ public:
     std::optional<reader_type> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
-        if (next_id != one2one_counter_queue_impl<counter_t>::DUMMY_READER_ID)
+        if (m_next_seq_num == one2one_counter_queue_impl<counter_t>::MIN_EVENT_SEQ_NUM and next_id != one2one_counter_queue_impl<counter_t>::DUMMY_READER_ID)
         {
             return std::make_optional<reader_type>(m_storage, m_storage_mask, m_next_seq_num, next_id);
         }
         else
         {
+            m_next_reader_id--;
             return std::nullopt;
         }
     }

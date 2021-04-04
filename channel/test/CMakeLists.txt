@@ -1,3 +1,11 @@
+# auto test
+
+ihft_add_test(test_one2one_stream_queue)
+target_link_libraries(test_one2one_stream_queue PRIVATE ihft_channel)
+target_link_libraries(test_one2one_stream_queue PRIVATE Catch2::Catch2)
+
+# manual unit tests
+
 # test main library
 
 add_library(ihft_queue_test_main INTERFACE)
