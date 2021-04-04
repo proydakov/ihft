@@ -26,18 +26,13 @@ namespace
             , m_next(0)
             , m_size(pool_size)
         {
-            auto size = pool_size * sizeof(holder);
-
-            // Просто включите hugepages…
-            madvise(m_data.get(), size, MADV_HUGEPAGE);
-            // … и задайте следующее
-            madvise(m_data.get(), size, MADV_HUGEPAGE | MADV_SEQUENTIAL);
         }
 
         T* allocate(std::size_t)
         {
             auto& res = m_data[m_next];
-            m_next = (++m_next) % m_size;
+            m_next++;
+            m_next %= m_size;
             return &res.data;
         }
 
