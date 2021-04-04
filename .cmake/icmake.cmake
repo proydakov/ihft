@@ -28,4 +28,13 @@ ihft_setup_tools_flags()
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
+include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v2.13.4)
+
+FetchContent_MakeAvailable(Catch2)
+
 # END CMAKE PREPARATION
