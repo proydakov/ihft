@@ -21,13 +21,13 @@ target_link_libraries(ihft_queue_test_main INTERFACE ihft_platform)
 
 add_executable(channel_one2many_stream_object_queue_perf_plain
     plain_data.h
-    test_one2many_stream_object_queue_plain_data.cpp
+    test_one2many_stream_object_queue_plain.cpp
 )
 target_link_libraries(channel_one2many_stream_object_queue_perf_plain ihft_queue_test_main)
 
 add_executable(channel_one2many_stream_object_queue_perf_heap
     heap_data.h
-    test_one2many_stream_object_queue_heap_data.cpp
+    test_one2many_stream_object_queue_heap.cpp
 )
 target_link_libraries(channel_one2many_stream_object_queue_perf_heap ihft_queue_test_main)
 
@@ -39,7 +39,7 @@ target_link_libraries(channel_one2many_stream_object_queue_latency ihft_queue_te
 
 add_executable(channel_one2many_stream_pod_queue_perf_plain
     plain_data.h
-    test_one2many_stream_pod_queue_plain_data.cpp
+    test_one2many_stream_pod_queue_plain.cpp
 )
 target_link_libraries(channel_one2many_stream_pod_queue_perf_plain ihft_queue_test_main)
 
@@ -53,13 +53,13 @@ target_link_libraries(channel_one2many_stream_pod_queue_latency ihft_queue_test_
 
 add_executable(channel_one2one_stream_object_queue_perf_plain
     plain_data.h
-    test_one2one_stream_object_queue_plain_data.cpp
+    test_one2one_stream_object_queue_plain.cpp
 )
 target_link_libraries(channel_one2one_stream_object_queue_perf_plain ihft_queue_test_main)
 
 add_executable(channel_one2one_stream_object_queue_perf_heap
     plain_data.h
-    test_one2one_stream_object_queue_heap_data.cpp
+    test_one2one_stream_object_queue_heap.cpp
 )
 target_link_libraries(channel_one2one_stream_object_queue_perf_heap ihft_queue_test_main)
 
@@ -71,7 +71,7 @@ target_link_libraries(channel_one2one_stream_object_queue_latency ihft_queue_tes
 
 add_executable(channel_one2one_stream_pod_queue_perf_plain
     plain_data.h
-    test_one2one_stream_pod_queue_plain_data.cpp
+    test_one2one_stream_pod_queue_plain.cpp
 )
 target_link_libraries(channel_one2one_stream_pod_queue_perf_plain ihft_queue_test_main)
 
