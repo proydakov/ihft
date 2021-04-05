@@ -21,10 +21,10 @@ namespace
         using value_type = T;
 
     public:
-        stream_allocator_demo(std::size_t pool_size)
-            : m_data(new holder[pool_size])
+        stream_allocator_demo(std::size_t queue_capacity)
+            : m_data(new holder[queue_capacity + 1])
             , m_next(0)
-            , m_size(pool_size)
+            , m_size(queue_capacity + 1)
         {
         }
 

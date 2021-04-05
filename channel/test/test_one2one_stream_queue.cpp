@@ -22,7 +22,7 @@ void one2one_stream_queue_simple_methods()
 
     Q queue(qsize);
 
-    REQUIRE( queue.size() == qsize );
+    REQUIRE( queue.capacity() == qsize );
 }
 
 TEST_CASE("one2one_stream_queue simple methods")

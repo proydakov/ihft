@@ -123,7 +123,7 @@ auto make_queue(std::size_t QUEUE_SIZE)
         std::unique_ptr<A> allocator;
         if constexpr(std::is_constructible_v<A, std::size_t>)
         {
-            allocator = std::make_unique<A>(QUEUE_SIZE + 1);
+            allocator = std::make_unique<A>(QUEUE_SIZE);
         }
         else
         {
@@ -141,19 +141,19 @@ template<typename Q, typename T, bool SINGLE_READER = false>
 int test_main(int argc, char* argv[],
     std::uint64_t total_events = 64,
     std::uint64_t num_readers = (std::thread::hardware_concurrency() - 1),
-    std::uint64_t queue_size = 4096)
+    std::uint64_t queue_capacity = 4096)
 {
-    std::cout << "usage: app <num readers> <events> * 10^6 <queue_size>" << std::endl;
+    std::cout << "usage: app <num readers> <events> * 10^6 <queue_capacity>" << std::endl;
 
     // TEST details
     auto const NUM_READERS = SINGLE_READER ? 1 : static_cast<std::size_t>(argc > 1 ? std::stoul(argv[1]) : num_readers);
     auto const TOTAL_EVENTS = static_cast<std::size_t>((argc > 2 ? std::stoul(argv[2]) : total_events) * std::mega::num);
-    auto const QUEUE_SIZE = static_cast<std::size_t>(argc > 3 ? std::stoul(argv[3]) : queue_size);
+    auto const QUEUE_CAPACITY = static_cast<std::size_t>(argc > 3 ? std::stoul(argv[3]) : queue_capacity);
 
     std::cout << "TEST: 1 writer, "
         << std::to_string(NUM_READERS) << " readers, "
         << std::to_string(TOTAL_EVENTS) << " total events, "
-        << QUEUE_SIZE << " queue size"
+        << QUEUE_CAPACITY << " queue capacity"
         << std::endl;
 
     std::uint64_t rdtsc_start, rdtsc_end;
@@ -165,7 +165,7 @@ int test_main(int argc, char* argv[],
     {
         //std::clog.setstate(std::ios_base::failbit);
 
-        Q queue = make_queue<Q>(QUEUE_SIZE);
+        Q queue = make_queue<Q>(QUEUE_CAPACITY);
         T controller = make_controller<T>(queue, NUM_READERS, TOTAL_EVENTS);
 
         std::atomic<std::uint64_t> waitinig_readers_counter{ NUM_READERS };

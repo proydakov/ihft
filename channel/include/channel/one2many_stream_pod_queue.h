@@ -149,7 +149,7 @@ public:
         }
     }
 
-    std::size_t size() const noexcept
+    std::size_t capacity() const noexcept
     {
         return m_storage_mask + 1;
     }
