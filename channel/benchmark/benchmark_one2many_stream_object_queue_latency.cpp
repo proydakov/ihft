@@ -1,5 +1,5 @@
 #include <main.h>
-#include <latency.h>
+#include <latency_data.h>
 #include <channel/one2many_stream_object_queue.h>
 
 int main(int argc, char* argv[])
