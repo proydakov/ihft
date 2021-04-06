@@ -69,9 +69,9 @@ public:
         }
     }
 
-    event_t const& get_event() const noexcept
+    operator event_t const& () const noexcept
     {
-        return m_bucket->get_event();
+        return m_bucket.get_event();
     }
 
 private:

@@ -24,14 +24,15 @@ struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) wait_t
     long waitCounter = 0;
 };
 
-template<typename reader_t>
-void NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, wait_t& stat)
+template<typename reader_t, typename controller_t>
+void NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, controller_t& controller, wait_t& stat)
 {
     for (std::size_t j = 0; j < total_events;)
     {
         auto opt = reader.try_read();
         if (opt)
         {
+            controller.check_data(reader.get_id(), *opt);
             j++;
         }
         else
@@ -50,7 +51,7 @@ void reader_method(std::size_t total_events, reader_t reader, wait_t& stat, std:
 
     waitinig_readers_counter--;
 
-    reader_method_impl(total_events, reader, stat);
+    reader_method_impl(total_events, reader, controller, stat);
 
     controller.reader_done();
 }
@@ -84,6 +85,11 @@ void writer_method(std::size_t total_events, queue_t& queue, wait_t& stat, std::
     platform::set_current_thread_name("writer");
 
     while(waitinig_readers_counter > 0);
+
+    for(int i = 0; i < 256; i++)
+    {
+        _mm_pause();
+    }
 
     writer_method_impl(total_events, queue, controller, stat);
 

@@ -9,12 +9,12 @@
 
 struct data_t
 {
-    data_t(std::chrono::time_point<std::chrono::high_resolution_clock> start) noexcept
+    data_t(std::uint64_t start) noexcept
         : m_start(start)
     {
     }
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_start;
+    std::uint64_t m_start;
 };
 
 struct latency_test
@@ -43,14 +43,13 @@ struct latency_test
 
     data_t create_data(std::uint64_t) noexcept
     {
-        return data_t(std::chrono::high_resolution_clock::now());
+        return data_t(__rdtsc());
     }
 
-    void check_data(std::uint64_t i, data_t const& data)
+    void check_data(std::uint64_t reader_id, data_t const& data)
     {
-        std::chrono::time_point<std::chrono::high_resolution_clock> stop = std::chrono::high_resolution_clock::now();
-        auto const microseconds = static_cast<long>(std::chrono::duration_cast<std::chrono::microseconds>(stop - data.m_start).count());
-        m_lines[i].m_delta.push_back(microseconds);
+        auto const end = __rdtsc();
+        m_lines[reader_id].m_delta.push_back(end - data.m_start);
     }
 
     void reader_done() noexcept
@@ -64,7 +63,7 @@ struct latency_test
 private:
     struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) line_t
     {
-        std::vector<long> m_delta;
+        std::vector<std::uint64_t> m_delta;
     };
 
     std::vector<line_t> m_lines;
