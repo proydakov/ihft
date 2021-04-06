@@ -5,6 +5,7 @@
 #include <channel/one2many_stream_object_queue.h>
 
 #include <thread>
+#include <limits>
 
 using namespace ihft;
 
@@ -155,4 +156,33 @@ void one2many_stream_queue_simple_write_and_part_read()
 TEST_CASE("one2many_stream_queue simple write + part read")
 {
     one2many_stream_queue_simple_write_and_part_read<one2many_stream_object_queue<std::unique_ptr<packet>>>();
+}
+
+template<typename Q>
+void one2many_stream_queue_stress_write_and_read()
+{
+    constexpr std::size_t qsize = 32;
+
+    Q queue(qsize);
+
+    auto reader_opt = queue.create_reader();
+    REQUIRE( reader_opt.has_value() );
+    auto& reader = *reader_opt;
+
+    REQUIRE( not reader.try_read().has_value() );
+
+    for(std::size_t i = 0; i < std::size_t(std::numeric_limits<uint16_t>::max()) * 3; i++)
+    {
+        REQUIRE( queue.try_write(std::size_t(i)) == true );
+        auto opt = reader.try_read();
+        REQUIRE( opt.has_value() );
+        std::size_t const& val = *opt;
+        REQUIRE(val == i);
+    }
+}
+
+TEST_CASE("one2many_stream_queue stress write + read")
+{
+    one2many_stream_queue_stress_write_and_read<one2many_stream_pod_queue<std::size_t, std::uint16_t>>();
+    one2many_stream_queue_stress_write_and_read<one2many_stream_object_queue<std::size_t, ihft::impl::empty_allocator, std::uint16_t>>();
 }
