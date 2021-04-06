@@ -135,7 +135,7 @@ auto make_queue(std::size_t QUEUE_SIZE)
         {
             allocator = std::make_unique<A>();
         }
-        return Q(QUEUE_SIZE, allocator.release(), allocator.get_deleter());
+        return Q(QUEUE_SIZE, std::move(allocator));
     }
     else
     {

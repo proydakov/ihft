@@ -142,9 +142,9 @@ public:
     using reader_type = one2many_stream_object_reader<event_t, counter_t>;
     using ring_buffer_type = one2many_stream_object_ring_buffer_t<event_t, counter_t>;
 
-    template<typename T, typename D>
-    one2many_stream_object_queue_impl(std::size_t n, T content_allocator, D content_allocator_deleter)
-        : m_storage(new bucket_type[n], [allocator = std::move(content_allocator), deleter = std::move(content_allocator_deleter)](bucket_type* ptr) {
+    template<typename A, typename D>
+    one2many_stream_object_queue_impl(std::size_t n, std::unique_ptr<A, D> content_allocator)
+        : m_storage(new bucket_type[n], [allocator = content_allocator.release(), deleter = content_allocator.get_deleter()](bucket_type* ptr) {
             delete [] ptr;
             // data removed. now we ready to cleanup allocator memory
             deleter(allocator);
@@ -190,7 +190,7 @@ public:
         auto& bucket = m_storage.get()[m_next_bucket];
         if (bucket.m_counter.load(std::memory_order_acquire) == impl::one2many_counter_queue_constant<counter_t>::EMPTY_DATA_MARK)
         {
-            auto const counter = m_next_reader_id + impl::one2many_counter_queue_constant<counter_t>::CONSTRUCTED_DATA_MARK;
+            counter_t const counter = m_next_reader_id + impl::one2many_counter_queue_constant<counter_t>::CONSTRUCTED_DATA_MARK;
             auto const seqn = m_next_seq_num++;
             m_next_bucket = m_next_seq_num & m_storage_mask;
             new (&bucket.m_storage) event_t(std::move(event));
@@ -247,9 +247,9 @@ public:
 
     // custom content allocator ctor
     template<typename Deleter = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, impl::empty_allocator>), int> = 0>
-    one2many_stream_object_queue(std::size_t n, content_allocator_t* content_allocator, Deleter deleter)
-        : impl::stream_object_allocator_holder<content_allocator_t>(content_allocator)
-        , m_impl(impl::queue_helper::to2pow(n), content_allocator, std::move(deleter))
+    one2many_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, Deleter> content_allocator)
+        : impl::stream_object_allocator_holder<content_allocator_t>(content_allocator.get())
+        , m_impl(impl::queue_helper::to2pow(n), std::move(content_allocator))
     {
         static_assert(sizeof(one2many_stream_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }

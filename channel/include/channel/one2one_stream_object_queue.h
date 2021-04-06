@@ -137,8 +137,8 @@ public:
     using ring_buffer_type = one2one_stream_object_ring_buffer_t<event_t, counter_t>;
 
     template<typename A, typename D>
-    one2one_stream_object_queue_impl(std::size_t n, A content_allocator, D content_allocator_deleter)
-        : m_storage(new bucket_type[n], [allocator = std::move(content_allocator), deleter = std::move(content_allocator_deleter)](bucket_type* ptr) {
+    one2one_stream_object_queue_impl(std::size_t n, std::unique_ptr<A, D> content_allocator)
+        : m_storage(new bucket_type[n], [allocator = content_allocator.release(), deleter = content_allocator.get_deleter()](bucket_type* ptr) {
             delete [] ptr;
             // data removed. now we ready to cleanup allocator memory
             deleter(allocator);
@@ -234,18 +234,16 @@ public:
     one2one_stream_object_queue(std::size_t n)
         : m_impl(impl::queue_helper::to2pow(n))
     {
-        static_assert(sizeof(one2one_stream_object_queue<event_t, counter_t, content_allocator_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2one_stream_object_queue<event_t, content_allocator_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
     // custom content allocator ctor
     template<typename Deleter = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, impl::empty_allocator>), int> = 0>
-    one2one_stream_object_queue(std::size_t n, content_allocator_t* content_allocator, Deleter deleter)
-        : impl::stream_object_allocator_holder<content_allocator_t>(content_allocator)
-        , m_impl(impl::queue_helper::to2pow(n), content_allocator, std::move(deleter))
+    one2one_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, Deleter> content_allocator)
+        : impl::stream_object_allocator_holder<content_allocator_t>(content_allocator.get())
+        , m_impl(impl::queue_helper::to2pow(n), std::move(content_allocator))
     {
-        static_assert(sizeof(impl::stream_object_allocator_holder<content_allocator_t>) == 8);
-        static_assert(sizeof(m_impl) == (40));
-        static_assert(sizeof(*this) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2one_stream_object_queue<event_t, content_allocator_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
     one2one_stream_object_queue(one2one_stream_object_queue&&) noexcept = default;
