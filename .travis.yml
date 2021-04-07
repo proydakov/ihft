@@ -89,6 +89,6 @@ script:
   - $CXX --version
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_STATIC_LINK=${STATIC} -DIHFT_SANITAZE_LINK=1 ..
+  - cmake -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_STATIC_LINK=${STATIC} -DIHFT_SANITIZE_LINK=1 ..
   - cmake --build .
   - ctest -R
