@@ -10,21 +10,21 @@ namespace ihft
 
 // bucket
 template<class event_t, typename counter_t>
-struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_counter_bucket final
+struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_seqnum_bucket final
 {
     using storage_t = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
 
-    one2one_counter_bucket() noexcept
+    one2one_seqnum_bucket() noexcept
         : m_seqn(impl::one2one_counter_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
     {
     }
 
-    one2one_counter_bucket(const one2one_counter_bucket&) = delete;
-    one2one_counter_bucket& operator=(const one2one_counter_bucket&) = delete;
-    one2one_counter_bucket(one2one_counter_bucket&&) = delete;
-    one2one_counter_bucket& operator=(one2one_counter_bucket&&) = delete;
+    one2one_seqnum_bucket(const one2one_seqnum_bucket&) = delete;
+    one2one_seqnum_bucket& operator=(const one2one_seqnum_bucket&) = delete;
+    one2one_seqnum_bucket(one2one_seqnum_bucket&&) = delete;
+    one2one_seqnum_bucket& operator=(one2one_seqnum_bucket&&) = delete;
 
-    ~one2one_counter_bucket() noexcept
+    ~one2one_seqnum_bucket() noexcept
     {
         if (m_seqn != impl::one2one_counter_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
         {

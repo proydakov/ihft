@@ -1,8 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
 
-#include <channel/one2one_stream_pod_queue.h>
-#include <channel/one2one_stream_object_queue.h>
+#include <channel/one2one_seqnum_stream_pod_queue.h>
+#include <channel/one2one_seqnum_stream_object_queue.h>
 
 #include <limits>
 
@@ -29,8 +29,8 @@ void one2one_stream_queue_simple_methods()
 
 TEST_CASE("one2one_stream_queue simple methods")
 {
-    one2one_stream_queue_simple_methods<one2one_stream_pod_queue<packet>>();
-    one2one_stream_queue_simple_methods<one2one_stream_object_queue<packet>>();
+    one2one_stream_queue_simple_methods<one2one_seqnum_stream_pod_queue<packet>>();
+    one2one_stream_queue_simple_methods<one2one_seqnum_stream_object_queue<packet>>();
 }
 
 template<typename Q>
@@ -64,8 +64,8 @@ void one2one_stream_queue_simple_reader()
 
 TEST_CASE("one2one_stream_queue simple reader")
 {
-    one2one_stream_queue_simple_reader<one2one_stream_pod_queue<packet>>();
-    one2one_stream_queue_simple_reader<one2one_stream_object_queue<packet>>();
+    one2one_stream_queue_simple_reader<one2one_seqnum_stream_pod_queue<packet>>();
+    one2one_stream_queue_simple_reader<one2one_seqnum_stream_object_queue<packet>>();
 }
 
 template<typename Q>
@@ -91,8 +91,8 @@ void one2one_stream_queue_reader_before_first_write()
 
 TEST_CASE("one2one_stream_queue reader before first write")
 {
-    one2one_stream_queue_reader_before_first_write<one2one_stream_pod_queue<packet>>();
-    one2one_stream_queue_reader_before_first_write<one2one_stream_object_queue<packet>>();
+    one2one_stream_queue_reader_before_first_write<one2one_seqnum_stream_pod_queue<packet>>();
+    one2one_stream_queue_reader_before_first_write<one2one_seqnum_stream_object_queue<packet>>();
 }
 
 template<typename Q>
@@ -126,8 +126,8 @@ void one2one_stream_queue_simple_write_and_read()
 
 TEST_CASE("one2one_stream_queue simple write + read")
 {
-    one2one_stream_queue_simple_write_and_read<one2one_stream_pod_queue<packet>>();
-    one2one_stream_queue_simple_write_and_read<one2one_stream_object_queue<packet>>();
+    one2one_stream_queue_simple_write_and_read<one2one_seqnum_stream_pod_queue<packet>>();
+    one2one_stream_queue_simple_write_and_read<one2one_seqnum_stream_object_queue<packet>>();
 }
 
 template<typename Q>
@@ -161,7 +161,7 @@ void one2one_stream_queue_simple_write_and_part_read()
 
 TEST_CASE("one2one_stream_queue simple write + part read")
 {
-    one2one_stream_queue_simple_write_and_part_read<one2one_stream_object_queue<std::unique_ptr<packet>>>();
+    one2one_stream_queue_simple_write_and_part_read<one2one_seqnum_stream_object_queue<std::unique_ptr<packet>>>();
 }
 
 template<typename Q>
@@ -189,6 +189,6 @@ void one2one_stream_queue_stress_write_and_read()
 
 TEST_CASE("one2one_stream_queue stress write + read")
 {
-    one2one_stream_queue_stress_write_and_read<one2one_stream_pod_queue<std::size_t, std::uint16_t>>();
-    one2one_stream_queue_stress_write_and_read<one2one_stream_object_queue<std::size_t, ihft::impl::empty_allocator, std::uint16_t>>();
+    one2one_stream_queue_stress_write_and_read<one2one_seqnum_stream_pod_queue<std::size_t, std::uint16_t>>();
+    one2one_stream_queue_stress_write_and_read<one2one_seqnum_stream_object_queue<std::size_t, ihft::impl::empty_allocator, std::uint16_t>>();
 }

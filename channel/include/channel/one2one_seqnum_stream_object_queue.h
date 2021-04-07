@@ -5,7 +5,7 @@
 #include <optional>
 #include <type_traits>
 
-#include "one2one_counter_bucket.h"
+#include "one2one_seqnum_bucket.h"
 
 namespace ihft
 {
@@ -14,47 +14,47 @@ namespace ihft
 
 // guard
 template<class event_t, typename counter_t>
-class one2one_stream_object_guard;
+class one2one_seqnum_stream_object_guard;
 
 // reader
 template<class event_t, typename counter_t>
-class one2one_stream_object_reader;
+class one2one_seqnum_stream_object_reader;
 
 // queue
 template<class event_t, typename content_allocator_t, typename counter_t>
-class one2one_stream_object_queue;
+class one2one_seqnum_stream_object_queue;
 
 // buffer
 template<class event_t, typename counter_t>
-using one2one_stream_object_ring_buffer_t = std::shared_ptr<one2one_counter_bucket<event_t, counter_t>>;
+using one2one_seqnum_stream_object_ring_buffer_t = std::shared_ptr<one2one_seqnum_bucket<event_t, counter_t>>;
 
 // implementation
 
 // guard
 template<class event_t, typename counter_t>
-class one2one_stream_object_guard final
+class one2one_seqnum_stream_object_guard final
 {
 public:
-    using bucket_type = one2one_counter_bucket<event_t, counter_t>;
+    using bucket_type = one2one_seqnum_bucket<event_t, counter_t>;
 
-    one2one_stream_object_guard(bucket_type& bucket, counter_t owner) noexcept
+    one2one_seqnum_stream_object_guard(bucket_type& bucket, counter_t owner) noexcept
         : m_bucket(bucket)
         , m_owner(owner)
     {
     }
 
-    one2one_stream_object_guard(one2one_stream_object_guard&& data) noexcept
+    one2one_seqnum_stream_object_guard(one2one_seqnum_stream_object_guard&& data) noexcept
         : m_bucket(data.m_bucket)
         , m_owner(data.m_owner)
     {
         data.m_owner = impl::one2one_counter_queue_constant<counter_t>::DUMMY_READER_ID;
     }
 
-    one2one_stream_object_guard& operator=(one2one_stream_object_guard&& data) = delete;
-    one2one_stream_object_guard(const one2one_stream_object_guard&) = delete;
-    one2one_stream_object_guard& operator=(const one2one_stream_object_guard&) = delete;
+    one2one_seqnum_stream_object_guard& operator=(one2one_seqnum_stream_object_guard&& data) = delete;
+    one2one_seqnum_stream_object_guard(const one2one_seqnum_stream_object_guard&) = delete;
+    one2one_seqnum_stream_object_guard& operator=(const one2one_seqnum_stream_object_guard&) = delete;
 
-    ~one2one_stream_object_guard() noexcept
+    ~one2one_seqnum_stream_object_guard() noexcept
     {
         if (m_owner != impl::one2one_counter_queue_constant<counter_t>::DUMMY_READER_ID)
         {
@@ -74,28 +74,28 @@ private:
 };
 
 template<class event_t, typename counter_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_stream_object_reader final
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_object_reader final
 {
 public:
-    using guard_type = one2one_stream_object_guard<event_t, counter_t>;
-    using ring_buffer_t = one2one_stream_object_ring_buffer_t<event_t, counter_t>;
+    using guard_type = one2one_seqnum_stream_object_guard<event_t, counter_t>;
+    using ring_buffer_t = one2one_seqnum_stream_object_ring_buffer_t<event_t, counter_t>;
 
 public:
-    one2one_stream_object_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+    one2one_seqnum_stream_object_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
         : m_storage(std::move(storage))
         , m_next_bucket(read_from & storage_mask)
         , m_storage_mask(storage_mask)
         , m_next_read_index(read_from)
         , m_id(id)
     {
-        static_assert(sizeof(one2one_stream_object_reader<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2one_seqnum_stream_object_reader<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
-    one2one_stream_object_reader(one2one_stream_object_reader&&) noexcept = default;
+    one2one_seqnum_stream_object_reader(one2one_seqnum_stream_object_reader&&) noexcept = default;
 
-    one2one_stream_object_reader& operator=(one2one_stream_object_reader&&) noexcept = delete;
-    one2one_stream_object_reader(const one2one_stream_object_reader&) = delete;
-    one2one_stream_object_reader& operator=(const one2one_stream_object_reader&) = delete;
+    one2one_seqnum_stream_object_reader& operator=(one2one_seqnum_stream_object_reader&&) noexcept = delete;
+    one2one_seqnum_stream_object_reader(const one2one_seqnum_stream_object_reader&) = delete;
+    one2one_seqnum_stream_object_reader& operator=(const one2one_seqnum_stream_object_reader&) = delete;
 
     std::optional<guard_type> try_read() noexcept
     {
@@ -129,15 +129,15 @@ namespace impl
 {
 
 template<class event_t, typename counter_t>
-class one2one_stream_object_queue_impl final
+class one2one_seqnum_stream_object_queue_impl final
 {
 public:
-    using bucket_type = one2one_counter_bucket<event_t, counter_t>;
-    using reader_type = one2one_stream_object_reader<event_t, counter_t>;
-    using ring_buffer_type = one2one_stream_object_ring_buffer_t<event_t, counter_t>;
+    using bucket_type = one2one_seqnum_bucket<event_t, counter_t>;
+    using reader_type = one2one_seqnum_stream_object_reader<event_t, counter_t>;
+    using ring_buffer_type = one2one_seqnum_stream_object_ring_buffer_t<event_t, counter_t>;
 
     template<typename A, typename D>
-    one2one_stream_object_queue_impl(std::size_t n, std::unique_ptr<A, D> content_allocator)
+    one2one_seqnum_stream_object_queue_impl(std::size_t n, std::unique_ptr<A, D> content_allocator)
         : m_storage(new bucket_type[n], [allocator = content_allocator.release(), deleter = content_allocator.get_deleter()](bucket_type* ptr) {
             delete [] ptr;
             // data removed. now we ready to cleanup allocator memory
@@ -151,7 +151,7 @@ public:
         m_storage_mask = n - 1;
     }
 
-    one2one_stream_object_queue_impl(std::size_t n)
+    one2one_seqnum_stream_object_queue_impl(std::size_t n)
         : m_storage(new bucket_type[n], [](bucket_type* ptr){
             delete [] ptr;
         })
@@ -222,35 +222,35 @@ private:
 }
 
 template<class event_t, typename content_allocator_t = impl::empty_allocator, typename counter_t = std::uint32_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_stream_object_queue final : public impl::stream_object_allocator_holder<content_allocator_t>
+class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_object_queue final : public impl::stream_object_allocator_holder<content_allocator_t>
 {
 public:
-    using reader_type = one2one_stream_object_reader<event_t, counter_t>;
+    using reader_type = one2one_seqnum_stream_object_reader<event_t, counter_t>;
     using allocator_type = content_allocator_t;
 
 public:
     // empty_allocator ctor
     template<bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, impl::empty_allocator>), int> = 0>
-    one2one_stream_object_queue(std::size_t n)
+    one2one_seqnum_stream_object_queue(std::size_t n)
         : m_impl(impl::queue_helper::to2pow(n))
     {
-        static_assert(sizeof(one2one_stream_object_queue<event_t, content_allocator_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2one_seqnum_stream_object_queue<event_t, content_allocator_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
     // custom content allocator ctor
     template<typename Deleter = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, impl::empty_allocator>), int> = 0>
-    one2one_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, Deleter> content_allocator)
+    one2one_seqnum_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, Deleter> content_allocator)
         : impl::stream_object_allocator_holder<content_allocator_t>(content_allocator.get())
         , m_impl(impl::queue_helper::to2pow(n), std::move(content_allocator))
     {
-        static_assert(sizeof(one2one_stream_object_queue<event_t, content_allocator_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2one_seqnum_stream_object_queue<event_t, content_allocator_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
     }
 
-    one2one_stream_object_queue(one2one_stream_object_queue&&) noexcept = default;
+    one2one_seqnum_stream_object_queue(one2one_seqnum_stream_object_queue&&) noexcept = default;
 
-    one2one_stream_object_queue& operator=(one2one_stream_object_queue&&) noexcept = delete;
-    one2one_stream_object_queue(const one2one_stream_object_queue&) = delete;
-    one2one_stream_object_queue& operator=(const one2one_stream_object_queue&) = delete;
+    one2one_seqnum_stream_object_queue& operator=(one2one_seqnum_stream_object_queue&&) noexcept = delete;
+    one2one_seqnum_stream_object_queue(const one2one_seqnum_stream_object_queue&) = delete;
+    one2one_seqnum_stream_object_queue& operator=(const one2one_seqnum_stream_object_queue&) = delete;
 
     std::optional<reader_type> create_reader() noexcept
     {
@@ -278,7 +278,7 @@ public:
     }
 
 private:
-    impl::one2one_stream_object_queue_impl<event_t, counter_t> m_impl;
+    impl::one2one_seqnum_stream_object_queue_impl<event_t, counter_t> m_impl;
 };
 
 } // ihft

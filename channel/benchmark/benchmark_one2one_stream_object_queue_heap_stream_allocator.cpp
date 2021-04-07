@@ -1,6 +1,6 @@
 #include <main.h>
 #include <heap_data.h>
-#include <channel/one2one_stream_object_queue.h>
+#include <channel/one2one_seqnum_stream_object_queue.h>
 #include <sys/mman.h>
 
 namespace
@@ -45,6 +45,6 @@ namespace
 int main(int argc, char* argv[])
 {
     using allocator_t = stream_allocator_demo<std::uint64_t>;
-    using queue_t = one2one_stream_object_queue<data_t<allocator_t>, allocator_t>;
+    using queue_t = one2one_seqnum_stream_object_queue<data_t<allocator_t>, allocator_t>;
     return test_main<queue_t, perf_allocated_test<allocator_t>, true>(argc, argv);
 }
