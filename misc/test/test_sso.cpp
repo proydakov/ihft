@@ -43,7 +43,13 @@ TEST_CASE("SSO")
     {
         std::cout << "sizeof: " << sizeof(istring) << std::endl;
 
+#if defined (__clang__)
         constexpr int SSO_BUFFER_SIZE = 22;
+#elif defined (__GNUC__)
+        constexpr int SSO_BUFFER_SIZE = 15;
+#else
+#   error "Unsupported compiler !!!"
+#endif
 
         istring text;
         for(int i = 0; i < SSO_BUFFER_SIZE; i++)
