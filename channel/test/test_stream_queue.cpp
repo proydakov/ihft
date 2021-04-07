@@ -1,4 +1,3 @@
-#define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
 
 #include <channel/one2one_seqnum_stream_pod_queue.h>
