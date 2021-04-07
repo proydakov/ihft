@@ -51,6 +51,8 @@ void reader_method(std::size_t total_events, reader_t reader, wait_t& stat, std:
 
     waitinig_readers_counter--;
 
+    _mm_pause();
+
     reader_method_impl(total_events, reader, controller, stat);
 
     controller.reader_done();
@@ -72,7 +74,7 @@ label:
         else
         {
             stat.waitCounter++;
-            _mm_pause();
+            //_mm_pause();
 
             goto label;
         }
@@ -85,11 +87,6 @@ void writer_method(std::size_t total_events, queue_t& queue, wait_t& stat, std::
     platform::set_current_thread_name("writer");
 
     while(waitinig_readers_counter > 0);
-
-    for(int i = 0; i < 256; i++)
-    {
-        _mm_pause();
-    }
 
     writer_method_impl(total_events, queue, controller, stat);
 
