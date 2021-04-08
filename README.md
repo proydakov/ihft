@@ -42,9 +42,21 @@ IHFT is microframework for low latency applications.
 
 # Dev Links
 
+[C++ reference](https://en.cppreference.com/w/)
+
+[Compiler Explorer](https://godbolt.org)
+
+[Agner Fog’s instruction tables](https://agner.org/optimize/instruction_tables.pdf)
+
+[GCC & Clang Optimizations for Embedded Linux](https://www.linuxsecrets.com/elinux-wiki/images/2/22/GCC_Clang_Optimizations_for_Embedded_Linux.pdf)
+
 [What every programmer should know about memory (pdf version)](https://people.freebsd.org/~lstewart/articles/cpumemory.pdf)
 
-[What every programmer should know about memory (web version)](https://lwn.net/Articles/250967)
+[WikiChip CPU information](https://en.wikichip.org/wiki/WikiChip:welcome)
+
+[Intel hardware information](https://ark.intel.com)
+
+[AMD hardware information](https://www.amd.com/ru/products/epyc-server)
 
 # DevOps Links
 
@@ -53,3 +65,8 @@ IHFT is microframework for low latency applications.
 [Red Hat Enterprise Linux-7 Low Latency Tuning](https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v2.1.pdf)
 
 [Red Hat Enterprise Linux-7 Performance Tuning Guide](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/pdf/performance_tuning_guide/Red_Hat_Enterprise_Linux-7-Performance_Tuning_Guide-en-US.pdf)
+
+# People
+
+[Erik Rigtorp personal blog](ttps://rigtorp.se)
+
