@@ -7,14 +7,16 @@
 
 #include "channel/common.h"
 
+using time_point = std::chrono::time_point<std::chrono::steady_clock>;
+
 struct data_t
 {
-    data_t(std::uint64_t start) noexcept
-        : m_start(start)
+    data_t(time_point start) noexcept
+        : m_start(std::move(start))
     {
     }
 
-    std::uint64_t m_start;
+    std::chrono::time_point<std::chrono::steady_clock> m_start;
 };
 
 struct latency_test
@@ -34,7 +36,7 @@ struct latency_test
         {
             auto const& line = m_lines[i];
             std::ofstream output("reader_" + std::to_string(i));
-            for(auto delta : line.m_delta)
+            for(auto const delta : line.m_delta)
             {
                 output << delta << "\n";
             }
@@ -43,13 +45,13 @@ struct latency_test
 
     data_t create_data(std::uint64_t) noexcept
     {
-        return data_t(__rdtsc());
+        return data_t(std::chrono::steady_clock::now());
     }
 
     void check_data(std::uint64_t reader_id, data_t const& data)
     {
-        auto const end = __rdtsc();
-        m_lines[reader_id].m_delta.push_back(end - data.m_start);
+        auto const end = std::chrono::steady_clock::now();
+        m_lines[reader_id].m_delta.emplace_back( (end - data.m_start).count() );
     }
 
     void reader_done() noexcept
@@ -63,7 +65,7 @@ struct latency_test
 private:
     struct alignas(channel::CPU_CACHE_LINE_SIZE) line_t
     {
-        std::vector<std::uint64_t> m_delta;
+        std::vector<unsigned> m_delta;
     };
 
     std::vector<line_t> m_lines;

@@ -9,7 +9,7 @@ p = np.percentile(x, q = q)
 
 plt.hist(x, density=True, bins=1024, label=['Eastasia', 'Eurasia', 'Oceania'])  # density=False would make counts
 plt.ylabel('Probability')
-plt.xlabel('Data (cycles)');
+plt.xlabel('Data (nanoseconds)');
 
 for i in range(len(q)):
     perc = q[i]

@@ -166,8 +166,6 @@ int test_main(int argc, char* argv[],
     std::vector<wait_t> readersWait{ static_cast<std::size_t>(NUM_READERS) };
 
     {
-        //std::clog.setstate(std::ios_base::failbit);
-
         Q queue = make_queue<Q>(QUEUE_CAPACITY);
         T controller = make_controller<T>(queue, NUM_READERS, TOTAL_EVENTS);
 
