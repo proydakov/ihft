@@ -221,7 +221,7 @@ private:
 
 }
 
-template<class event_t, typename content_allocator_t = impl::empty_allocator, typename counter_t = std::uint32_t>
+template<class event_t, typename content_allocator_t = channel::empty_allocator, typename counter_t = std::uint32_t>
 class alignas(channel::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_object_queue final : public impl::stream_object_allocator_holder<content_allocator_t>
 {
 public:
@@ -230,7 +230,7 @@ public:
 
 public:
     // empty_allocator ctor
-    template<bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, impl::empty_allocator>), int> = 0>
+    template<bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, channel::empty_allocator>), int> = 0>
     one2one_seqnum_stream_object_queue(std::size_t n)
         : m_impl(impl::queue_helper::to2pow(n))
     {
@@ -238,7 +238,7 @@ public:
     }
 
     // custom content allocator ctor
-    template<typename Deleter = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, impl::empty_allocator>), int> = 0>
+    template<typename Deleter = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, channel::empty_allocator>), int> = 0>
     one2one_seqnum_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, Deleter> content_allocator)
         : impl::stream_object_allocator_holder<content_allocator_t>(content_allocator.get())
         , m_impl(impl::queue_helper::to2pow(n), std::move(content_allocator))

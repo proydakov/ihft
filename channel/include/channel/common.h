@@ -8,6 +8,10 @@ namespace ihft
 namespace channel
 {
     constexpr std::size_t CPU_CACHE_LINE_SIZE = 64;
+
+    struct empty_allocator
+    {
+    };
 }
 
 namespace impl
@@ -59,10 +63,6 @@ struct queue_helper
     }
 };
 
-struct empty_allocator
-{
-};
-
 template<typename content_allocator_t>
 struct stream_object_allocator_holder
 {
@@ -86,7 +86,7 @@ public:
 };
 
 template<>
-struct stream_object_allocator_holder<empty_allocator>
+struct stream_object_allocator_holder<channel::empty_allocator>
 {
 };
 
