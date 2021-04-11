@@ -5,7 +5,10 @@
 namespace ihft
 {
 
-constexpr std::size_t QUEUE_CPU_CACHE_LINE_SIZE = 64;
+namespace channel
+{
+    constexpr std::size_t CPU_CACHE_LINE_SIZE = 64;
+}
 
 namespace impl
 {

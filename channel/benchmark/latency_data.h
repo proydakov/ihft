@@ -61,7 +61,7 @@ struct latency_test
     }
 
 private:
-    struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) line_t
+    struct alignas(channel::CPU_CACHE_LINE_SIZE) line_t
     {
         std::vector<std::uint64_t> m_delta;
     };

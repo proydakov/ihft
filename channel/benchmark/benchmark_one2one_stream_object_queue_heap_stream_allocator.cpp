@@ -9,7 +9,7 @@ namespace
     template<typename T>
     class stream_allocator_demo
     {
-        struct alignas(ihft::QUEUE_CPU_CACHE_LINE_SIZE) holder
+        struct alignas(ihft::channel::CPU_CACHE_LINE_SIZE) holder
         {
             T data;
         };

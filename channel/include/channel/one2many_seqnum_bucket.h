@@ -10,7 +10,7 @@ namespace ihft
 
 // bucket
 template<class event_t, typename counter_t>
-struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_seqnum_bucket final
+struct alignas(channel::CPU_CACHE_LINE_SIZE) one2many_seqnum_bucket final
 {
     using storage_t = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
 

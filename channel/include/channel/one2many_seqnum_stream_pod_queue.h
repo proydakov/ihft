@@ -28,7 +28,7 @@ using one2many_seqnum_stream_pod_ring_buffer_t = std::shared_ptr<one2many_seqnum
 
 // reader
 template<class event_t, typename counter_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_reader final
+class alignas(channel::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_reader final
 {
 public:
     using ring_buffer_t = one2many_seqnum_stream_pod_ring_buffer_t<event_t, counter_t>;
@@ -43,7 +43,7 @@ public:
         , m_next_read_index(read_from)
         , m_id(id)
     {
-        static_assert(sizeof(one2many_seqnum_stream_pod_reader<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_seqnum_stream_pod_reader<event_t, counter_t>) <= channel::CPU_CACHE_LINE_SIZE);
     }
 
     one2many_seqnum_stream_pod_reader(one2many_seqnum_stream_pod_reader&&) noexcept = default;
@@ -84,7 +84,7 @@ private:
 
 // queue
 template<class event_t, typename counter_t = std::uint32_t>
-class alignas(QUEUE_CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_queue final
+class alignas(channel::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_queue final
 {
 public:
     using reader_type = one2many_seqnum_stream_pod_reader<event_t, counter_t>;
@@ -98,7 +98,7 @@ public:
         , m_next_seq_num(impl::one2many_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_next_reader_id(impl::one2many_counter_queue_constant<counter_t>::MIN_READER_ID)
     {
-        static_assert(sizeof(one2many_seqnum_stream_pod_queue<event_t, counter_t>) <= QUEUE_CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_seqnum_stream_pod_queue<event_t, counter_t>) <= channel::CPU_CACHE_LINE_SIZE);
         static_assert(std::is_trivially_copyable<event_t>::value);
 
         n = impl::queue_helper::to2pow(n);

@@ -19,7 +19,7 @@ using namespace ihft;
 
 #define NOINLINE  __attribute__((noinline))
 
-struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) wait_t
+struct alignas(channel::CPU_CACHE_LINE_SIZE) wait_t
 {
     long waitCounter = 0;
 };

@@ -6,12 +6,12 @@
 
 #include "channel/common.h"
 
-struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) stat_local_t
+struct alignas(channel::CPU_CACHE_LINE_SIZE) stat_local_t
 {
     std::int64_t counter{0};
 };
 
-struct alignas(QUEUE_CPU_CACHE_LINE_SIZE) stat_global_t
+struct alignas(channel::CPU_CACHE_LINE_SIZE) stat_global_t
 {
     std::atomic<std::int64_t> counter{0};
 };
