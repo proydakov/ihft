@@ -6,6 +6,8 @@ namespace ihft
 class platform
 {
 public:
+    static constexpr unsigned long CPU_CACHE_LINE_SIZE = 64;
+
     // Change current thread name. Could be useful with htop
     // The name can be up to 16 bytes long, including the terminating null byte.
     // (If the length of the string, including the terminating null byte,

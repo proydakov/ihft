@@ -8,3 +8,5 @@ target_link_libraries(platform_set_thread_cpu ihft_platform)
 add_executable(platform_get_isolated_cpu get_isolated_cpu.cpp)
 target_link_libraries(platform_get_isolated_cpu ihft_platform)
 
+add_executable(platform_core_2_core_latancy core_2_core_latancy.cpp)
+target_link_libraries(platform_core_2_core_latancy ihft_platform)
