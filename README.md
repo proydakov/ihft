@@ -46,19 +46,15 @@ IHFT is microframework for low latency applications.
 
 [Compiler Explorer](https://godbolt.org)
 
-[Agner Fog’s instruction tables](https://agner.org/optimize/instruction_tables.pdf)
-
 [Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)
+
+[Agner Fog’s instruction tables](https://agner.org/optimize/instruction_tables.pdf)
 
 [WikiChip CPU information](https://en.wikichip.org/wiki/WikiChip:welcome)
 
 [Intel hardware information](https://ark.intel.com)
 
 [AMD hardware information](https://www.amd.com/ru/products/epyc-server)
-
-[GCC & Clang Optimizations for Embedded Linux](https://www.linuxsecrets.com/elinux-wiki/images/2/22/GCC_Clang_Optimizations_for_Embedded_Linux.pdf)
-
-[What every programmer should know about memory](https://people.freebsd.org/~lstewart/articles/cpumemory.pdf)
 
 # DevOps Links
 
