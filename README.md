@@ -26,9 +26,9 @@ IHFT is microframework for low latency applications.
   - [ ] stream data allocator
   - [ ] 4KB, 2MB & 1GB page allocator
 - [ ] task module
+  - [ ] logical cpu
+  - [ ] cpu assignment
   - [ ] logical task
-  - [ ] logical thread
-  - [ ] cpu settings
 - [ ] logger module
   - [ ] simple client usage
   - [ ] non reliable delivery
@@ -48,9 +48,7 @@ IHFT is microframework for low latency applications.
 
 [Agner Fog’s instruction tables](https://agner.org/optimize/instruction_tables.pdf)
 
-[GCC & Clang Optimizations for Embedded Linux](https://www.linuxsecrets.com/elinux-wiki/images/2/22/GCC_Clang_Optimizations_for_Embedded_Linux.pdf)
-
-[What every programmer should know about memory (pdf version)](https://people.freebsd.org/~lstewart/articles/cpumemory.pdf)
+[Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)
 
 [WikiChip CPU information](https://en.wikichip.org/wiki/WikiChip:welcome)
 
@@ -58,9 +56,15 @@ IHFT is microframework for low latency applications.
 
 [AMD hardware information](https://www.amd.com/ru/products/epyc-server)
 
+[GCC & Clang Optimizations for Embedded Linux](https://www.linuxsecrets.com/elinux-wiki/images/2/22/GCC_Clang_Optimizations_for_Embedded_Linux.pdf)
+
+[What every programmer should know about memory](https://people.freebsd.org/~lstewart/articles/cpumemory.pdf)
+
 # DevOps Links
 
 [Disable cpu frecuency scaling](https://nixcp.com/disable-cpu-frecuency-scaling/)
+
+[Eric Rigtorp Low Latency Tuning](https://rigtorp.se/low-latency-guide/)
 
 [Red Hat Enterprise Linux-7 Low Latency Tuning](https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v2.1.pdf)
 
@@ -68,5 +72,5 @@ IHFT is microframework for low latency applications.
 
 # People
 
-[Erik Rigtorp personal blog](ttps://rigtorp.se)
+[Erik Rigtorp personal blog](https://rigtorp.se)
 
