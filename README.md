@@ -22,9 +22,11 @@ IHFT is microframework for low latency applications.
   - [x] one 2 many moveable object queue
   - [ ] one 2 many moveable intrusive object queue
   - [ ] batch reader for one 2 one & one 2 many moveabel object queue
+  - [x] python latency analysis tool
 - [ ] memory module
-  - [ ] stream data allocator
-  - [ ] 4KB, 2MB & 1GB page allocator
+  - [x] stream allocator
+  - [ ] arena allocator
+  - [ ] huge page allocator for 2MB & 1GB pages
 - [ ] task module
   - [ ] logical cpu
   - [ ] cpu assignment
