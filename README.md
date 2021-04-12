@@ -6,7 +6,7 @@
 [![BSD 3 License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/proydakov/ihft/blob/master/LICENSE)
 </span>
 
-IHFT is microframework for low latency applications.
+IHFT is microframework & laboratory for low latency applications.
 
 # Goals
 
@@ -21,22 +21,24 @@ IHFT is microframework for low latency applications.
   - [x] one 2 many pod data queue
   - [x] one 2 many moveable object queue
   - [ ] one 2 many moveable intrusive object queue
+  - [ ] next node consume bucket r&d
   - [ ] batch reader for one 2 one & one 2 many moveabel object queue
   - [x] python latency analysis tool
 - [ ] memory module
   - [x] stream allocator
   - [ ] arena allocator
   - [ ] huge page allocator for 2MB & 1GB pages
-- [ ] task module
-  - [ ] logical cpu
-  - [ ] cpu assignment
-  - [ ] logical task
+- [ ] misc module
+  - [ ] simple human-readable ini-based config system
 - [ ] logger module
   - [ ] simple client usage
   - [ ] non reliable delivery
   - [ ] lock-free implementation
-- [ ] configuration module
-  - [ ] simple human-readable csv-based config system
+- [ ] engine module
+  - [ ] logical cpu
+  - [ ] cpu assignment
+  - [ ] logical task
+  - [ ] container configuration
 - [x] CI & DevOps
   - [x] travis CI
   - [x] static binary
