@@ -1,5 +1,6 @@
 option(IHFT_STATIC_LINK "Use static runtime for linkage. Compile dependency free executables." OFF)
 option(IHFT_STRIP_LINK  "Strip binaries in linker stage." OFF)
-option(IHFT_ADDRESS_SANITIZER "Using address sanitizers for binary." OFF)
-option(IHFT_MEMORY_SANITIZER "Using memory sanitizers for binary." OFF)
+option(IHFT_ADDRESS_SANITIZER "Using address sanitizers for project." OFF)
+option(IHFT_THREAD_SANITIZER "Using thread sanitizers for project." OFF)
+option(IHFT_UB_SANITIZER "Using undefined behavior sanitizer for project" OFF)
 option(IHFT_BUILD_UNITTESTS "Build unit tests for project" ON)
