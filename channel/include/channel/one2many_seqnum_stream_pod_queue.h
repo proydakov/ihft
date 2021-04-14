@@ -1,11 +1,11 @@
 #pragma once
 
+#include "private/one2many_seqnum_stream_queue_impl.h"
+
 #include <atomic>
 #include <memory>
 #include <optional>
 #include <type_traits>
-
-#include "one2many_seqnum_bucket.h"
 
 namespace ihft
 {
@@ -22,7 +22,7 @@ class one2many_seqnum_stream_pod_queue;
 
 // buffer
 template<class event_t, typename counter_t>
-using one2many_seqnum_stream_pod_ring_buffer_t = std::shared_ptr<one2many_seqnum_bucket<event_t, counter_t>>;
+using one2many_seqnum_stream_ring_buffer_t = std::shared_ptr<channel::one2many_seqnum_bucket<event_t, counter_t>>;
 
 // implementation
 
@@ -31,21 +31,10 @@ template<class event_t, typename counter_t>
 class alignas(channel::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_reader final
 {
 public:
-    using ring_buffer_t = one2many_seqnum_stream_pod_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_t = one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
     using event_type = event_t;
 
 public:
-    // ctor
-    one2many_seqnum_stream_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
-        : m_storage(std::move(storage))
-        , m_next_bucket(read_from & storage_mask)
-        , m_storage_mask(storage_mask)
-        , m_next_read_index(read_from)
-        , m_id(id)
-    {
-        static_assert(sizeof(one2many_seqnum_stream_pod_reader<event_t, counter_t>) <= channel::CPU_CACHE_LINE_SIZE);
-    }
-
     one2many_seqnum_stream_pod_reader(one2many_seqnum_stream_pod_reader&&) noexcept = default;
 
     one2many_seqnum_stream_pod_reader& operator=(one2many_seqnum_stream_pod_reader&&) noexcept = delete;
@@ -75,6 +64,19 @@ public:
     }
 
 private:
+    one2many_seqnum_stream_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+        : m_storage(std::move(storage))
+        , m_next_bucket(read_from & storage_mask)
+        , m_storage_mask(storage_mask)
+        , m_next_read_index(read_from)
+        , m_id(id)
+    {
+        static_assert(sizeof(one2many_seqnum_stream_pod_reader<event_t, counter_t>) <= channel::CPU_CACHE_LINE_SIZE);
+    }
+
+private:
+    friend class channel::one2many_seqnum_stream_queue_impl<event_t, counter_t>;
+
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
     std::size_t m_storage_mask;
@@ -88,88 +90,52 @@ class alignas(channel::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_queue fin
 {
 public:
     using reader_type = one2many_seqnum_stream_pod_reader<event_t, counter_t>;
-    using ring_buffer_t = one2many_seqnum_stream_pod_ring_buffer_t<event_t, counter_t>;
-    using bucket_type = one2many_seqnum_bucket<event_t, counter_t>;
+    using ring_buffer_t = one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using bucket_type = channel::one2many_seqnum_bucket<event_t, counter_t>;
 
 public:
-    one2many_seqnum_stream_pod_queue(std::size_t n)
-        : m_next_bucket(impl::one2many_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_storage_mask(0)
-        , m_next_seq_num(impl::one2many_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_next_reader_id(impl::one2many_counter_queue_constant<counter_t>::MIN_READER_ID)
-    {
-        static_assert(sizeof(one2many_seqnum_stream_pod_queue<event_t, counter_t>) <= channel::CPU_CACHE_LINE_SIZE);
-        static_assert(std::is_trivially_copyable<event_t>::value);
-
-        n = impl::queue_helper::to2pow(n);
-        m_storage.reset(new bucket_type[n], [](bucket_type* ptr){
-            delete [] ptr;
-        });
-        m_storage_mask = n - 1;
-    }
-
     one2many_seqnum_stream_pod_queue(one2many_seqnum_stream_pod_queue&&) noexcept = default;
 
     one2many_seqnum_stream_pod_queue& operator=(one2many_seqnum_stream_pod_queue&&) noexcept = delete;
     one2many_seqnum_stream_pod_queue(const one2many_seqnum_stream_pod_queue&) = delete;
     one2many_seqnum_stream_pod_queue& operator=(const one2many_seqnum_stream_pod_queue&) = delete;
 
-    std::optional<reader_type> create_reader() noexcept
-    {
-        auto const next_id = m_next_reader_id++;
-        if (m_next_seq_num == impl::one2many_counter_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM and next_id != impl::one2many_counter_queue_constant<counter_t>::DUMMY_READER_ID)
-        {
-            return std::make_optional<reader_type>(m_storage, m_storage_mask, m_next_seq_num, next_id);
-        }
-        else
-        {
-            m_next_reader_id--;
-            return std::nullopt;
-        }
-    }
-
     bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
     {
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
-
-        auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_counter.load(std::memory_order_acquire) == impl::one2many_counter_queue_constant<counter_t>::EMPTY_DATA_MARK)
-        {
-            auto const counter = m_next_reader_id;
-            auto const seqn = m_next_seq_num++;
-            m_next_bucket = m_next_seq_num & m_storage_mask;
-            new (&bucket.m_storage) event_t(std::move(event));
-            bucket.m_counter.store(counter, std::memory_order_relaxed);
-            bucket.m_seqn.store(seqn, store_order);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return m_impl.try_write(std::move(event), store_order);
     }
 
     std::size_t capacity() const noexcept
     {
-        return m_storage_mask + 1;
+        return m_impl.capacity();
     }
 
     std::size_t readers_mask() const noexcept
     {
-        return (~((~std::size_t(0)) << m_next_reader_id));
+        return m_impl.readers_mask();
     }
 
     std::size_t readers_count() const noexcept
     {
-        return m_next_reader_id;
+        return m_impl.readers_count();
     }
 
 private:
-    ring_buffer_t m_storage;
-    std::size_t m_next_bucket;
-    std::size_t m_storage_mask;
-    counter_t m_next_seq_num;
-    counter_t m_next_reader_id;
+    one2many_seqnum_stream_pod_queue(std::size_t n)
+        : m_impl(channel::queue_helper::to2pow(n))
+    {
+    }
+
+    std::optional<reader_type> create_reader() noexcept
+    {
+        return m_impl.template create_reader<reader_type>();
+    }
+
+private:
+    friend class channel_factory;
+
+    channel::one2many_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
 };
 
 } // ihft

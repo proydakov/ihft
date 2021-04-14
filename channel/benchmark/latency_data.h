@@ -5,7 +5,7 @@
 #include <vector>
 #include <fstream>
 
-#include "channel/common.h"
+#include "platform/platform.h"
 
 using time_point = std::chrono::time_point<std::chrono::steady_clock>;
 
@@ -63,7 +63,7 @@ struct latency_test
     }
 
 private:
-    struct alignas(channel::CPU_CACHE_LINE_SIZE) line_t
+    struct alignas(platform::CPU_CACHE_LINE_SIZE) line_t
     {
         std::vector<unsigned> m_delta;
     };

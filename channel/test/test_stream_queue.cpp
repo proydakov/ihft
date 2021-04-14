@@ -1,5 +1,6 @@
 #include "catch2/catch.hpp"
 
+#include <channel/channel_factory.h>
 #include <channel/one2one_seqnum_stream_pod_queue.h>
 #include <channel/one2one_seqnum_stream_object_queue.h>
 #include <channel/one2many_seqnum_stream_pod_queue.h>
@@ -29,10 +30,15 @@ void one2_stream_queue_simple_methods()
 {
     constexpr std::size_t qsize = 32;
 
-    Q queue(qsize);
+    auto opt = channel_factory::make<Q>(qsize, 0);
+
+    REQUIRE( opt.has_value() );
+
+    auto& queue = opt->producer;
 
     REQUIRE( queue.capacity() == qsize );
 }
+
 
 TEST_CASE("one2*_stream_queue simple methods")
 {
@@ -47,7 +53,11 @@ void one2_stream_queue_min_capacity()
 {
     constexpr std::size_t qsize = 0;
 
-    Q queue(qsize);
+    auto opt = channel_factory::make<Q>(qsize, 0);
+
+    REQUIRE( opt.has_value() );
+
+    auto& queue = opt->producer;
 
     REQUIRE( queue.capacity() == 2 );
 }
@@ -65,27 +75,14 @@ void one2one_stream_queue_simple_reader()
 {
     constexpr std::size_t qsize = 32;
 
-    Q queue(qsize);
-
-    REQUIRE( queue.readers_count() == 0 );
-    REQUIRE( queue.readers_mask() == 0 );
-
-    // create valid reader
     {
-        auto reader_opt = queue.create_reader();
-        REQUIRE( reader_opt.has_value() );
-        auto& reader = *reader_opt;
-        REQUIRE( reader.get_id() == 0 );
-        REQUIRE( queue.readers_count() == 1 );
-        REQUIRE( queue.readers_mask() == 1 );
+        auto opt = channel_factory::make<Q>(qsize, 1);
+        REQUIRE( opt.has_value() );
     }
 
-    // one2one queue support only a single reader
     {
-        auto reader_opt = queue.create_reader();
-        REQUIRE( not reader_opt.has_value() );
-        REQUIRE( queue.readers_count() == 1 );
-        REQUIRE( queue.readers_mask() == 1 );
+        auto opt = channel_factory::make<Q>(qsize, 2);
+        REQUIRE( not opt.has_value() );
     }
 }
 
@@ -100,20 +97,20 @@ void one2many_stream_queue_simple_reader()
 {
     constexpr std::size_t qsize = 32;
 
-    Q queue(qsize);
+    auto const cpus = std::thread::hardware_concurrency();
 
-    REQUIRE( queue.readers_count() == 0 );
-    REQUIRE( queue.readers_mask() == 0 );
+    auto opt = channel_factory::make<Q>(qsize, cpus);
+    REQUIRE( opt.has_value() );
+
+    auto& queue = opt->producer;
+    auto& readers = opt->consumers;
+
+    REQUIRE( queue.readers_count() == cpus );
 
     // create valid readers
-    for(unsigned i = 0; i < std::thread::hardware_concurrency(); i++)
+    for(unsigned i = 0; i < cpus; i++)
     {
-        auto reader_opt = queue.create_reader();
-        REQUIRE( reader_opt.has_value() );
-        auto& reader = *reader_opt;
-        REQUIRE( reader.get_id() == i );
-        REQUIRE( queue.readers_count() == i + 1 );
-        REQUIRE( queue.readers_mask() != 0 );
+        REQUIRE( readers[i].get_id() == i );
     }
 }
 
@@ -124,44 +121,15 @@ TEST_CASE("one2many_stream_queue simple reader")
 }
 
 template<typename Q>
-void one2_stream_queue_reader_before_first_write()
-{
-    constexpr std::size_t qsize = 32;
-
-    Q queue(qsize);
-
-    REQUIRE( queue.readers_count() == 0 );
-    REQUIRE( queue.readers_mask() == 0 );
-
-    REQUIRE( queue.try_write(packet_t{}) == true );
-
-    // can't create valid reader
-    {
-        auto reader_opt = queue.create_reader();
-        REQUIRE( not reader_opt.has_value() );
-        REQUIRE( queue.readers_count() == 0 );
-        REQUIRE( queue.readers_mask() == 0 );
-    }
-}
-
-TEST_CASE("one2*_stream_queue reader before first write")
-{
-    one2_stream_queue_reader_before_first_write<one2one_seqnum_stream_pod_queue<packet_t>>();
-    one2_stream_queue_reader_before_first_write<one2one_seqnum_stream_object_queue<packet_t>>();
-    one2_stream_queue_reader_before_first_write<one2many_seqnum_stream_pod_queue<packet_t>>();
-    one2_stream_queue_reader_before_first_write<one2many_seqnum_stream_object_queue<packet_t>>();
-}
-
-template<typename Q>
 void one2_stream_queue_simple_write_and_read()
 {
     constexpr std::size_t qsize = 32;
 
-    Q queue(qsize);
+    auto opt = channel_factory::make<Q>(qsize, 1);
+    REQUIRE( opt.has_value() );
 
-    auto reader_opt = queue.create_reader();
-    REQUIRE( reader_opt.has_value() );
-    auto& reader = *reader_opt;
+    auto& queue = opt->producer;
+    auto& reader = opt->consumers.back();
 
     REQUIRE( not reader.try_read().has_value() );
 
@@ -197,11 +165,11 @@ void one2_stream_queue_simple_write_and_part_read()
 {
     constexpr std::size_t qsize = 32;
 
-    Q queue(qsize);
+    auto opt = channel_factory::make<Q>(qsize, 1);
+    REQUIRE( opt.has_value() );
 
-    auto reader_opt = queue.create_reader();
-    REQUIRE( reader_opt.has_value() );
-    auto& reader = *reader_opt;
+    auto& queue = opt->producer;
+    auto& reader = opt->consumers.back();
 
     REQUIRE( not reader.try_read().has_value() );
 
@@ -232,11 +200,11 @@ void one2_stream_queue_complex_write_and_many_read_attemps()
 {
     constexpr std::size_t qsize = 32;
 
-    Q queue(qsize);
+    auto opt = channel_factory::make<Q>(qsize, 1);
+    REQUIRE( opt.has_value() );
 
-    auto reader_opt = queue.create_reader();
-    REQUIRE( reader_opt.has_value() );
-    auto& reader = *reader_opt;
+    auto& queue = opt->producer;
+    auto& reader = opt->consumers.back();
 
     for(std::size_t i = 0; i < qsize; i++)
     {
@@ -267,11 +235,11 @@ void one2_stream_queue_stress_write_and_read()
 {
     constexpr std::size_t qsize = 32;
 
-    Q queue(qsize);
+    auto opt = channel_factory::make<Q>(qsize, 1);
+    REQUIRE( opt.has_value() );
 
-    auto reader_opt = queue.create_reader();
-    REQUIRE( reader_opt.has_value() );
-    auto& reader = *reader_opt;
+    auto& queue = opt->producer;
+    auto& reader = opt->consumers.back();
 
     REQUIRE( not reader.try_read().has_value() );
 

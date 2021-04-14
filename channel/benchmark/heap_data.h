@@ -4,14 +4,14 @@
 #include <cstdint>
 #include <iostream>
 
-#include "channel/common.h"
+#include "platform/platform.h"
 
-struct alignas(channel::CPU_CACHE_LINE_SIZE) stat_local_t
+struct alignas(platform::CPU_CACHE_LINE_SIZE) stat_local_t
 {
     std::int64_t counter{0};
 };
 
-struct alignas(channel::CPU_CACHE_LINE_SIZE) stat_global_t
+struct alignas(platform::CPU_CACHE_LINE_SIZE) stat_global_t
 {
     std::atomic<std::int64_t> counter{0};
 };

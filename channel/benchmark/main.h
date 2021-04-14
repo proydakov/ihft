@@ -10,8 +10,8 @@
 #include <iostream>
 #include <type_traits>
 
-#include <channel/common.h>
 #include <platform/platform.h>
+#include <channel/channel_factory.h>
 
 #include <x86intrin.h>
 
@@ -19,7 +19,7 @@ using namespace ihft;
 
 #define NOINLINE  __attribute__((noinline))
 
-struct alignas(channel::CPU_CACHE_LINE_SIZE) wait_t
+struct alignas(platform::CPU_CACHE_LINE_SIZE) wait_t
 {
     long waitCounter = 0;
 };
@@ -38,7 +38,7 @@ void NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, con
         else
         {
             stat.waitCounter++;
-            _mm_pause();
+            //_mm_pause();
         }
     }
 }
@@ -118,7 +118,7 @@ auto make_controller(Q& queue, std::size_t NUM_READERS, std::size_t TOTAL_EVENTS
 }
 
 template<typename Q>
-auto make_queue(std::size_t QUEUE_SIZE)
+auto make_queue_with_readers(std::size_t QUEUE_SIZE, std::size_t NUM_READERS)
 {
     if constexpr(has_get_content_allocator<Q>::value)
     {
@@ -132,11 +132,11 @@ auto make_queue(std::size_t QUEUE_SIZE)
         {
             allocator = std::make_unique<A>();
         }
-        return Q(QUEUE_SIZE, std::move(allocator));
+        return channel_factory::make<Q>(QUEUE_SIZE, NUM_READERS, std::move(allocator));
     }
     else
     {
-        return Q(QUEUE_SIZE);
+        return channel_factory::make<Q>(QUEUE_SIZE, NUM_READERS);
     }
 }
 
@@ -166,22 +166,19 @@ int test_main(int argc, char* argv[],
     std::vector<wait_t> readersWait{ static_cast<std::size_t>(NUM_READERS) };
 
     {
-        Q queue = make_queue<Q>(QUEUE_CAPACITY);
+        auto queue_with_readers = make_queue_with_readers<Q>(QUEUE_CAPACITY, NUM_READERS);
+        if (not queue_with_readers)
+        {
+            std::cerr << "Can't create queue with: " << NUM_READERS << " reader." << std::endl;
+            return EXIT_FAILURE;
+        }
+        auto& pair = *queue_with_readers;
+        auto& queue = pair.producer;
+        auto& readers = pair.consumers;
+
         T controller = make_controller<T>(queue, NUM_READERS, TOTAL_EVENTS);
 
         std::atomic<std::uint64_t> waitinig_readers_counter{ NUM_READERS };
-
-        std::vector<typename Q::reader_type> readers;
-        for (std::size_t i = 0; i < NUM_READERS; i++)
-        {
-            auto reader = queue.create_reader();
-            if (not reader)
-            {
-                std::cerr << "Can't create reader." << std::endl;
-                return EXIT_FAILURE;
-            }
-            readers.push_back(std::move(*reader));
-        }
 
         auto const mask = queue.readers_mask();
         std::cout << "alive mask: " << std::bitset<sizeof(mask) * 8>(mask) << " [" << mask << "]" << std::endl;;
@@ -190,6 +187,7 @@ int test_main(int argc, char* argv[],
         start = std::chrono::high_resolution_clock::now();
 
         std::vector<std::thread> threads;
+        threads.reserve(NUM_READERS);
         for (std::size_t i = 0; i < NUM_READERS; i++)
         {
             threads.emplace_back(reader_method<typename Q::reader_type, T>, TOTAL_EVENTS, std::move(readers[i]), std::ref(readersWait[i]), std::ref(waitinig_readers_counter), std::ref(controller));
