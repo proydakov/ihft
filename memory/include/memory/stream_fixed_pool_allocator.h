@@ -2,14 +2,14 @@
 
 #include <memory>
 
-#include "common.h"
+#include "private/common.h"
 
 namespace ihft
 {
     template<typename T, typename RegionAllocator = std::allocator<T>>
     class stream_fixed_pool_allocator
     {
-        struct alignas(ihft::memory::CPU_CACHE_LINE_SIZE) holder
+        struct alignas(memory::CPU_CACHE_LINE_SIZE) holder
         {
             T data;
         };
@@ -57,7 +57,7 @@ namespace ihft
         {
         }
 
-        T* active_slab()
+        T* active_slab() const
         {
             auto& res = m_data[m_next];
             return std::addressof(res.data);
