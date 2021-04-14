@@ -18,18 +18,18 @@ matrix:
         - ADDRESS=0
         - THREAD=0
         - UB=0
-        - CC=clang-10
-        - CXX=clang++-10
+        - CC=clang-12
+        - CXX=clang++-12
       os: linux
       compiler: clang
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-bionic-10
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
+          - llvm-toolchain-focal-12
+          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
             key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-          packages: ['cmake', 'ninja-build', 'clang-10', 'clang++-10', 'lld-10', 'libc++-10-dev', 'libc++abi-10-dev']
+          packages: ['cmake', 'ninja-build', 'clang-12', 'clang++-12', 'lld-12', 'libc++-12-dev', 'libc++abi-12-dev']
 
     - env:
         - TYPE=Release
@@ -37,18 +37,18 @@ matrix:
         - ADDRESS=1
         - THREAD=0
         - UB=1
-        - CC=clang-10
-        - CXX=clang++-10
+        - CC=clang-12
+        - CXX=clang++-12
       os: linux
       compiler: clang
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-bionic-10
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
+          - llvm-toolchain-focal-12
+          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
             key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-          packages: ['cmake', 'ninja-build', 'clang-10', 'clang++-10', 'lld-10', 'libc++-10-dev', 'libc++abi-10-dev']
+          packages: ['cmake', 'ninja-build', 'clang-12', 'clang++-12', 'lld-12', 'libc++-12-dev', 'libc++abi-12-dev']
 
     - env:
         - TYPE=Release
@@ -56,18 +56,18 @@ matrix:
         - ADDRESS=0
         - THREAD=1
         - UB=0
-        - CC=clang-10
-        - CXX=clang++-10
+        - CC=clang-12
+        - CXX=clang++-12
       os: linux
       compiler: clang
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-bionic-10
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
+          - llvm-toolchain-focal-12
+          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
             key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-          packages: ['cmake', 'ninja-build', 'clang-10', 'clang++-10', 'lld-10', 'libc++-10-dev', 'libc++abi-10-dev']
+          packages: ['cmake', 'ninja-build', 'clang-12', 'clang++-12', 'lld-12', 'libc++-12-dev', 'libc++abi-12-dev']
 
     - env:
         - TYPE=Release
@@ -83,9 +83,6 @@ matrix:
         apt:
           sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-bionic-10
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
-            key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages: ['cmake', 'ninja-build', 'gcc-10', 'g++-10']
 
     - env:
@@ -102,9 +99,6 @@ matrix:
         apt:
           sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-bionic-10
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
-            key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages: ['cmake', 'ninja-build', 'gcc-10', 'g++-10']
 
     - env:
@@ -121,9 +115,6 @@ matrix:
         apt:
           sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-bionic-10
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
-            key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages: ['cmake', 'ninja-build', 'gcc-10', 'g++-10']
 
     - env:
