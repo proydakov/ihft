@@ -28,6 +28,8 @@ namespace ihft
         stream_fixed_pool_allocator(std::size_t queue_capacity, const RegionAllocator& allocator = RegionAllocator())
             : m_data(nullptr)
             , m_next(0)
+            // The queue has maximum of queue_capacity elements.
+            // Allow the client to prepare the next record before the queue space becomes available
             , m_size(queue_capacity + 1)
             , m_allocator(allocator)
         {
@@ -39,6 +41,7 @@ namespace ihft
             m_allocator.deallocate(m_data, m_size);
         }
 
+        // STL-like interface
         T* allocate(std::size_t n)
         {
             if (n == 1)
@@ -57,6 +60,8 @@ namespace ihft
         {
         }
 
+        // IHFT-like interface
+        // We are going to next slab only after success producer.try_write()
         T* active_slab() const
         {
             auto& res = m_data[m_next];
