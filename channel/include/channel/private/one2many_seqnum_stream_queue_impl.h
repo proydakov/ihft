@@ -58,14 +58,13 @@ public:
         }
     }
 
-    bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
+    bool try_write(event_t&& event, counter_t counter, std::memory_order store_order = std::memory_order_release) noexcept
     {
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
 
         auto& bucket = m_storage.get()[m_next_bucket];
         if (bucket.m_counter.load(std::memory_order_acquire) == one2many_seqnum_queue_constant<counter_t>::EMPTY_DATA_MARK)
         {
-            counter_t const counter = m_next_reader_id + one2many_seqnum_queue_constant<counter_t>::CONSTRUCTED_DATA_MARK;
             auto const seqn = m_next_seq_num++;
             m_next_bucket = m_next_seq_num & m_storage_mask;
             new (&bucket.m_storage) event_t(std::move(event));

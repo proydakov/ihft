@@ -32,6 +32,10 @@ public:
     static std::optional<producer_and_consumers<queue_t>> make(std::size_t queue_capacity, std::size_t readers_count)
     {
         auto result = std::make_optional<producer_and_consumers<queue_t>>(queue_capacity);
+        if (not result)
+        {
+            return std::nullopt;
+        }
         auto& pair = *result;
         for (std::size_t i = 0; i < readers_count; i++)
         {
@@ -49,6 +53,10 @@ public:
     static std::optional<producer_and_consumers<queue_t>> make(std::size_t queue_capacity, std::size_t readers_count, std::unique_ptr<content_allocator_t, deleter_t> content_allocator)
     {
         auto result = std::make_optional<producer_and_consumers<queue_t>>(queue_capacity, std::move(content_allocator));
+        if (not result)
+        {
+            return std::nullopt;
+        }
         auto& pair = *result;
         for (std::size_t i = 0; i < readers_count; i++)
         {

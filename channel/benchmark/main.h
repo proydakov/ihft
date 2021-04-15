@@ -8,6 +8,7 @@
 #include <thread>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include <type_traits>
 
 #include <platform/platform.h>
@@ -25,8 +26,10 @@ struct alignas(platform::CPU_CACHE_LINE_SIZE) wait_t
 };
 
 template<typename reader_t, typename controller_t>
-void NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, controller_t& controller, wait_t& stat)
+long NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, controller_t& controller)
 {
+    long waitCounter = 0;
+
     for (std::size_t j = 0; j < total_events;)
     {
         auto opt = reader.try_read();
@@ -37,10 +40,12 @@ void NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, con
         }
         else
         {
-            stat.waitCounter++;
+            waitCounter++;
             //_mm_pause();
         }
     }
+
+    return waitCounter;
 }
 
 template<typename reader_t, typename controller_t>
@@ -51,16 +56,16 @@ void reader_method(std::size_t total_events, reader_t reader, wait_t& stat, std:
 
     waitinig_readers_counter--;
 
-    _mm_pause();
-
-    reader_method_impl(total_events, reader, controller, stat);
+    stat.waitCounter = reader_method_impl(total_events, reader, controller);
 
     controller.reader_done();
 }
 
 template<typename queue_t, typename controller_t>
-void NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, controller_t& controller, wait_t& stat)
+long NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, controller_t& controller)
 {
+    long waitCounter = 0;
+
     for (std::size_t j = 0; j < total_events;)
     {
         auto data = controller.create_data(j);
@@ -73,12 +78,14 @@ label:
         }
         else
         {
-            stat.waitCounter++;
+            waitCounter++;
             //_mm_pause();
 
             goto label;
         }
     }
+
+    return waitCounter;
 }
 
 template<typename queue_t, typename controller_t>
@@ -88,7 +95,7 @@ void writer_method(std::size_t total_events, queue_t& queue, wait_t& stat, std::
 
     while(waitinig_readers_counter > 0);
 
-    writer_method_impl(total_events, queue, controller, stat);
+    stat.waitCounter = writer_method_impl(total_events, queue, controller);
 
     controller.writer_done();
 }
@@ -143,13 +150,16 @@ auto make_queue_with_readers(std::size_t QUEUE_SIZE, std::size_t NUM_READERS)
 template<typename Q, typename T, bool SINGLE_READER = false>
 int test_main(int argc, char* argv[],
     std::uint64_t total_events = 64,
-    std::uint64_t num_readers = (std::thread::hardware_concurrency() - 1),
+    std::uint64_t num_readers = std::max((std::thread::hardware_concurrency() - 1), 1u),
     std::uint64_t queue_capacity = 4096)
 {
     std::cout << "usage: app <num readers> <events> * 10^6 <queue_capacity>" << std::endl;
 
     // TEST details
-    auto const NUM_READERS = SINGLE_READER ? 1 : static_cast<std::size_t>(argc > 1 ? std::stoul(argv[1]) : num_readers);
+    auto const NUM_READERS = [&](){
+        auto const readers = static_cast<std::size_t>(argc > 1 ? std::stoul(argv[1]) : num_readers);
+        return SINGLE_READER ? 1 : readers;
+    }();
     auto const TOTAL_EVENTS = static_cast<std::size_t>((argc > 2 ? std::stoul(argv[2]) : total_events) * std::mega::num);
     auto const QUEUE_CAPACITY = static_cast<std::size_t>(argc > 3 ? std::stoul(argv[3]) : queue_capacity);
 
@@ -183,9 +193,6 @@ int test_main(int argc, char* argv[],
         auto const mask = queue.readers_mask();
         std::cout << "alive mask: " << std::bitset<sizeof(mask) * 8>(mask) << " [" << mask << "]" << std::endl;;
 
-        rdtsc_start = __rdtsc();
-        start = std::chrono::high_resolution_clock::now();
-
         std::vector<std::thread> threads;
         threads.reserve(NUM_READERS);
         for (std::size_t i = 0; i < NUM_READERS; i++)
@@ -193,12 +200,17 @@ int test_main(int argc, char* argv[],
             threads.emplace_back(reader_method<typename Q::reader_type, T>, TOTAL_EVENTS, std::move(readers[i]), std::ref(readersWait[i]), std::ref(waitinig_readers_counter), std::ref(controller));
         }
 
-        threads.emplace_back(writer_method<Q, T>, TOTAL_EVENTS, std::ref(queue), std::ref(writerWait), std::ref(waitinig_readers_counter), std::ref(controller));
+        {
+            rdtsc_start = __rdtsc();
+            start = std::chrono::high_resolution_clock::now();
 
-        for (auto& t : threads) t.join();
+            threads.emplace_back(writer_method<Q, T>, TOTAL_EVENTS, std::ref(queue), std::ref(writerWait), std::ref(waitinig_readers_counter), std::ref(controller));
 
-        rdtsc_end = __rdtsc();
-        stop = std::chrono::high_resolution_clock::now();
+            for (auto& t : threads) t.join();
+
+            rdtsc_end = __rdtsc();
+            stop = std::chrono::high_resolution_clock::now();
+        }
     }
 
     auto const milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();

@@ -103,7 +103,8 @@ public:
     bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
     {
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
-        return m_impl.try_write(std::move(event), store_order);
+        counter_t const counter = static_cast<counter_t>(m_impl.readers_count());
+        return m_impl.try_write(std::move(event), counter, store_order);
     }
 
     std::size_t capacity() const noexcept
