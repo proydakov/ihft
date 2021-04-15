@@ -56,7 +56,7 @@ public:
         if (m_owner != channel::one2one_seqnum_queue_constant<counter_t>::DUMMY_READER_ID)
         {
             m_bucket.get_event().~event_t();
-            m_bucket.m_seqn.store(channel::one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_relaxed);
+            m_bucket.m_seqn.store(channel::one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
         }
     }
 
