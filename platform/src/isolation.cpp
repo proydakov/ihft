@@ -3,11 +3,12 @@
 #include <cstring>
 #include <fstream>
 #include <charconv>
-#include <algorithm>
 #include <string_view>
 
 namespace ihft::impl
 {
+
+static_assert(sizeof(isolation) == 64);
 
 isolation::isolation(const char* file)
 {
@@ -35,7 +36,7 @@ isolation::isolation(const char* file)
                     // only 1 cpu in section
                     if (p == cpu.end())
                     {
-                        m_isolated.emplace_back(result);
+                        m_isolated.set(result);
                     }
                     // range cpu in section
                     else
@@ -45,7 +46,7 @@ isolation::isolation(const char* file)
                         {
                             for(auto i = result; i <= to_result; i++)
                             {
-                                m_isolated.emplace_back(i);
+                                m_isolated.set(i);
                             }
                         }
 
@@ -55,13 +56,6 @@ isolation::isolation(const char* file)
             while(next != std::string_view::npos);
         }
     }
-
-    std::sort(m_isolated.begin(), m_isolated.end());
-}
-
-bool isolation::is_isolated(unsigned long cpu) const
-{
-    return std::binary_search(m_isolated.begin(), m_isolated.end(), cpu);
 }
 
 }

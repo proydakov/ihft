@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <bitset>
 
 namespace ihft::impl
 {
@@ -10,10 +10,13 @@ class isolation
 public:
     explicit isolation(const char* file);
 
-    bool is_isolated(unsigned long cpu) const;
+    bool is_isolated(unsigned long cpu) const
+    {
+        return m_isolated.test(cpu);
+    }
 
 private:
-    std::vector<unsigned long> m_isolated;
+    std::bitset<512> m_isolated;
 };
 
 }

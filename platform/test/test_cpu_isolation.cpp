@@ -1,6 +1,7 @@
 #include <platform/private/isolation.h>
 
 #include <string>
+#include <vector>
 #include <fstream>
 #include <iostream>
 
