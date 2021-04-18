@@ -12,6 +12,7 @@
 #include <type_traits>
 
 #include <platform/platform.h>
+#include <platform/private/process_cpu_list.h>
 #include <channel/channel_factory.h>
 
 #include <x86intrin.h>
@@ -49,12 +50,16 @@ long NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, con
 }
 
 template<typename reader_t, typename controller_t>
-void reader_method(std::size_t total_events, reader_t reader, wait_t& stat, std::atomic<std::uint64_t>& waitinig_readers_counter, controller_t& controller)
+void reader_method(reader_t reader, controller_t& controller, std::size_t total_events, std::atomic<std::uint64_t>& waitinig, wait_t& stat, std::optional<unsigned> cpu)
 {
     auto const name = "reader_" + std::to_string(reader.get_id());
     platform::set_current_thread_name(name.c_str());
+    if (cpu)
+    {
+        platform::set_current_thread_cpu(*cpu);
+    }
 
-    waitinig_readers_counter--;
+    waitinig--;
 
     stat.waitCounter = reader_method_impl(total_events, reader, controller);
 
@@ -89,11 +94,15 @@ label:
 }
 
 template<typename queue_t, typename controller_t>
-void writer_method(std::size_t total_events, queue_t& queue, wait_t& stat, std::atomic<std::uint64_t>& waitinig_readers_counter, controller_t& controller)
+void writer_method(queue_t queue, controller_t& controller, std::size_t total_events, std::atomic<std::uint64_t>& waitinig, wait_t& stat, std::optional<unsigned> cpu)
 {
     platform::set_current_thread_name("writer");
+    if (cpu)
+    {
+        platform::set_current_thread_cpu(*cpu);
+    }
 
-    while(waitinig_readers_counter.load(std::memory_order_consume) > 0);
+    while(waitinig.load(std::memory_order_consume) > 0);
 
     stat.waitCounter = writer_method_impl(total_events, queue, controller);
 
@@ -153,15 +162,51 @@ int test_main(int argc, char* argv[],
     std::uint64_t num_readers = std::max((std::thread::hardware_concurrency() - 1), 1u),
     std::uint64_t queue_capacity = 4096)
 {
-    std::cout << "usage: app <num readers> <events> * 10^6 <queue_capacity>" << std::endl;
+    std::cout << "usage: app <cpu-list or #> <num_readers> <total_events> * 10^6 <queue_capacity>" << std::endl;
 
     // TEST details
-    auto const NUM_READERS = [&](){
-        auto const readers = static_cast<std::size_t>(argc > 1 ? std::stoul(argv[1]) : num_readers);
-        return SINGLE_READER ? 1 : readers;
+    auto const cpus = [&](){
+        std::vector<unsigned> result;
+        if (argc > 1)
+        {
+            auto const cpus = std::string_view(argv[1]);
+            if (cpus != std::string_view("*"))
+            {
+                auto lambda = [&](unsigned cpu) mutable
+                {
+                    result.emplace_back(cpu);
+                };
+                ihft::impl::process_cpu_list(cpus, lambda);
+            }
+        }
+        return result;
     }();
-    auto const TOTAL_EVENTS = static_cast<std::size_t>((argc > 2 ? std::stoul(argv[2]) : total_events) * std::mega::num);
-    auto const QUEUE_CAPACITY = static_cast<std::size_t>(argc > 3 ? std::stoul(argv[3]) : queue_capacity);
+    auto const NUM_READERS = [&](){
+        auto const readers = static_cast<std::size_t>(argc > 2 ? std::stoul(argv[2]) : num_readers);
+        return SINGLE_READER ? 1 : std::max(std::size_t{1}, readers);
+    }();
+    auto const TOTAL_EVENTS = static_cast<std::size_t>((argc > 3 ? std::stoul(argv[3]) : total_events) * std::mega::num);
+    auto const QUEUE_CAPACITY = static_cast<std::size_t>(argc > 4 ? std::stoul(argv[4]) : queue_capacity);
+
+    if (cpus.empty())
+    {
+        std::cout << "WARNING. Benchmark started without cpu list" << std::endl;
+    }
+    else if (cpus.size() != (NUM_READERS + 1))
+    {
+        std::cerr << "Cpu count [" << cpus.size() << "]!= num readers + 1 [" << (NUM_READERS + 1) << "]" << std::endl;
+        return EXIT_FAILURE;
+    }
+    else
+    {
+        for (auto const cpu : cpus)
+        {
+            if (not platform::get_cpu_isolation_status(cpu))
+            {
+                std::cout << "WARNING. cpu: " << cpu << " doesn't have system isolation. " << std::endl;
+            }
+        }
+    }
 
     std::cout << "TEST: 1 writer, "
         << std::to_string(NUM_READERS) << " readers, "
@@ -188,7 +233,7 @@ int test_main(int argc, char* argv[],
 
         T controller = make_controller<T>(queue, NUM_READERS, TOTAL_EVENTS);
 
-        std::atomic<std::uint64_t> waitinig_readers_counter{ NUM_READERS };
+        std::atomic<std::uint64_t> waitinig{ NUM_READERS };
 
         auto const mask = queue.readers_mask();
         std::cout << "alive mask: " << std::bitset<sizeof(mask) * 8>(mask) << " [" << mask << "]" << std::endl;;
@@ -197,14 +242,20 @@ int test_main(int argc, char* argv[],
         threads.reserve(NUM_READERS);
         for (std::size_t i = 0; i < NUM_READERS; i++)
         {
-            threads.emplace_back(reader_method<typename Q::reader_type, T>, TOTAL_EVENTS, std::move(readers[i]), std::ref(readersWait[i]), std::ref(waitinig_readers_counter), std::ref(controller));
+            threads.emplace_back(reader_method<typename Q::reader_type, T>,
+                std::move(readers[i]), std::ref(controller), TOTAL_EVENTS, std::ref(waitinig), std::ref(readersWait[i]),
+                not cpus.empty() ? std::make_optional(cpus[1 + i]) : std::nullopt
+            );
         }
 
         {
             rdtsc_start = __rdtsc();
             start = std::chrono::high_resolution_clock::now();
 
-            threads.emplace_back(writer_method<Q, T>, TOTAL_EVENTS, std::ref(queue), std::ref(writerWait), std::ref(waitinig_readers_counter), std::ref(controller));
+            threads.emplace_back(writer_method<Q, T>,
+                std::move(queue), std::ref(controller), TOTAL_EVENTS, std::ref(waitinig), std::ref(writerWait),
+                not cpus.empty() ? std::make_optional(cpus[0]) : std::nullopt
+            );
 
             for (auto& t : threads) t.join();
 

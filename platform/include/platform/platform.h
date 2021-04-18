@@ -20,10 +20,10 @@ public:
     // https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_for_real_time/7/html/tuning_guide/isolating_cpus_using_tuned-profiles-realtime
 
     // Change current thread cpu
-    static void set_current_thread_cpu(unsigned long cpu);
+    static void set_current_thread_cpu(unsigned cpu);
 
     // Check cpu isolation
-    static bool get_cpu_isolation_status(unsigned long cpu);
+    static bool get_cpu_isolation_status(unsigned cpu);
 };
 
 }

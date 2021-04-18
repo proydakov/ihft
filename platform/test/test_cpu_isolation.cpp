@@ -45,13 +45,13 @@ private:
 
 }
 
-int test_impl(temp_file const& file, std::vector<unsigned long> result)
+int test_impl(temp_file const& file, std::vector<unsigned> result)
 {
-    std::vector<unsigned long> data;
+    std::vector<unsigned> data;
 
     ihft::impl::isolation isolation(file.path());
 
-    for(unsigned long cpu = 0; cpu < 64; cpu++)
+    for(unsigned cpu = 0; cpu < 64; cpu++)
     {
         if(isolation.is_isolated(cpu))
         {

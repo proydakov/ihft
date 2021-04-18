@@ -18,16 +18,16 @@ namespace ihft
         prctl(PR_SET_NAME, name, 0, 0, 0);
     }
 
-    void platform::set_current_thread_cpu(unsigned long cpu)
+    void platform::set_current_thread_cpu(unsigned cpu)
     {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
-        CPU_SET(cpu, &cpuset);
+        CPU_SET(static_cast<unsigned long>(cpu), &cpuset);
 
         sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
     }
 
-    bool platform::get_cpu_isolation_status(unsigned long cpu)
+    bool platform::get_cpu_isolation_status(unsigned cpu)
     {
         return g_isolation.is_isolated(cpu);
     }
@@ -41,11 +41,11 @@ namespace ihft
     {
     }
 
-    void platform::set_current_thread_cpu(unsigned long)
+    void platform::set_current_thread_cpu(unsigned)
     {
     }
 
-    bool platform::get_cpu_isolation_status(unsigned long)
+    bool platform::get_cpu_isolation_status(unsigned)
     {
         return false;
     }
