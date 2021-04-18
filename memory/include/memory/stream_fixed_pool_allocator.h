@@ -47,7 +47,7 @@ namespace ihft
             if (n == 1)
             {
                 auto ptr = active_slab();
-                move_to_next_slab();
+                seek_to_next_slab();
                 return ptr;
             }
             else
@@ -68,7 +68,7 @@ namespace ihft
             return std::addressof(res.data);
         }
 
-        void move_to_next_slab()
+        void seek_to_next_slab()
         {
             m_next++;
             if (m_next >= m_size)

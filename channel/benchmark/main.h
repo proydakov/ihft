@@ -93,7 +93,7 @@ void writer_method(std::size_t total_events, queue_t& queue, wait_t& stat, std::
 {
     platform::set_current_thread_name("writer");
 
-    while(waitinig_readers_counter > 0);
+    while(waitinig_readers_counter.load(std::memory_order_consume) > 0);
 
     stat.waitCounter = writer_method_impl(total_events, queue, controller);
 
