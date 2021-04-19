@@ -1,0 +1,2 @@
+ihft_add_test(test_stream_fixed_pool_allocator)
+target_link_libraries(test_stream_fixed_pool_allocator PRIVATE ihft_memory)
