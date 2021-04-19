@@ -39,7 +39,7 @@ struct alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_bucket final
         if (m_seqn != one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
         {
             get_event().~event_t();
-            m_seqn.store(one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_relaxed);
+            m_seqn.store(one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
         }
     }
 

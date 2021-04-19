@@ -2,7 +2,7 @@
 
 #include <constant/constant.h>
 #include <platform/platform.h>
-#include <platform/private/process_cpu_list.h>
+#include <platform/process_cpu_list.h>
 #include <channel/channel_factory.h>
 
 #include <ratio>
@@ -171,7 +171,7 @@ int test_main(int argc, char* argv[],
         if (argc > 1)
         {
             auto const cpus = std::string_view(argv[1]);
-            if (cpus != std::string_view("*"))
+            if (cpus != std::string_view("#"))
             {
                 auto lambda = [&](unsigned cpu) mutable
                 {

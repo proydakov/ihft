@@ -1,5 +1,5 @@
 #include <platform/private/isolation.h>
-#include <platform/private/process_cpu_list.h>
+#include <platform/process_cpu_list.h>
 
 #include <cstring>
 #include <fstream>
