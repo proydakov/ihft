@@ -1,6 +1,7 @@
 #pragma once
 
 #include <constant/constant.h>
+#include <compiler/compiler.h>
 #include <platform/platform.h>
 #include <platform/process_cpu_list.h>
 #include <channel/channel_factory.h>
@@ -20,15 +21,13 @@
 
 using namespace ihft;
 
-#define NOINLINE  __attribute__((noinline))
-
 struct alignas(constant::CPU_CACHE_LINE_SIZE) wait_t
 {
     long waitCounter = 0;
 };
 
 template<typename reader_t, typename controller_t>
-long NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, controller_t& controller)
+long IHFT_NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, controller_t& controller)
 {
     long waitCounter = 0;
 
@@ -68,7 +67,7 @@ void reader_method(reader_t reader, controller_t& controller, std::size_t total_
 }
 
 template<typename queue_t, typename controller_t>
-long NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, controller_t& controller)
+long IHFT_NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, controller_t& controller)
 {
     long waitCounter = 0;
 

@@ -1,0 +1,2 @@
+add_library(ihft_compiler INTERFACE)
+target_include_directories(ihft_compiler INTERFACE include)

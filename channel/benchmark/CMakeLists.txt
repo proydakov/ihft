@@ -6,6 +6,7 @@ add_library(ihft_queue_benchmark_main INTERFACE)
 target_include_directories(ihft_queue_benchmark_main INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(ihft_queue_benchmark_main INTERFACE ihft_channel)
 target_link_libraries(ihft_queue_benchmark_main INTERFACE ihft_platform)
+target_link_libraries(ihft_queue_benchmark_main INTERFACE ihft_compiler)
 
 # one2many_stream
 
