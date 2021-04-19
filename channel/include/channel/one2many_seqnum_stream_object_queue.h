@@ -79,7 +79,7 @@ private:
 };
 
 template<class event_t, typename counter_t>
-class alignas(channel::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_reader final
+class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_reader final
 {
 public:
     using guard_type = one2many_seqnum_stream_object_guard<event_t, counter_t>;
@@ -120,7 +120,7 @@ private:
         , m_next_read_index(read_from)
         , m_id(id)
     {
-        static_assert(sizeof(one2many_seqnum_stream_object_reader<event_t, counter_t>) <= channel::CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_seqnum_stream_object_reader<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
 private:
@@ -134,11 +134,11 @@ private:
 };
 
 template<class event_t, typename content_allocator_t = channel::empty_allocator, typename counter_t = std::uint32_t>
-class alignas(channel::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_queue final : public channel::allocator_holder<content_allocator_t>
+class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_queue final : public channel::allocator_holder<content_allocator_t>
 {
 public:
-    using reader_type = one2many_seqnum_stream_object_reader<event_t, counter_t>;
     using allocator_type = content_allocator_t;
+    using reader_type = one2many_seqnum_stream_object_reader<event_t, counter_t>;
 
 public:
     one2many_seqnum_stream_object_queue(one2many_seqnum_stream_object_queue&&) noexcept = default;
@@ -175,7 +175,7 @@ private:
     one2many_seqnum_stream_object_queue(std::size_t n)
         : m_impl(channel::queue_helper::to2pow(n))
     {
-        static_assert(sizeof(one2many_seqnum_stream_object_queue<event_t, counter_t, content_allocator_t>) <= channel::CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_seqnum_stream_object_queue<event_t, counter_t, content_allocator_t>) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
     // custom content allocator ctor
@@ -184,7 +184,7 @@ private:
         : channel::allocator_holder<content_allocator_t>(content_allocator.get())
         , m_impl(channel::queue_helper::to2pow(n), std::move(content_allocator))
     {
-        static_assert(sizeof(one2many_seqnum_stream_object_queue<event_t, counter_t, content_allocator_t>) <= channel::CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2many_seqnum_stream_object_queue<event_t, counter_t, content_allocator_t>) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
     std::optional<reader_type> create_reader() noexcept

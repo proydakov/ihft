@@ -5,6 +5,9 @@
 // A tool to measure CPU core to core latency (inter-core latency).
 //
 
+#include <constant/constant.h>
+#include <platform/platform.h>
+
 #include <map>
 #include <vector>
 #include <atomic>
@@ -13,8 +16,6 @@
 #include <numeric>
 #include <iomanip>
 #include <iostream>
-
-#include <platform/platform.h>
 
 using plf = ihft::platform;
 
@@ -34,8 +35,8 @@ int main()
     {
         for(unsigned j = i + 1; j < cpus.size(); j++)
         {
-            alignas(plf::CPU_CACHE_LINE_SIZE) std::atomic<int> seq1 = {-1};
-            alignas(plf::CPU_CACHE_LINE_SIZE) std::atomic<int> seq2 = {-1};
+            alignas(ihft::constant::CPU_CACHE_LINE_SIZE) std::atomic<int> seq1 = {-1};
+            alignas(ihft::constant::CPU_CACHE_LINE_SIZE) std::atomic<int> seq2 = {-1};
 
             auto t = std::thread([&](){
                 plf::set_current_thread_cpu(cpus[i]);

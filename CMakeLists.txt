@@ -11,6 +11,7 @@ include(.cmake/icmake.cmake)
 
 enable_testing()
 
+add_subdirectory(constant)
 add_subdirectory(misc)
 add_subdirectory(memory)
 add_subdirectory(channel)

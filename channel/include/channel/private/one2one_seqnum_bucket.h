@@ -20,7 +20,7 @@ struct one2one_seqnum_queue_constant
 
 // bucket
 template<class event_t, typename counter_t>
-struct alignas(CPU_CACHE_LINE_SIZE) one2one_seqnum_bucket final
+struct alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_bucket final
 {
     using storage_t = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
 

@@ -28,7 +28,7 @@ using one2one_seqnum_stream_ring_buffer_t = std::shared_ptr<channel::one2one_seq
 
 // reader
 template<class event_t, typename counter_t>
-class alignas(channel::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_reader final
+class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_reader final
 {
 public:
     using ring_buffer_t = one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
@@ -71,7 +71,7 @@ private:
         , m_next_read_index(read_from)
         , m_id(id)
     {
-        static_assert(sizeof(one2one_seqnum_stream_pod_reader<event_t, counter_t>) <= channel::CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2one_seqnum_stream_pod_reader<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
 private:
@@ -86,7 +86,7 @@ private:
 
 // queue
 template<class event_t, typename counter_t = std::uint32_t>
-class alignas(channel::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_queue final
+class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_queue final
 {
 public:
     using reader_type = one2one_seqnum_stream_pod_reader<event_t, counter_t>;
@@ -125,7 +125,7 @@ private:
     one2one_seqnum_stream_pod_queue(std::size_t n)
         : m_impl(channel::queue_helper::to2pow(n))
     {
-        static_assert(sizeof(one2one_seqnum_stream_pod_queue<event_t, counter_t>) <= channel::CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(one2one_seqnum_stream_pod_queue<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
         static_assert(std::is_trivially_copyable<event_t>::value);
     }
 

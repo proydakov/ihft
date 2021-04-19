@@ -1,11 +1,12 @@
 #pragma once
 
+#include <constant/constant.h>
+#include <platform/platform.h>
+
 #include <string>
 #include <chrono>
 #include <vector>
 #include <fstream>
-
-#include "platform/platform.h"
 
 using time_point = std::chrono::time_point<std::chrono::steady_clock>;
 
@@ -63,7 +64,7 @@ struct latency_test
     }
 
 private:
-    struct alignas(platform::CPU_CACHE_LINE_SIZE) line_t
+    struct alignas(constant::CPU_CACHE_LINE_SIZE) line_t
     {
         std::vector<unsigned> m_delta;
     };

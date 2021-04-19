@@ -1,5 +1,10 @@
 #pragma once
 
+#include <constant/constant.h>
+#include <platform/platform.h>
+#include <platform/private/process_cpu_list.h>
+#include <channel/channel_factory.h>
+
 #include <ratio>
 #include <atomic>
 #include <string>
@@ -11,17 +16,13 @@
 #include <algorithm>
 #include <type_traits>
 
-#include <platform/platform.h>
-#include <platform/private/process_cpu_list.h>
-#include <channel/channel_factory.h>
-
 #include <x86intrin.h>
 
 using namespace ihft;
 
 #define NOINLINE  __attribute__((noinline))
 
-struct alignas(platform::CPU_CACHE_LINE_SIZE) wait_t
+struct alignas(constant::CPU_CACHE_LINE_SIZE) wait_t
 {
     long waitCounter = 0;
 };

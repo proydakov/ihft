@@ -1,15 +1,15 @@
 #pragma once
 
-#include <memory>
+#include <constant/constant.h>
 
-#include "private/common.h"
+#include <memory>
 
 namespace ihft
 {
     template<typename T, typename RegionAllocator = std::allocator<T>>
     class stream_fixed_pool_allocator
     {
-        struct alignas(memory::CPU_CACHE_LINE_SIZE) holder
+        struct alignas(constant::CPU_CACHE_LINE_SIZE) holder
         {
             T data;
         };

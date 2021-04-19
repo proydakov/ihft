@@ -1,0 +1,2 @@
+add_library(ihft_constant INTERFACE)
+target_include_directories(ihft_constant INTERFACE include)

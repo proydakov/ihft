@@ -1,17 +1,18 @@
 #pragma once
 
+#include <constant/constant.h>
+#include <platform/platform.h>
+
 #include <atomic>
 #include <cstdint>
 #include <iostream>
 
-#include "platform/platform.h"
-
-struct alignas(platform::CPU_CACHE_LINE_SIZE) stat_local_t
+struct alignas(constant::CPU_CACHE_LINE_SIZE) stat_local_t
 {
     std::int64_t counter{0};
 };
 
-struct alignas(platform::CPU_CACHE_LINE_SIZE) stat_global_t
+struct alignas(constant::CPU_CACHE_LINE_SIZE) stat_global_t
 {
     std::atomic<std::int64_t> counter{0};
 };

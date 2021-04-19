@@ -1,11 +1,11 @@
 #pragma once
 
+#include <constant/constant.h>
+
 #include <cstdint>
 
 namespace ihft::channel
 {
-
-constexpr unsigned long CPU_CACHE_LINE_SIZE = 64;
 
 struct queue_helper
 {
