@@ -15,18 +15,17 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] set name for current thread
   - [x] verification for cpu isolation
 - [x] channel module
-  - [x] one 2 one pod data queue
-  - [x] one 2 one moveable object queue
-  - [ ] one 2 one moveable intrusive object queue 
-  - [x] one 2 many pod data queue
-  - [x] one 2 many moveable object queue
-  - [ ] one 2 many moveable intrusive object queue
+  - [x] one 2 one stream pod data queue
+  - [x] one 2 one stream moveable object queue
+  - [x] one 2 many stream pod data queue
+  - [x] one 2 many stream moveable object queue
   - [ ] next node consume bucket r&d
   - [ ] batch reader for one 2 one & one 2 many moveabel object queue
   - [x] python latency analysis tool
 - [ ] memory module
-  - [x] stream allocator
   - [ ] arena allocator
+  - [x] stream fixed pool allocator
+  - [ ] huge page system detector
   - [ ] huge page allocator for 2MB & 1GB pages
 - [ ] misc module
   - [ ] simple human-readable ini-based config system
