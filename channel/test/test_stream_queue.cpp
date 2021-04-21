@@ -19,7 +19,7 @@ namespace
         std::size_t length{};
     };
 
-    bool operator==(const packet_t& p1, const packet_t& p2) noexcept
+    [[maybe_unused]] bool operator==(const packet_t& p1, const packet_t& p2) noexcept
     {
         return p1.header_id == p2.header_id && p1.length == p2.length;
     }

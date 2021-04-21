@@ -1,46 +1,44 @@
 #pragma once
 
+#include "ring_buffer_factory.h"
 #include "one2many_seqnum_bucket.h"
 
 namespace ihft::channel
 {
 
 // buffer
-template<class event_t, typename counter_t>
+template<typename event_t, typename counter_t>
 using one2many_seqnum_stream_ring_buffer_t = std::shared_ptr<one2many_seqnum_bucket<event_t, counter_t>>;
 
-template<class event_t, typename counter_t>
+template<typename event_t, typename counter_t>
 class one2many_seqnum_stream_queue_impl final
 {
 public:
     using bucket_type = one2many_seqnum_bucket<event_t, counter_t>;
     using ring_buffer_type = one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
 
-    template<typename A, typename D>
-    one2many_seqnum_stream_queue_impl(std::size_t n, std::unique_ptr<A, D> content_allocator)
-        : m_storage(new bucket_type[n], [allocator = content_allocator.release(), deleter = content_allocator.get_deleter()](bucket_type* ptr) {
-            delete [] ptr;
-            // data removed. now we ready to cleanup allocator memory
-            deleter(allocator);
-        })
+    // CA - content allocator type
+    // CD - content deleter type
+    // RA - region allocator type. Used for ring buffer allocation
+    template<typename CA, typename CD, typename RA = std::allocator<bucket_type>>
+    one2many_seqnum_stream_queue_impl(std::size_t n, std::unique_ptr<CA, CD> content_allocator, RA region_allocator = RA())
+        : m_storage(ring_buffer_factory::make(n, std::move(content_allocator), std::move(region_allocator)))
         , m_next_bucket(one2many_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_storage_mask(0)
+        , m_storage_mask(n - 1)
         , m_next_seq_num(one2many_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_next_reader_id(one2many_seqnum_queue_constant<counter_t>::MIN_READER_ID)
     {
-        m_storage_mask = n - 1;
     }
 
-    one2many_seqnum_stream_queue_impl(std::size_t n)
-        : m_storage(new bucket_type[n], [](bucket_type* ptr){
-            delete [] ptr;
-        })
+    // RA - region allocator type. Used for ring buffer allocation
+    template<typename RA = std::allocator<bucket_type>>
+    one2many_seqnum_stream_queue_impl(std::size_t n, RA region_allocator = RA())
+        : m_storage(ring_buffer_factory::make(n, std::move(region_allocator)))
         , m_next_bucket(one2many_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_storage_mask(0)
+        , m_storage_mask(n - 1)
         , m_next_seq_num(one2many_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_next_reader_id(one2many_seqnum_queue_constant<counter_t>::MIN_READER_ID)
     {
-        m_storage_mask = n - 1;
     }
 
     template<typename R>

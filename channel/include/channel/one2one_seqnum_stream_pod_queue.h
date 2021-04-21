@@ -20,10 +20,6 @@ class one2one_seqnum_stream_pod_reader;
 template<class event_t, typename counter_t>
 class one2one_seqnum_stream_pod_queue;
 
-// buffer
-template<class event_t, typename counter_t>
-using one2one_seqnum_stream_ring_buffer_t = std::shared_ptr<channel::one2one_seqnum_bucket<event_t, counter_t>>;
-
 // implementation
 
 // reader
@@ -31,7 +27,7 @@ template<class event_t, typename counter_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_reader final
 {
 public:
-    using ring_buffer_t = one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_t = channel::one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
     using event_type = event_t;
 
 public:
@@ -90,7 +86,7 @@ class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_queue fin
 {
 public:
     using reader_type = one2one_seqnum_stream_pod_reader<event_t, counter_t>;
-    using ring_buffer_t = one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_t = channel::one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
     using bucket_type = channel::one2one_seqnum_bucket<event_t, counter_t>;
 
 public:
