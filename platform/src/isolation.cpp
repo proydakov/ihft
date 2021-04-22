@@ -1,5 +1,6 @@
 #include <platform/private/isolation.h>
 #include <platform/process_cpu_list.h>
+#include <constant/constant.h>
 
 #include <cstring>
 #include <fstream>
@@ -9,7 +10,7 @@
 namespace ihft::impl
 {
 
-static_assert(sizeof(isolation) == 64);
+static_assert(sizeof(isolation) == constant::CPU_CACHE_LINE_SIZE);
 
 isolation::isolation(const char* file)
 {
