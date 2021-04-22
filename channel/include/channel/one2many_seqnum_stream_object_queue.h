@@ -173,7 +173,7 @@ private:
     // empty_allocator ctor
     template<bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, channel::empty_allocator>), int> = 0>
     one2many_seqnum_stream_object_queue(std::size_t n)
-        : m_impl(channel::queue_helper::to2pow(n))
+        : m_impl(channel::queue_helper::to2pow<counter_t>(n))
     {
         static_assert(sizeof(one2many_seqnum_stream_object_queue<event_t, counter_t, content_allocator_t>) <= constant::CPU_CACHE_LINE_SIZE);
     }
@@ -182,7 +182,7 @@ private:
     template<typename deleter_t = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, channel::empty_allocator>), int> = 0>
     one2many_seqnum_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, deleter_t> content_allocator)
         : channel::allocator_holder<content_allocator_t>(content_allocator.get())
-        , m_impl(channel::queue_helper::to2pow(n), std::move(content_allocator))
+        , m_impl(channel::queue_helper::to2pow<counter_t>(n), std::move(content_allocator))
     {
         static_assert(sizeof(one2many_seqnum_stream_object_queue<event_t, counter_t, content_allocator_t>) <= constant::CPU_CACHE_LINE_SIZE);
     }

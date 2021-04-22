@@ -120,7 +120,7 @@ public:
 
 private:
     one2one_seqnum_stream_pod_queue(std::size_t n)
-        : m_impl(channel::queue_helper::to2pow(n))
+        : m_impl(channel::queue_helper::to2pow<counter_t>(n))
     {
         static_assert(sizeof(one2one_seqnum_stream_pod_queue<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
         static_assert(std::is_trivially_copyable<event_t>::value);

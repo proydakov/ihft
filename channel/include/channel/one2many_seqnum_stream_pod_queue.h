@@ -120,7 +120,7 @@ public:
 
 private:
     one2many_seqnum_stream_pod_queue(std::size_t n)
-        : m_impl(channel::queue_helper::to2pow(n))
+        : m_impl(channel::queue_helper::to2pow<counter_t>(n))
     {
     }
 

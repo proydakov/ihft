@@ -287,7 +287,7 @@ void one2one_stream_queue_overflow()
     }
 }
 
-TEST_CASE("one2one_stream_queue_overflow")
+TEST_CASE("one2one_stream_queue_cycle_seqnum_overflow")
 {
     one2one_stream_queue_overflow<one2one_seqnum_stream_pod_queue<std::size_t, std::uint8_t>>();
     one2one_stream_queue_overflow<one2one_seqnum_stream_object_queue<std::size_t, ihft::channel::empty_allocator, std::uint8_t>>();
