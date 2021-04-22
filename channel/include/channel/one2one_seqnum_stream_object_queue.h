@@ -87,10 +87,11 @@ public:
     std::optional<guard_type> try_read() noexcept
     {
         auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_seqn.load(std::memory_order_acquire) == m_next_read_index)
+        counter_t const next = m_next_seq_num & channel::one2one_seqnum_queue_constant<counter_t>::SEQNUM_MASK;
+        if (bucket.m_seqn.load(std::memory_order_acquire) == next)
         {
-            m_next_read_index++;
-            m_next_bucket = m_next_read_index & m_storage_mask;
+            m_next_seq_num++;
+            m_next_bucket = m_next_seq_num & m_storage_mask;
             return std::optional<guard_type>(guard_type(bucket, m_id));
         }
         else
@@ -105,11 +106,11 @@ public:
     }
 
 private:
-    one2one_seqnum_stream_object_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+    one2one_seqnum_stream_object_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t id) noexcept
         : m_storage(std::move(storage))
-        , m_next_bucket(read_from & storage_mask)
+        , m_next_bucket(channel::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM & storage_mask)
         , m_storage_mask(storage_mask)
-        , m_next_read_index(read_from)
+        , m_next_seq_num(channel::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_id(id)
     {
         static_assert(sizeof(one2one_seqnum_stream_object_reader<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
@@ -121,7 +122,7 @@ private:
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
     std::size_t m_storage_mask;
-    counter_t m_next_read_index;
+    counter_t m_next_seq_num;
     counter_t m_id;
 };
 
@@ -170,7 +171,7 @@ private:
     }
 
     // custom content allocator ctor
-    template<typename deleter_t = std::default_delete<content_allocator_t>, bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, channel::empty_allocator>), int> = 0>
+    template<bool IsEnabled = true, typename deleter_t = std::default_delete<content_allocator_t>, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, channel::empty_allocator>), int> = 0>
     one2one_seqnum_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, deleter_t> content_allocator)
         : channel::allocator_holder<content_allocator_t>(content_allocator.get())
         , m_impl(channel::queue_helper::to2pow(n), std::move(content_allocator))

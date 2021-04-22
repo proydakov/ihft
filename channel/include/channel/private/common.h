@@ -17,7 +17,7 @@ struct queue_helper
             return min_valid_pow;
         }
 
-        constexpr auto max_valid_pow = std::size_t(2) << 31;
+        constexpr auto max_valid_pow = std::size_t(2) << 30;
         if (n >= max_valid_pow)
         {
             return max_valid_pow;
@@ -28,7 +28,7 @@ struct queue_helper
         {
             power *= 2;
         }
-        return power;
+        return std::min(max_valid_pow, power);
     }
 };
 

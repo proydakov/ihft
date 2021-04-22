@@ -47,7 +47,7 @@ public:
         auto const next_id = m_next_reader_id++;
         if (next_id != one2one_seqnum_queue_constant<counter_t>::DUMMY_READER_ID)
         {
-            return R(m_storage, m_storage_mask, m_next_seq_num, next_id);
+            return R(m_storage, m_storage_mask, next_id);
         }
         else
         {
@@ -61,9 +61,9 @@ public:
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
 
         auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_seqn.load(std::memory_order_acquire) == one2one_seqnum_queue_constant<counter_t>::EMPTY_DATA_MARK)
+        if (bucket.m_seqn.load(std::memory_order_acquire) == one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
         {
-            auto const seqn = m_next_seq_num++;
+            counter_t const seqn = (m_next_seq_num++) & channel::one2one_seqnum_queue_constant<counter_t>::SEQNUM_MASK;
             m_next_bucket = m_next_seq_num & m_storage_mask;
             new (&bucket.m_storage) event_t(std::move(event));
             bucket.m_seqn.store(seqn, store_order);

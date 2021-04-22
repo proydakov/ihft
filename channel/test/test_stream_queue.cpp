@@ -260,3 +260,35 @@ TEST_CASE("one2*_stream_queue stress write + read")
     one2_stream_queue_stress_write_and_read<one2one_seqnum_stream_pod_queue<std::size_t, std::uint8_t>>();
     one2_stream_queue_stress_write_and_read<one2one_seqnum_stream_object_queue<std::size_t, ihft::channel::empty_allocator, std::uint8_t>>();
 }
+
+template<typename Q>
+void one2one_stream_queue_overflow()
+{
+    constexpr std::size_t qsize = 32;
+
+    auto opt = channel_factory::make<Q>(qsize, 1);
+    REQUIRE( opt.has_value() );
+
+    auto& queue = opt->producer;
+    auto& reader = opt->consumers.back();
+
+    REQUIRE( not reader.try_read().has_value() );
+
+    for(std::size_t i = 0; i < std::size_t(std::numeric_limits<uint8_t>::max()); i++)
+    {
+        REQUIRE( queue.try_write(std::size_t(i)) == true );
+        auto opt = reader.try_read();
+        REQUIRE( opt.has_value() );
+    }
+
+    {
+        // check max -> zero overflow + read next sequence
+        REQUIRE( not reader.try_read().has_value() );
+    }
+}
+
+TEST_CASE("one2one_stream_queue_overflow")
+{
+    one2one_stream_queue_overflow<one2one_seqnum_stream_pod_queue<std::size_t, std::uint8_t>>();
+    one2one_stream_queue_overflow<one2one_seqnum_stream_object_queue<std::size_t, ihft::channel::empty_allocator, std::uint8_t>>();
+}

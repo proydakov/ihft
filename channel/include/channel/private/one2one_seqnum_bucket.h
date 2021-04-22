@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <limits>
 #include <type_traits>
 
 #include "common.h"
@@ -11,11 +12,13 @@ namespace ihft::channel
 template<typename T>
 struct one2one_seqnum_queue_constant
 {
-    enum : T { MIN_EVENT_SEQ_NUM = 1 };
-    enum : T { DUMMY_EVENT_SEQ_NUM = 0 };
+    static_assert(std::is_unsigned_v<T>, "Counter type must be unsigned.");
+
+    enum : T { MIN_EVENT_SEQ_NUM = 0 };
+    enum : T { DUMMY_EVENT_SEQ_NUM = std::numeric_limits<T>::max() };
     enum : T { MIN_READER_ID = 0 };
     enum : T { DUMMY_READER_ID = 1 };
-    enum : T { EMPTY_DATA_MARK = 0 };
+    enum : T { SEQNUM_MASK = std::numeric_limits<T>::max() >> T(1) };
 };
 
 // bucket
