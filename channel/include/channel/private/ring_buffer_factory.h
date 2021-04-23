@@ -16,7 +16,7 @@ public:
 
         auto reg_allocator(std::move(region_allocator));
         auto ptr = reg_allocator.allocate(n);
-        std::uninitialized_value_construct_n(ptr, n);
+        std::uninitialized_default_construct_n(ptr, n);
 
         std::shared_ptr<bucket_type> buffer(ptr, [
             r_allocator = std::move(reg_allocator),
@@ -36,7 +36,7 @@ public:
 
         auto reg_allocator(std::move(region_allocator));
         auto ptr = reg_allocator.allocate(n);
-        std::uninitialized_value_construct_n(ptr, n);
+        std::uninitialized_default_construct_n(ptr, n);
 
         std::shared_ptr<bucket_type> buffer(ptr, [
             r_allocator = std::move(reg_allocator),
