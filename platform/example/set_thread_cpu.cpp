@@ -13,7 +13,8 @@ int main(int argc, char* argv[])
     }
 
     std::thread thread([argv](){
-        ihft::platform::set_current_thread_cpu(static_cast<unsigned>(std::stoul(argv[1])));
+        auto const cpu = static_cast<unsigned>(std::stoul(argv[1]));
+        ihft::platform::set_current_thread_cpu(cpu);
         std::cout << "Enter any symbol for exit... ";
         char c;
         std::cin >> c;

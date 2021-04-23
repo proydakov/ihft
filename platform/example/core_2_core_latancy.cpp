@@ -1,7 +1,6 @@
 //
 // This program was inspired by https://github.com/rigtorp/c2clat
 //
-// 
 // A tool to measure CPU core to core latency (inter-core latency).
 //
 
