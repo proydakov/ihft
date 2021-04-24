@@ -9,7 +9,7 @@ class isolation
 {
 public:
     explicit isolation(const char* file);
-    bool is_isolated(unsigned cpu) const
+    bool is_isolated(unsigned cpu) const noexcept
     {
         return m_isolated.test(cpu);
     }

@@ -11,12 +11,12 @@ template<typename content_allocator_t>
 struct allocator_holder
 {
 public:
-    allocator_holder(content_allocator_t* ptr)
+    allocator_holder(content_allocator_t* ptr) noexcept
         : m_content_allocator(ptr)
     {
     }
 
-    ~allocator_holder()
+    ~allocator_holder() noexcept
     {
         m_content_allocator = nullptr;
     }

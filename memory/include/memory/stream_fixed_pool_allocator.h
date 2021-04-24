@@ -36,13 +36,13 @@ namespace ihft
             m_data = m_allocator.allocate(m_size);
         }
 
-        ~stream_fixed_pool_allocator()
+        ~stream_fixed_pool_allocator() noexcept
         {
             m_allocator.deallocate(m_data, m_size);
         }
 
         // STL-like interface
-        [[nodiscard]] T* allocate(std::size_t n)
+        [[nodiscard]] T* allocate(std::size_t n) noexcept
         {
             if (n == 1)
             {
@@ -56,19 +56,19 @@ namespace ihft
             }
         }
 
-        void deallocate(T*, std::size_t)
+        void deallocate(T*, std::size_t) noexcept
         {
         }
 
         // IHFT-like interface
         // We are going to next slab only after success producer.try_write()
-        [[nodiscard]] T* active_slab() const
+        [[nodiscard]] T* active_slab() const noexcept
         {
             auto& res = m_data[m_next];
             return std::addressof(res.data);
         }
 
-        void seek_to_next_slab()
+        void seek_to_next_slab() noexcept
         {
             m_next++;
             if (m_next >= m_size)
