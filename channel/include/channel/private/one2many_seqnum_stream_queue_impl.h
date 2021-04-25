@@ -56,7 +56,7 @@ public:
         }
     }
 
-    bool try_write(event_t&& event, counter_t counter, std::memory_order store_order = std::memory_order_release) noexcept
+    bool try_write(event_t&& event, counter_t counter) noexcept
     {
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
 
@@ -67,7 +67,7 @@ public:
             m_next_bucket = m_next_seq_num & m_storage_mask;
             new (&bucket.m_storage) event_t(std::move(event));
             bucket.m_counter.store(counter, std::memory_order_relaxed);
-            bucket.m_seqn.store(seqn, store_order);
+            bucket.m_seqn.store(seqn, std::memory_order_release);
             return true;
         }
         else

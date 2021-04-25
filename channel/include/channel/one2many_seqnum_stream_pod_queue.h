@@ -96,11 +96,11 @@ public:
     one2many_seqnum_stream_pod_queue(const one2many_seqnum_stream_pod_queue&) = delete;
     one2many_seqnum_stream_pod_queue& operator=(const one2many_seqnum_stream_pod_queue&) = delete;
 
-    bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
+    bool try_write(event_t&& event) noexcept
     {
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
         counter_t const counter = static_cast<counter_t>(m_impl.readers_count());
-        return m_impl.try_write(std::move(event), counter, store_order);
+        return m_impl.try_write(std::move(event), counter);
     }
 
     std::size_t capacity() const noexcept

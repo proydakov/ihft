@@ -140,10 +140,10 @@ public:
     one2one_seqnum_stream_object_queue(const one2one_seqnum_stream_object_queue&) = delete;
     one2one_seqnum_stream_object_queue& operator=(const one2one_seqnum_stream_object_queue&) = delete;
 
-    bool try_write(event_t&& event, std::memory_order store_order = std::memory_order_release) noexcept
+    bool try_write(event_t&& event) noexcept
     {
         static_assert(std::is_nothrow_move_constructible_v<event_t>);
-        return m_impl.try_write(std::move(event), store_order);
+        return m_impl.try_write(std::move(event));
     }
 
     std::size_t capacity() const noexcept

@@ -77,8 +77,9 @@ long IHFT_NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, 
 
 label:
 
-        if(queue.try_write(std::move(data), std::memory_order_seq_cst))
+        if(queue.try_write(std::move(data)))
         {
+            std::atomic_thread_fence(std::memory_order_seq_cst);
             j++;
         }
         else
