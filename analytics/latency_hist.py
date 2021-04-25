@@ -18,6 +18,7 @@ for x in range(1, len(sys.argv)):
     plt.ylabel('Samples')
     plt.xlabel('Latency (nanoseconds)');
 
+    print(f"samples: {len(x)}")
     for i in range(len(q)):
         perc = q[i]
         cycl = p[i]
