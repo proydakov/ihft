@@ -13,7 +13,7 @@ namespace
     public:
         using value_type = T;
 
-        T* allocate(std::size_t size)
+        [[nodiscard]] T* allocate(std::size_t size) noexcept
         {
             g_call_allocate++;
             auto bytes = size * sizeof(T);
@@ -22,7 +22,7 @@ namespace
             return ptr;
         }
 
-        void deallocate(T* ptr, std::size_t size)
+        void deallocate(T* ptr, std::size_t size) noexcept
         {
             std::cout << "deallocate: " << ptr << " size: " << size << std::endl;
             g_call_deallocate++;
