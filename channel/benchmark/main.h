@@ -33,6 +33,7 @@ long IHFT_NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader
 
     for (std::size_t j = 0; j < total_events;)
     {
+//        _mm_lfence();
         auto opt = reader.try_read();
         if (opt)
         {
@@ -75,10 +76,14 @@ long IHFT_NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, 
     {
         auto data = controller.create_data(j);
 
+        // some examples use stream_fixed_pool_allocator
+        // we must create only one item for many try_write attemps
 label:
 
         if(queue.try_write(std::move(data)))
         {
+//            _mm_mfence();
+//            _mm_sfence();
             std::atomic_thread_fence(std::memory_order_seq_cst);
             j++;
         }
@@ -265,7 +270,7 @@ int test_main(int argc, char* argv[],
         }
     }
 
-    auto const milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+    auto const microseconds = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
     auto const nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
     auto const rdtsc_delta = rdtsc_end - rdtsc_start;
 
@@ -275,9 +280,9 @@ int test_main(int argc, char* argv[],
         std::cout << "R WAIT: " << stat.waitCounter << "\n";
     }
     std::cout << "\n";
-    std::cout << "TIME: " << milliseconds << " milliseconds\n";
+    std::cout << "TIME: " << double(microseconds) / double(1'000'000) << " seconds\n";
     std::cout << "TIME: " << rdtsc_delta << " cycles\n";
-    std::cout << "PERF: " << double(double(TOTAL_EVENTS) / double(milliseconds)) << " events/millisecond\n";
+    std::cout << "PERF: " << double(double(TOTAL_EVENTS) / double(microseconds)) * 1'000'000 << " events/second\n";
     std::cout << "PERF: " << double(double(nanoseconds) / double(TOTAL_EVENTS)) << " nanoseconds/event\n";
     std::cout << "PERF: " << double(double(rdtsc_delta) / double(TOTAL_EVENTS)) << " cycles/event\n";
 
