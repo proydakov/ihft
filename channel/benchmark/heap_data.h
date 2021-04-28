@@ -20,9 +20,6 @@ struct alignas(constant::CPU_CACHE_LINE_SIZE) stat_global_t
 thread_local stat_local_t g_local_allocated;
 thread_local stat_local_t g_local_released;
 
-stat_global_t g_global_allocated;
-stat_global_t g_global_released;
-
 template<typename allocator_t>
 struct data_t
 {
@@ -68,12 +65,12 @@ struct perf_allocated_test
     perf_allocated_test(std::uint64_t, std::uint64_t, allocator_t& allocator) noexcept
         : m_allocator(allocator)
     {
-        std::cout << "g_counter before: " << (g_global_allocated.counter - g_global_released.counter) << " (must be zero)" << std::endl;
+        std::cout << "g_counter before: " << (m_global_allocated.counter - m_global_released.counter) << " (must be zero)" << std::endl;
     }
 
     ~perf_allocated_test() noexcept
     {
-        std::cout << "g_counter after: " << (g_global_allocated.counter - g_global_released.counter) << " (must be zero)" << std::endl;
+        std::cout << "g_counter after: " << (m_global_allocated.counter - m_global_released.counter) << " (must be zero)" << std::endl;
     }
 
     auto create_data(std::uint64_t i) noexcept
@@ -87,13 +84,15 @@ struct perf_allocated_test
 
     void reader_done() noexcept
     {
-        g_global_released.counter += g_local_released.counter;
+        m_global_released.counter += g_local_released.counter;
     }
 
     void writer_done() noexcept
     {
-        g_global_allocated.counter += g_local_allocated.counter;
+        m_global_allocated.counter += g_local_allocated.counter;
     }
 
     allocator_t& m_allocator;
+    stat_global_t m_global_allocated;
+    stat_global_t m_global_released;
 };
