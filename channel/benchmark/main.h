@@ -37,7 +37,7 @@ long IHFT_NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader
         auto opt = reader.try_read();
         if (opt)
         {
-            controller.check_data(reader.get_id(), *opt);
+            controller.check_data(reader.get_id(), j, *opt);
             j++;
         }
         else

@@ -32,8 +32,12 @@ struct perf_plain_test
         return data_t(i);
     }
 
-    void check_data(std::uint64_t, data_t const&) noexcept
+    void check_data(std::uint64_t, std::uint64_t i, data_t const& cref) noexcept
     {
+        if (i != cref.m_value)
+        {
+            abort();
+        }
     }
 
     void reader_done() noexcept

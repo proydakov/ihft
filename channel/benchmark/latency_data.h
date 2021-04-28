@@ -56,7 +56,7 @@ struct latency_test
         return data_t(clock_type::now());
     }
 
-    void check_data(std::uint64_t reader_id, data_t const& data)
+    void check_data(std::uint64_t reader_id, std::uint64_t, data_t const& data)
     {
         auto const end = clock_type::now();
         auto const delta = static_cast<unsigned>((end - data.m_start).count());
