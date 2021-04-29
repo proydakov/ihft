@@ -1,14 +1,10 @@
+sudo: false
+
 git:
   submodules: false
 
-# permissions
-sudo: false
-
-# Enable C++ support
 language: cpp
-
-# Compiler selection
-dist: focal
+dist: bionic
 
 matrix:
   include:
@@ -25,10 +21,8 @@ matrix:
       addons:
         apt:
           sources:
-          - ubuntu-toolchain-r-test
-          - llvm-toolchain-focal-12
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
-            key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages: ['cmake', 'ninja-build', 'clang-12', 'clang++-12', 'lld-12', 'libc++-12-dev', 'libc++abi-12-dev']
 
     - env:
@@ -44,10 +38,8 @@ matrix:
       addons:
         apt:
           sources:
-          - ubuntu-toolchain-r-test
-          - llvm-toolchain-focal-12
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
-            key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages: ['cmake', 'ninja-build', 'clang-12', 'clang++-12', 'lld-12', 'libc++-12-dev', 'libc++abi-12-dev']
 
     - env:
@@ -63,10 +55,8 @@ matrix:
       addons:
         apt:
           sources:
-          - ubuntu-toolchain-r-test
-          - llvm-toolchain-focal-12
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
-            key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages: ['cmake', 'ninja-build', 'clang-12', 'clang++-12', 'lld-12', 'libc++-12-dev', 'libc++abi-12-dev']
 
     - env:
@@ -147,3 +137,4 @@ script:
   - cmake -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_STATIC_LINK=${STATIC} -DIHFT_ADDRESS_SANITIZER=${ADDRESS} -DIHFT_THREAD_SANITIZER=${THREAD} -DIHFT_UB_SANITIZER=${UB} ..
   - cmake --build .
   - ctest -R
+

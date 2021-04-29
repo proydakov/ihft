@@ -37,7 +37,12 @@ if (IHFT_BUILD_UNITTESTS)
         GIT_TAG        v2.13.4
     )
 
-    FetchContent_MakeAvailable(Catch2)
+    FetchContent_GetProperties(Catch2)
+    if(NOT Catch2_POPULATED)
+        FetchContent_Populate(Catch2)
+        #message(STATUS "${catch2_SOURCE_DIR} - ${catch2_BINARY_DIR}")
+        add_subdirectory(${catch2_SOURCE_DIR} ${catch2_BINARY_DIR})
+    endif()
 endif()
 
 # END CMAKE PREPARATION
