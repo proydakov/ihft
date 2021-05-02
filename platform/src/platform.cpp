@@ -37,10 +37,42 @@ namespace ihft
     bool platform::is_smt_active() noexcept
     {
         std::ifstream file("/sys/devices/system/cpu/smt/active");
+
         std::string value;
         file >> value;
 
         return value != "0";
+    }
+
+    bool platform::is_transparent_huge_pages_active() noexcept
+    {
+        std::ifstream file("/sys/kernel/mm/transparent_hugepage/enabled");
+
+        bool active = true;
+        std::string value;
+        while(file >> value)
+        {
+            if (value == "[never]")
+            {
+                active = false;
+            }
+        }
+
+        return active;
+    }
+
+    bool platform::is_swap_active() noexcept
+    {
+        std::ifstream file("/proc/swaps");
+
+        size_t lines = 0;
+        std::string buffer;
+        while(std::getline(file, buffer))
+        {
+            lines++;
+        }
+
+        return lines != 1;
     }
 }
 
@@ -62,6 +94,16 @@ namespace ihft
     }
 
     bool platform::is_smt_active() noexcept
+    {
+        return true;
+    }
+
+    bool platform::is_transparent_huge_pages_active() noexcept
+    {
+        return true;
+    }
+
+    bool platform::is_swap_active() noexcept
     {
         return true;
     }

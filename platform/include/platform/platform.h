@@ -25,6 +25,12 @@ public:
 
     // Check hyper-threading
     static bool is_smt_active() noexcept;
+
+    // Check transparent huge pages is [always] or [madvise]
+    static bool is_transparent_huge_pages_active() noexcept;
+
+    // Check swaps
+    static bool is_swap_active() noexcept;
 };
 
 }
