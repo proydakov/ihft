@@ -77,7 +77,7 @@ macro(ihft_setup_linker_flags)
 
     if(IHFT_STATIC_LINK)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
-        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static")
     endif()
 
     if(IHFT_STRIP_LINK)

@@ -19,6 +19,11 @@ macro(ihft_setup_compiler_flags)
         message(FATAL_ERROR "Unknown compiler")
     endif()
 
+    if(IHFT_MARCH_NATIVE)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+    endif()
+
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
 
     if(NOT IHFT_STATIC_LINK)
