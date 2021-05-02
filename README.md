@@ -39,15 +39,21 @@ IHFT is microframework & laboratory for low latency applications.
 - [ ] network module
   - [ ] multicast demo
   - [ ] DPDK demo
-- [ ] engine module
+- [ ] thread module
   - [ ] logical cpu
   - [ ] cpu assignment
-  - [ ] logical task
-  - [ ] container configuration
+  - [ ] configuration verification
 - [x] CI & DevOps
   - [x] travis CI
+  - [x] GCC support with libstdc++
+  - [x] Clang support with libc++
+  - [x] Catch2 unit tests
   - [x] static binary
   - [x] address sanitizer
+  - [x] thread sanitizer
+  - [x] ub sanitizer
+- [x] DevOps
+  - [x] script for cpu isolation optimization
 
 # Dev Links
 
