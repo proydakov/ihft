@@ -17,7 +17,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] hyper-threading detector
   - [x] transparent huge pages detector
   - [x] swap detector
-  - [ ] cpu frequency scaling detector
+  - [x] cpu frequency scaling detector
   - [ ] huge page system detector
 - [x] channel module
   - [x] one 2 one stream pod data queue

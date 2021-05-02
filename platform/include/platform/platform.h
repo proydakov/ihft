@@ -31,6 +31,9 @@ public:
 
     // Check swaps
     static bool is_swap_active() noexcept;
+
+    // Check CPU frequency scaling governor mode
+    static bool is_scaling_governor_use_performance_mode() noexcept;
 };
 
 }

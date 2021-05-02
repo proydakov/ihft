@@ -2,6 +2,7 @@
 #include <platform/private/isolation.h>
 
 #include <fstream>
+#include <filesystem>
 
 #ifdef __linux__
 
@@ -52,7 +53,7 @@ namespace ihft
         std::string value;
         while(file >> value)
         {
-            if (value == "[never]")
+            if ("[never]" == value)
             {
                 active = false;
             }
@@ -73,6 +74,28 @@ namespace ihft
         }
 
         return lines != 1;
+    }
+
+    bool platform::is_scaling_governor_use_performance_mode() noexcept
+    {
+        size_t total_cpus = 0;
+        size_t total_performance = 0;
+        for(auto const& p : std::filesystem::recursive_directory_iterator("/sys/devices/system/cpu/cpufreq"))
+        {
+            std::string const str = p.path();
+            if (str.ends_with("/scaling_governor"))
+            {
+                total_cpus++;
+                std::ifstream file(str);
+                std::string buffer;
+                file >> buffer;
+                if ("performance" == buffer)
+                {
+                    total_performance++;
+                }
+            }
+        }
+        return total_cpus > 0 && total_cpus == total_performance;
     }
 }
 
@@ -106,6 +129,11 @@ namespace ihft
     bool platform::is_swap_active() noexcept
     {
         return true;
+    }
+
+    bool platform::is_scaling_governor_use_performance_mode() noexcept
+    {
+        return false;
     }
 }
 
