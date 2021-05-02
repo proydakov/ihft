@@ -23,17 +23,32 @@ public:
     // Check cpu isolation
     static bool get_cpu_isolation_status(unsigned cpu) noexcept;
 
+    //
+    // Hugepages detector
+    // https://rigtorp.se/hugepages/
+    // Get total 1gb hugepages
+    static unsigned total_1gb_hugepages() noexcept;
+
+    //
+    // System cpu & memory features
+    // https://rigtorp.se/low-latency-guide/
+    //
+
+    // All parameters below should be true for low latency
+
+    // Check CPU frequency scaling governor mode
+    static bool is_scaling_governor_use_performance_mode() noexcept;
+
+    // All parameters below should be false for low latency
+
     // Check hyper-threading
     static bool is_smt_active() noexcept;
-
-    // Check transparent huge pages is [always] or [madvise]
-    static bool is_transparent_huge_pages_active() noexcept;
 
     // Check swaps
     static bool is_swap_active() noexcept;
 
-    // Check CPU frequency scaling governor mode
-    static bool is_scaling_governor_use_performance_mode() noexcept;
+    // Check transparent hugepages is [always] or [madvise]
+    static bool is_transparent_hugepages_active() noexcept;
 };
 
 }

@@ -1,10 +1,14 @@
 #include <platform/platform.h>
-#include <platform/private/isolation.h>
-
-#include <fstream>
-#include <filesystem>
 
 #ifdef __linux__
+
+#include <platform/private/isolation.h>
+
+#include <cstring>
+#include <fstream>
+#include <charconv>
+#include <filesystem>
+#include <string_view>
 
 #include <sched.h>
 #include <sys/prctl.h>
@@ -35,6 +39,38 @@ namespace ihft
         return g_isolation.is_isolated(cpu);
     }
 
+    unsigned platform::total_1gb_hugepages() noexcept
+    {
+        std::ifstream file("/proc/meminfo");
+
+        unsigned total{};
+        unsigned hpsize{};
+
+        const char * const hugepagesizeMark = "Hugepagesize:";
+        const char * const hugePagesTotalMark = "HugePages_Total:";
+
+        std::string buffer;
+        while(std::getline(file, buffer))
+        {
+            if (buffer.starts_with(hugepagesizeMark))
+            {
+                std::string_view view(buffer);
+                view.remove_prefix(strlen(hugepagesizeMark));
+                view.remove_prefix(std::min(view.find_first_not_of(' '), view.size()));
+                std::from_chars(view.data(), view.data() + view.size(), hpsize);
+            }
+            else if (buffer.starts_with(hugePagesTotalMark))
+            {
+                std::string_view view(buffer);
+                view.remove_prefix(strlen(hugePagesTotalMark));
+                view.remove_prefix(std::min(view.find_first_not_of(' '), view.size()));
+                std::from_chars(view.data(), view.data() + view.size(), total);
+            }
+        }
+
+        return 1048576u == hpsize ? total : 0u;
+    }
+
     bool platform::is_smt_active() noexcept
     {
         std::ifstream file("/sys/devices/system/cpu/smt/active");
@@ -43,23 +79,6 @@ namespace ihft
         file >> value;
 
         return value != "0";
-    }
-
-    bool platform::is_transparent_huge_pages_active() noexcept
-    {
-        std::ifstream file("/sys/kernel/mm/transparent_hugepage/enabled");
-
-        bool active = true;
-        std::string value;
-        while(file >> value)
-        {
-            if ("[never]" == value)
-            {
-                active = false;
-            }
-        }
-
-        return active;
     }
 
     bool platform::is_swap_active() noexcept
@@ -74,6 +93,23 @@ namespace ihft
         }
 
         return lines != 1;
+    }
+
+    bool platform::is_transparent_hugepages_active() noexcept
+    {
+        std::ifstream file("/sys/kernel/mm/transparent_hugepage/enabled");
+
+        bool active = true;
+        std::string value;
+        while(file >> value)
+        {
+            if ("[never]" == value)
+            {
+                active = false;
+            }
+        }
+
+        return active;
     }
 
     bool platform::is_scaling_governor_use_performance_mode() noexcept
@@ -116,17 +152,22 @@ namespace ihft
         return false;
     }
 
+    unsigned platform::total_1gb_hugepages() noexcept
+    {
+        return 0;
+    }
+
     bool platform::is_smt_active() noexcept
     {
         return true;
     }
 
-    bool platform::is_transparent_huge_pages_active() noexcept
+    bool platform::is_swap_active() noexcept
     {
         return true;
     }
 
-    bool platform::is_swap_active() noexcept
+    bool platform::is_transparent_hugepages_active() noexcept
     {
         return true;
     }
