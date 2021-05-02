@@ -56,7 +56,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] thread sanitizer
   - [x] ub sanitizer
 - [x] DevOps
-  - [x] script for cpu isolation optimization
+  - [x] script for system latency optimization
 
 # Dev Links
 
@@ -89,4 +89,3 @@ IHFT is microframework & laboratory for low latency applications.
 [Erik Rigtorp personal blog](https://rigtorp.se)
 
 [Martin Thompson mechanical sympathy](https://mechanical-sympathy.blogspot.com)
-

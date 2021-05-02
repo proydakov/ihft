@@ -1,5 +1,2 @@
-# disable all swaps on target machine
-@reboot /usr/sbin/swapoff -a
-
-# using tuna tool for cpu isolation
-@reboot /usr/local/bin/isolate.sh
+# apply all low-latency optimizations
+@reboot /usr/local/bin/restart.sh

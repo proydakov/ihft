@@ -10,17 +10,23 @@ if grep -q "isolcpus" /proc/cmdline; then
     for word in $CMDLINE
     do
         if [[ $word == *"isolcpus="* ]]; then
-	    cpus="$word"
+            cpus="$word"
             pattern=""
             cpus=${cpus/isolcpus=/$pattern}
-	    echo $cpus
-	    /usr/bin/tuna --cpus=$cpus --isolate
+            echo $cpus
+            /usr/bin/tuna --cpus=$cpus --isolate
         fi
     done
+
     /usr/sbin/irqbalance --foreground --oneshot
 
+    /usr/sbin/swapoff -a
+
     echo never > /sys/kernel/mm/transparent_hugepage/enabled
+    echo 0 > /proc/sys/kernel/numa_balancing
+    echo 0 > /sys/kernel/mm/ksm/run
+
+    sysctl vm.stat_interval=60
 else
     echo isolcpus not found
 fi
-
