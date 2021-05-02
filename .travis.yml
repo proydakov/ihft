@@ -137,4 +137,4 @@ script:
   - cmake -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_STATIC_LINK=${STATIC} -DIHFT_ADDRESS_SANITIZER=${ADDRESS} -DIHFT_THREAD_SANITIZER=${THREAD} -DIHFT_UB_SANITIZER=${UB} ..
   - cmake --build .
   - ctest -R
-
+  - ./platform_get_info

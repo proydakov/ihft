@@ -13,6 +13,7 @@ int main(int, char*[])
 
     std::cout << "Is CPU frequency scaling governor use performance: " << std::boolalpha << plf::is_scaling_governor_use_performance_mode() << std::endl;
     std::cout << "Total 1GB hugepages: " << plf::total_1gb_hugepages() << std::endl;
+    std::cout << "Total 2MB hugepages: " << plf::total_2mb_hugepages() << std::endl;
 
     std::cout << "\n";
 

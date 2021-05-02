@@ -29,6 +29,9 @@ public:
     // Get total 1gb hugepages
     static unsigned total_1gb_hugepages() noexcept;
 
+    // Get total 2mb hugepages
+    static unsigned total_2mb_hugepages() noexcept;
+
     //
     // System cpu & memory features
     // https://rigtorp.se/low-latency-guide/

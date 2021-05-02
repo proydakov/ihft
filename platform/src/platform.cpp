@@ -16,30 +16,8 @@
 namespace
 {
     static const ihft::impl::isolation g_isolation("/proc/cmdline");
-}
 
-namespace ihft
-{
-    void platform::set_current_thread_name(const char* name) noexcept
-    {
-        prctl(PR_SET_NAME, name, 0, 0, 0);
-    }
-
-    void platform::set_current_thread_cpu(unsigned cpu) noexcept
-    {
-        cpu_set_t cpuset;
-        CPU_ZERO(&cpuset);
-        CPU_SET(static_cast<unsigned long>(cpu), &cpuset);
-
-        sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
-    }
-
-    bool platform::get_cpu_isolation_status(unsigned cpu) noexcept
-    {
-        return g_isolation.is_isolated(cpu);
-    }
-
-    unsigned platform::total_1gb_hugepages() noexcept
+    std::pair<unsigned, unsigned> get_hp_info_impl() noexcept
     {
         std::ifstream file("/proc/meminfo");
 
@@ -68,7 +46,43 @@ namespace ihft
             }
         }
 
+        return {total, hpsize};
+    }
+}
+
+namespace ihft
+{
+    void platform::set_current_thread_name(const char* name) noexcept
+    {
+        prctl(PR_SET_NAME, name, 0, 0, 0);
+    }
+
+    void platform::set_current_thread_cpu(unsigned cpu) noexcept
+    {
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        CPU_SET(static_cast<unsigned long>(cpu), &cpuset);
+
+        sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
+    }
+
+    bool platform::get_cpu_isolation_status(unsigned cpu) noexcept
+    {
+        return g_isolation.is_isolated(cpu);
+    }
+
+    unsigned platform::total_1gb_hugepages() noexcept
+    {
+        auto const [total, hpsize] = get_hp_info_impl();
+
         return 1048576u == hpsize ? total : 0u;
+    }
+
+    unsigned platform::total_2mb_hugepages() noexcept
+    {
+        auto const [total, hpsize] = get_hp_info_impl();
+
+        return 2048u == hpsize ? total : 0u;
     }
 
     bool platform::is_smt_active() noexcept
@@ -153,6 +167,11 @@ namespace ihft
     }
 
     unsigned platform::total_1gb_hugepages() noexcept
+    {
+        return 0;
+    }
+
+    unsigned platform::total_2mb_hugepages() noexcept
     {
         return 0;
     }

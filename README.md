@@ -15,9 +15,9 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] set name for current thread
   - [x] verification for cpu isolation
   - [x] hyper-threading detector
-  - [x] transparent huge pages detector
-  - [x] swap detector
   - [x] cpu frequency scaling detector
+  - [x] swap detector
+  - [x] transparent huge pages detector
   - [x] huge page system detector
 - [x] channel module
   - [x] one 2 one stream pod data queue
@@ -27,12 +27,12 @@ IHFT is microframework & laboratory for low latency applications.
   - [ ] next node consume bucket r&d
   - [ ] batch reader for all moveable object queues
   - [x] python latency analysis tool
-  - [ ] add latency histograms in documentation 
+  - [ ] add latency histograms in documentation
 - [ ] memory module
   - [ ] arena allocator
   - [x] stream fixed pool allocator
   - [ ] page allocator for 4KB pages
-  - [ ] huge page allocator for 2MB & 1GB pages
+  - [x] huge page allocator for 2MB & 1GB pages
 - [ ] misc module
   - [ ] simple human-readable ini-based config system
 - [ ] logger module
@@ -42,7 +42,7 @@ IHFT is microframework & laboratory for low latency applications.
 - [ ] network module
   - [ ] multicast demo
   - [ ] DPDK demo
-- [ ] thread module
+- [ ] engine module
   - [ ] logical cpu
   - [ ] cpu assignment
   - [ ] configuration verification
