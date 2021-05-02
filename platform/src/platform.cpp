@@ -1,6 +1,8 @@
 #include <platform/platform.h>
 #include <platform/private/isolation.h>
 
+#include <fstream>
+
 #ifdef __linux__
 
 #include <sched.h>
@@ -31,6 +33,15 @@ namespace ihft
     {
         return g_isolation.is_isolated(cpu);
     }
+
+    bool platform::is_smt_active() noexcept
+    {
+        std::ifstream file("/sys/devices/system/cpu/smt/active");
+        std::string value;
+        file >> value;
+
+        return value != "0";
+    }
 }
 
 #else
@@ -48,6 +59,11 @@ namespace ihft
     bool platform::get_cpu_isolation_status(unsigned) noexcept
     {
         return false;
+    }
+
+    bool platform::is_smt_active() noexcept
+    {
+        return true;
     }
 }
 

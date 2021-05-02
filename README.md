@@ -14,6 +14,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] set cpu for current thread
   - [x] set name for current thread
   - [x] verification for cpu isolation
+  - [x] hyper-threading detector
   - [ ] huge page system detector
   - [ ] cpu frequency scaling detector
 - [x] channel module

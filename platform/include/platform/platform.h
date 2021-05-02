@@ -22,6 +22,9 @@ public:
 
     // Check cpu isolation
     static bool get_cpu_isolation_status(unsigned cpu) noexcept;
+
+    // Check hyper-threading
+    static bool is_smt_active() noexcept;
 };
 
 }

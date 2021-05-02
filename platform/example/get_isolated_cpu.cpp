@@ -1,9 +1,9 @@
+#include <platform/platform.h>
+
 #include <thread>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
-
-#include <platform/platform.h>
 
 using plf = ihft::platform;
 
