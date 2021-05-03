@@ -85,7 +85,7 @@ namespace ihft
         return 2048u == hpsize ? total : 0u;
     }
 
-    bool platform::is_smt_active() noexcept
+    bool platform::is_hyper_threading_active() noexcept
     {
         std::ifstream file("/sys/devices/system/cpu/smt/active");
 
@@ -176,7 +176,7 @@ namespace ihft
         return 0;
     }
 
-    bool platform::is_smt_active() noexcept
+    bool platform::is_hyper_threading_active() noexcept
     {
         return true;
     }

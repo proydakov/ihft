@@ -48,10 +48,10 @@ IHFT is microframework & laboratory for low latency applications.
   - [ ] configuration verification
 - [x] CI & DevOps
   - [x] travis CI
-  - [x] GCC support with libstdc++
-  - [x] Clang support with libc++
-  - [x] Catch2 unit tests
   - [x] static binary
+  - [x] Clang support with libc++
+  - [x] GCC support with libstdc++
+  - [x] Catch2 unit tests
   - [x] address sanitizer
   - [x] thread sanitizer
   - [x] ub sanitizer

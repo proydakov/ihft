@@ -45,7 +45,7 @@ public:
     // All parameters below should be false for low latency
 
     // Check hyper-threading
-    static bool is_smt_active() noexcept;
+    static bool is_hyper_threading_active() noexcept;
 
     // Check swaps
     static bool is_swap_active() noexcept;
