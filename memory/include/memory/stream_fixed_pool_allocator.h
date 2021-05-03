@@ -42,6 +42,7 @@ namespace ihft
         }
 
         // STL-like interface
+
         [[nodiscard]] T* allocate(std::size_t n) noexcept
         {
             if (n == 1)
@@ -62,6 +63,7 @@ namespace ihft
 
         // IHFT-like interface
         // We are going to next slab only after success producer.try_write()
+
         [[nodiscard]] T* active_slab() const noexcept
         {
             auto& res = m_data[m_next];
