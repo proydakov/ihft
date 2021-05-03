@@ -61,12 +61,13 @@
     "\u03C9"
 };
 
+static_assert(std::size(greek_alphabet_ascii) == std::size(greek_alphabet_utf8));
+
 int main()
 {
     std::vector<std::thread> threads;
 
-    auto const size = std::min<size_t>(std::size(greek_alphabet_utf8), std::thread::hardware_concurrency());
-    for(size_t i = 0; i < size; i++)
+    for(size_t i = 0; i < std::size(greek_alphabet_utf8); i++)
     {
         threads.emplace_back([i](){
             auto const ptr = greek_alphabet_utf8[i];

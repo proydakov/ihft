@@ -4,3 +4,7 @@ target_link_libraries(engine_greek_alphabet ihft_platform)
 
 add_executable(engine_china_cities china_cities.cpp)
 target_link_libraries(engine_china_cities ihft_platform)
+
+add_executable(engine_bogatyr bogatyr.cpp)
+target_link_libraries(engine_bogatyr ihft_platform)
+

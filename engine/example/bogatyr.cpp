@@ -7,29 +7,20 @@
 #include <iterator>
 #include <algorithm>
 
-[[maybe_unused]] inline constexpr const char * const cities_in_china[] = {
-    "上海",
-    "北京",
-    "深圳",
-    "香港",
-    "广州",
-    "重庆",
-    "天津",
-    "苏州",
-    "成都",
-    "澳门",
-    "台北",
-    "哈尔滨"
+[[maybe_unused]] inline constexpr const char * const russian_bogatyrs[] = {
+    "Добрыня Никитич",
+    "Илья Муромец",
+    "Алёша Попович"
 };
 
 int main()
 {
     std::vector<std::thread> threads;
 
-    for(size_t i = 0; i < std::size(cities_in_china); i++)
+    for(size_t i = 0; i < std::size(russian_bogatyrs); i++)
     {
         threads.emplace_back([i](){
-            auto const ptr = cities_in_china[i];
+            auto const ptr = russian_bogatyrs[i];
             ihft::platform::set_current_thread_name(ptr);
 
             using namespace std::chrono_literals;
