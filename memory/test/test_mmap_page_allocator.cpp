@@ -14,19 +14,19 @@ namespace
     class memory_cleaner
     {
     public:
-        memory_cleaner(allocator_t& allocator, void* ptr, size_t count)
+        memory_cleaner(allocator_t& allocator, std::byte* ptr, size_t count) noexcept
             : m_allocator(allocator), m_ptr(ptr), m_count(count)
         {
         }
 
-        ~memory_cleaner()
+        ~memory_cleaner() noexcept
         {
             m_allocator.deallocate_pages(m_ptr, m_count);
         }
 
     private:
         allocator_t& m_allocator;
-        void* m_ptr;
+        std::byte* m_ptr;
         size_t m_count;
     };
 
@@ -56,15 +56,15 @@ namespace
 
 TEST_CASE("check 1gb hugepages")
 {
-    test_impl<one_gb_huge_page_allocator>(ihft::platform::total_1gb_hugepages(), "hugepages 1GB");
+    test_impl<one_gb_huge_page_allocator<>>(ihft::platform::total_1gb_hugepages(), "hugepages 1GB");
 }
 
 TEST_CASE("check 2mb hugepages")
 {
-    test_impl<one_gb_huge_page_allocator>(ihft::platform::total_2mb_hugepages(), "hugepages 2mb");
+    test_impl<one_gb_huge_page_allocator<>>(ihft::platform::total_2mb_hugepages(), "hugepages 2mb");
 }
 
 TEST_CASE("check 4kb pages")
 {
-    test_impl<four_4b_page_allocator>(std::numeric_limits<unsigned>::max(), "pages 4kb");
+    test_impl<four_4b_page_allocator<>>(std::numeric_limits<unsigned>::max(), "pages 4kb");
 }

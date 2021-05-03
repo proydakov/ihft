@@ -1,8 +1,10 @@
 #pragma once
 
-#include <sys/mman.h>
-
 #include "constant.h"
+
+#include <cstddef>
+
+#include <sys/mman.h>
 
 namespace ihft::impl
 {
@@ -12,7 +14,7 @@ namespace ihft::impl
 // https://man7.org/linux/man-pages/man2/mmap.2.html
 //
 
-template <unsigned psize, bool is_huge>
+template <typename T, unsigned psize, bool is_huge>
 struct mmap_page_allocator
 {
     static constexpr unsigned page_size = psize;
@@ -34,32 +36,39 @@ struct mmap_page_allocator
 
     // IHFT-like interface
 
-    [[nodiscard]] void* allocate_pages(size_t number_of_pages, bool touch_memory = true) noexcept
+    [[nodiscard]] T* allocate_pages(size_t number_of_pages, bool touch_memory = true) noexcept
     {
-        #ifdef __APPLE__
-        constexpr int MAP_HUGETLB_MARK = 0;
-        #else
-        constexpr int MAP_HUGETLB_MARK = is_huge ? MAP_HUGETLB : 0;
-        #endif
-
-        auto p = mmap(
-            nullptr, number_of_pages * page_size, PROT_READ | PROT_WRITE,
-            MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB_MARK, -1, 0);
-
-        if (touch_memory && p != nullptr)
+        if (number_of_pages > 0)
         {
-            auto ptr = reinterpret_cast<volatile char*>(p);
-            for(size_t i = 0; i < number_of_pages; i++)
-            {
-                *ptr = 0;
-                ptr += page_size;
-            }
-        }
+            #ifdef __APPLE__
+            constexpr int MAP_HUGETLB_MARK = 0;
+            #else
+            constexpr int MAP_HUGETLB_MARK = is_huge ? MAP_HUGETLB : 0;
+            #endif
 
-        return p;
+            auto p = mmap(
+                nullptr, number_of_pages * page_size, PROT_READ | PROT_WRITE,
+                MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB_MARK, -1, 0);
+
+            if (touch_memory && p != nullptr)
+            {
+                auto ptr = reinterpret_cast<volatile char*>(p);
+                for(size_t i = 0; i < number_of_pages; i++)
+                {
+                    *ptr = 0;
+                    ptr += page_size;
+                }
+            }
+
+            return reinterpret_cast<T*>(p);
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 
-    void deallocate_pages(void* p, size_t number_of_pages) noexcept
+    void deallocate_pages(T* p, size_t number_of_pages) noexcept
     {
         munmap(p, number_of_pages * page_size);
     }

@@ -5,6 +5,7 @@
 namespace ihft
 {
 
-using four_4b_page_allocator = impl::mmap_page_allocator<impl::_4kb_, false>;
+template<typename T = std::byte>
+using four_4b_page_allocator = impl::mmap_page_allocator<T, impl::_4kb_, false>;
 
 }
