@@ -17,5 +17,6 @@ add_subdirectory(misc)
 add_subdirectory(memory)
 add_subdirectory(channel)
 add_subdirectory(platform)
+add_subdirectory(engine)
 
 ihft_build_report()

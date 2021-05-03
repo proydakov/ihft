@@ -1,0 +1,6 @@
+# manual example apps
+add_executable(engine_greek_alphabet greek_alphabet.cpp)
+target_link_libraries(engine_greek_alphabet ihft_platform)
+
+add_executable(engine_china_cities china_cities.cpp)
+target_link_libraries(engine_china_cities ihft_platform)
