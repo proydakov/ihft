@@ -5,8 +5,8 @@
 namespace ihft
 {
 
-using one_gb_huge_page_allocator = mmap_page_allocator<1u << 30u, true>;
+using one_gb_huge_page_allocator = impl::mmap_page_allocator<impl::_1gb_, true>;
 
-using two_mb_huge_page_allocator = mmap_page_allocator<1u << 21u, true>;
+using two_mb_huge_page_allocator = impl::mmap_page_allocator<impl::_2mb_, true>;
 
 }

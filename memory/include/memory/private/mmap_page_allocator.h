@@ -2,7 +2,9 @@
 
 #include <sys/mman.h>
 
-namespace ihft
+#include "constant.h"
+
+namespace ihft::impl
 {
 
 //
@@ -19,13 +21,13 @@ struct mmap_page_allocator
     {
         if constexpr(is_huge)
         {
-            static_assert(page_size == (1u << 21u) || page_size == (1u << 30u),
+            static_assert(page_size == _2mb_ || page_size == _1gb_,
                 "Only 2MB or 1GB hugepages are available");
         }
 
         if constexpr(!is_huge)
         {
-            static_assert(page_size == (1u << 12u),
+            static_assert(page_size == _4kb_,
                 "Only 4Kb pages are available");
         }
     }
