@@ -170,6 +170,11 @@ int test_main(int argc, char* argv[],
 {
     std::cout << "usage: app <cpu-list or #> <num_readers> <total_events> * 10^6 <queue_capacity>" << std::endl;
 
+    if (not platform::is_scaling_governor_use_performance_mode())
+    {
+        std::cout << "WARNING. Benchmark started on cpu without performance mode." << std::endl;
+    }
+
     // TEST details
     auto const cpus = [&](){
         std::vector<unsigned> result;
@@ -196,7 +201,7 @@ int test_main(int argc, char* argv[],
 
     if (cpus.empty())
     {
-        std::cout << "WARNING. Benchmark started without cpu list" << std::endl;
+        std::cout << "WARNING. Benchmark started without cpu list." << std::endl;
     }
     else if (cpus.size() != (NUM_READERS + 1))
     {
