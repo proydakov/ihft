@@ -31,7 +31,7 @@ IHFT is microframework & laboratory for low latency applications.
 - [ ] memory module
   - [ ] arena allocator
   - [x] stream fixed pool allocator
-  - [ ] page allocator for 4KB pages
+  - [x] page allocator for 4KB pages
   - [x] huge page allocator for 2MB & 1GB pages
 - [ ] misc module
   - [ ] simple human-readable ini-based config system
