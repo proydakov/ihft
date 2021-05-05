@@ -34,7 +34,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] page allocator for 4KB pages
   - [x] huge page allocator for 2MB & 1GB pages
 - [ ] misc module
-  - [ ] simple human-readable ini-based config system
+  - [ ] simple human-readable TOML config system
 - [ ] logger module
   - [ ] simple client usage
   - [ ] non reliable delivery
@@ -73,6 +73,8 @@ IHFT is microframework & laboratory for low latency applications.
 [Intel hardware information](https://ark.intel.com)
 
 [AMD hardware information](https://www.amd.com/ru/products/epyc-server)
+
+[TOML config format](https://toml.io/en/)
 
 # DevOps Links
 
