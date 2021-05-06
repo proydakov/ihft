@@ -20,6 +20,7 @@ include(ioption)
 include(imacro)
 include(icompiler)
 include(ilinker)
+include(ideps)
 
 ihft_setup_compiler_flags()
 ihft_setup_linker_flags()
@@ -27,22 +28,5 @@ ihft_setup_tools_flags()
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-
-if (IHFT_BUILD_UNITTESTS)
-    include(FetchContent)
-
-    FetchContent_Declare(
-        Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v2.13.6
-    )
-
-    FetchContent_GetProperties(Catch2)
-    if(NOT Catch2_POPULATED)
-        FetchContent_Populate(Catch2)
-        #message(STATUS "${catch2_SOURCE_DIR} - ${catch2_BINARY_DIR}")
-        add_subdirectory(${catch2_SOURCE_DIR} ${catch2_BINARY_DIR})
-    endif()
-endif()
 
 # END CMAKE PREPARATION

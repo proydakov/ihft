@@ -74,7 +74,7 @@ IHFT is microframework & laboratory for low latency applications.
 
 [AMD hardware information](https://www.amd.com/ru/products/epyc-server)
 
-[TOML config format](https://toml.io/en/)
+[TOML config file format](https://toml.io/en/)
 
 # DevOps Links
 
