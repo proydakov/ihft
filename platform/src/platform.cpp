@@ -128,6 +128,11 @@ namespace ihft
 
     bool platform::is_scaling_governor_use_performance_mode() noexcept
     {
+        if (not std::filesystem::exists("/sys/devices/system/cpu/cpufreq"))
+        {
+            return true;
+        }
+
         size_t total_cpus = 0;
         size_t total_performance = 0;
         for(auto const& p : std::filesystem::recursive_directory_iterator("/sys/devices/system/cpu/cpufreq"))
