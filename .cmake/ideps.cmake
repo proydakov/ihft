@@ -21,7 +21,7 @@ if (IHFT_BUILD_TOML)
     FetchContent_Declare(
         tomlplusplus
         GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
-        GIT_TAG        2cee913b6d627a964caae0e3f03ac9ad1c7afed1
+        GIT_TAG        0fcbfbe655917738c39321fcbcbdc7b048a40e33
     )
 
     FetchContent_GetProperties(tomlplusplus)

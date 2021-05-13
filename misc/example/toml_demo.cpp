@@ -1,3 +1,5 @@
+#define TOML_EXCEPTIONS 0
+
 #include <toml++/toml.h>
 
 #include <fstream>
