@@ -23,6 +23,12 @@ public:
     // Check cpu isolation
     static bool get_cpu_isolation_status(unsigned cpu) noexcept;
 
+    // Check cpu nohz_full
+    static bool get_cpu_nohz_full_status(unsigned cpu) noexcept;
+
+    // Check cpu rcu_nocbs
+    static bool get_cpu_rcu_nocbs_status(unsigned cpu) noexcept;
+
     //
     // Hugepages detector
     // https://rigtorp.se/hugepages/

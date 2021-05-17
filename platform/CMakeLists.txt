@@ -1,4 +1,4 @@
-add_library(ihft_platform src/platform.cpp src/isolation.cpp)
+add_library(ihft_platform src/platform.cpp src/cmdline.cpp)
 target_include_directories(ihft_platform PUBLIC include)
 target_link_libraries(ihft_platform PRIVATE ihft_constant)
 

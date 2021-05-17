@@ -2,7 +2,7 @@
 
 #ifdef __linux__
 
-#include <platform/private/isolation.h>
+#include <platform/private/cmdline.h>
 
 #include <cstring>
 #include <fstream>
@@ -15,7 +15,7 @@
 
 namespace
 {
-    static const ihft::impl::isolation g_isolation("/proc/cmdline");
+    static const ihft::impl::cmdline g_cmdline("/proc/cmdline");
 
     std::pair<unsigned, unsigned> get_hp_info_impl() noexcept
     {
@@ -68,7 +68,17 @@ namespace ihft
 
     bool platform::get_cpu_isolation_status(unsigned cpu) noexcept
     {
-        return g_isolation.is_isolated(cpu);
+        return g_cmdline.is_isolated(cpu);
+    }
+
+    bool platform::get_cpu_nohz_full_status(unsigned cpu) noexcept
+    {
+        return g_cmdline.is_nohz_fulled(cpu);
+    }
+
+    bool platform::get_cpu_rcu_nocbs_status(unsigned cpu) noexcept
+    {
+        return g_cmdline.is_rcu_nocbsed(cpu);
     }
 
     unsigned platform::total_1gb_hugepages() noexcept
@@ -167,6 +177,16 @@ namespace ihft
     }
 
     bool platform::get_cpu_isolation_status(unsigned) noexcept
+    {
+        return false;
+    }
+
+    bool platform::get_cpu_nohz_full_status(unsigned) noexcept
+    {
+        return false;
+    }
+
+    bool platform::get_cpu_rcu_nocbs_status(unsigned) noexcept
     {
         return false;
     }
