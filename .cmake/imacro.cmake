@@ -44,9 +44,21 @@ function(ihft_add_test NAME)
     if (IHFT_BUILD_UNITTESTS)
         add_executable(${NAME} ${NAME}.cpp)
         add_test(NAME ${NAME} COMMAND ${NAME})
-        target_link_libraries(${NAME} PRIVATE catch2_main)
+        target_link_libraries(${NAME} PRIVATE catch2_test_main)
     else()
         # fake target to avoid problems with target_link_libraries
         add_executable(${NAME} EXCLUDE_FROM_ALL ${NAME}.cpp)
     endif()
 endfunction()
+
+function(ihft_add_benchmark NAME)
+    if (IHFT_BUILD_UNITTESTS)
+        add_executable(${NAME} ${NAME}.cpp)
+        add_test(NAME ${NAME} COMMAND ${NAME})
+        target_link_libraries(${NAME} PRIVATE catch2_benchmark_main)
+    else()
+        # fake target to avoid problems with target_link_libraries
+        add_executable(${NAME} EXCLUDE_FROM_ALL ${NAME}.cpp)
+    endif()
+endfunction()
+
