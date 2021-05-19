@@ -1,3 +1,4 @@
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch2/catch.hpp"
 
 #include <memory/stream_fixed_pool_allocator.h>
@@ -69,4 +70,14 @@ TEST_CASE("stream_fixed_pool_allocator array allocation")
     stream_fixed_pool_allocator<A> allocator(16);
 
     REQUIRE( allocator.allocate(2) == nullptr );
+}
+
+TEST_CASE("stream_fixed_pool_allocator benchmark")
+{
+    stream_fixed_pool_allocator<A> allocator(1024);
+
+    BENCHMARK("allocate(1)")
+    {
+        return allocator.allocate(1);
+    };
 }
