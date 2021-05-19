@@ -23,11 +23,11 @@ int main(int, char*[])
 
     std::cout << "\n";
 
-    std::cout << "cpu | isolation | nohz_full | rcu_nocbs" << std::endl;
+    std::cout << "| cpu | isolation | nohz_full | rcu_nocbs |" << std::endl;
     for(unsigned int i = 0; i < std::thread::hardware_concurrency(); i++)
     {
         std::cout << std::noboolalpha
-            << std::setw(3) << i
+            << std::setw(5) << i
             << std::setw(12) << (plf::get_cpu_isolation_status(i) ? '*' : ' ')
             << std::setw(12) << (plf::get_cpu_nohz_full_status(i) ? '*' : ' ')
             << std::setw(12) << (plf::get_cpu_rcu_nocbs_status(i) ? '*' : ' ')
