@@ -6,8 +6,10 @@ include(FetchContent)
 if (IHFT_BUILD_UNITTESTS)
     FetchContent_Declare(
         Catch2
-        URL https://github.com/catchorg/Catch2/archive/refs/tags/v2.13.6.tar.gz
-        URL_HASH MD5=c7c7ef181b9e08418fd9f2ef8159d03f
+        GIT_REPOSITORY https://github.com/proydakov/Catch2.git
+        GIT_TAG 268f02ceff8c1b798046ceb7a2bc2b05fc7cd5e6
+        #URL https://github.com/catchorg/Catch2/archive/refs/tags/v2.13.6.tar.gz
+        #URL_HASH MD5=c7c7ef181b9e08418fd9f2ef8159d03f
     )
     FetchContent_GetProperties(Catch2)
     if(NOT Catch2_POPULATED)
