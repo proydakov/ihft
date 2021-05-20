@@ -5,6 +5,7 @@
 #include <memory/huge_page_allocator.h>
 
 #include <limits>
+#include <iostream>
 
 using namespace ihft;
 

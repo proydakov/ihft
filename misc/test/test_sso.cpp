@@ -1,6 +1,7 @@
 #include "catch2/catch.hpp"
 
 #include <string>
+#include <iostream>
 
 namespace
 {
