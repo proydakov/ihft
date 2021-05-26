@@ -279,6 +279,23 @@ int test_main(int argc, char* argv[],
     auto const nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
     auto const rdtsc_delta = rdtsc_end - rdtsc_start;
 
+    using microseconds_t = decltype(microseconds);
+
+    auto format_events_per_second = [](std::size_t total_enents, microseconds_t microseconds)
+    {
+        double seconds_per_micros = double(total_enents) / double(microseconds);
+        double base = seconds_per_micros * 1'000'000;
+        std::size_t power = 0;
+        while(base > 9)
+        {
+            base /= 10;
+            power++;
+        }
+        std::string str = std::to_string(base);
+        str.append(" * 10 ^ ").append(std::to_string(power));
+        return str;
+    };
+
     std::cout << "W WAIT: " << writerWait.waitCounter << "\n";
     for (auto const& stat : readersWait)
     {
@@ -287,7 +304,7 @@ int test_main(int argc, char* argv[],
     std::cout << "\n";
     std::cout << "TIME: " << double(microseconds) / double(1'000'000) << " seconds\n";
     std::cout << "TIME: " << rdtsc_delta << " cycles\n";
-    std::cout << "PERF: " << double(double(TOTAL_EVENTS) / double(microseconds)) * 1'000'000 << " events/second\n";
+    std::cout << "PERF: " << format_events_per_second(TOTAL_EVENTS, microseconds) << " events/second\n";
     std::cout << "PERF: " << double(double(nanoseconds) / double(TOTAL_EVENTS)) << " nanoseconds/event\n";
     std::cout << "PERF: " << double(double(rdtsc_delta) / double(TOTAL_EVENTS)) << " cycles/event\n";
 
