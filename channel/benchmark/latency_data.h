@@ -25,6 +25,8 @@ struct data_t
 
 struct latency_test
 {
+    static constexpr bool flush = true;
+
     static constexpr unsigned default_delta = std::numeric_limits<unsigned>::min();
     static constexpr unsigned max_pow_2 = 32;
     static constexpr unsigned mask = max_pow_2 - 1;

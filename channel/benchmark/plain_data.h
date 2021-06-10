@@ -19,6 +19,8 @@ struct data_t
 
 struct perf_plain_test
 {
+    static constexpr bool flush = false;
+
     perf_plain_test(std::uint64_t, std::uint64_t) noexcept
     {
     }

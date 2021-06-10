@@ -62,6 +62,8 @@ struct data_t
 template<typename allocator_t>
 struct perf_allocated_test
 {
+    static constexpr bool flush = false;
+
     perf_allocated_test(std::uint64_t, std::uint64_t, allocator_t& allocator) noexcept
         : m_allocator(allocator)
     {

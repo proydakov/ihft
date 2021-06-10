@@ -82,9 +82,12 @@ label:
 
         if(queue.try_write(std::move(data)))
         {
-//            _mm_mfence();
-//            _mm_sfence();
-            std::atomic_thread_fence(std::memory_order_seq_cst);
+            if constexpr(controller_t::flush)
+            {
+//                _mm_mfence();
+//                _mm_sfence();
+                std::atomic_thread_fence(std::memory_order_seq_cst);
+            }
             j++;
         }
         else
