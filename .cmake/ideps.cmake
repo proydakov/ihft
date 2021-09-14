@@ -6,8 +6,8 @@ include(FetchContent)
 if (IHFT_BUILD_UNITTESTS)
     FetchContent_Declare(
         Catch2
-        URL https://github.com/catchorg/Catch2/archive/refs/tags/v2.13.6.tar.gz
-        URL_HASH MD5=c7c7ef181b9e08418fd9f2ef8159d03f
+        URL https://github.com/catchorg/Catch2/archive/refs/tags/v2.13.7.tar.gz
+        URL_HASH MD5=933e58313f752d142f915698e720e467
     )
     FetchContent_GetProperties(Catch2)
     if(NOT Catch2_POPULATED)
