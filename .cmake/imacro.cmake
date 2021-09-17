@@ -54,7 +54,6 @@ endfunction()
 function(ihft_add_benchmark NAME)
     if (IHFT_BUILD_UNITTESTS)
         add_executable(${NAME} ${NAME}.cpp)
-        add_test(NAME ${NAME} COMMAND ${NAME})
         target_link_libraries(${NAME} PRIVATE catch2_benchmark_main)
     else()
         # fake target to avoid problems with target_link_libraries
