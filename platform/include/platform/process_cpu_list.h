@@ -3,9 +3,6 @@
 #include <charconv>
 #include <string_view>
 
-namespace ihft::platform
-{
-
 //
 // This code process cpu list from /proc/cmdline & other linux files
 // and execute functor: Functor for each cpu in list or range cpus
@@ -14,6 +11,8 @@ namespace ihft::platform
 // 1,2,3 -> cpus: [1, 2, 3]
 // 1-3,5-7 -> cpus: [1, 2, 3, 5, 6, 7]
 //
+namespace ihft::platform
+{
 template<typename Functor>
 void process_cpu_list(std::string_view cpus, Functor& functor)
 {

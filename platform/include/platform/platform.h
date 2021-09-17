@@ -1,5 +1,11 @@
 #pragma once
 
+//
+// This code contains a lot of common methods for detecting system
+// configuration or change some runtime parameters
+//
+// See examples: get_platform_info & set_thread_cpu & set_thread_name
+//
 namespace ihft::platform
 {
     // Change current thread name. Could be useful with htop
