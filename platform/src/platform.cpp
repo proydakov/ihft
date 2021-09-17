@@ -50,14 +50,14 @@ namespace
     }
 }
 
-namespace ihft
+namespace ihft::platform
 {
-    void platform::set_current_thread_name(const char* name) noexcept
+    void set_current_thread_name(const char* name) noexcept
     {
         prctl(PR_SET_NAME, name, 0, 0, 0);
     }
 
-    void platform::set_current_thread_cpu(unsigned cpu) noexcept
+    void set_current_thread_cpu(unsigned cpu) noexcept
     {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
@@ -66,36 +66,36 @@ namespace ihft
         sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
     }
 
-    bool platform::get_cpu_isolation_status(unsigned cpu) noexcept
+    bool get_cpu_isolation_status(unsigned cpu) noexcept
     {
         return g_cmdline.is_isolated(cpu);
     }
 
-    bool platform::get_cpu_nohz_full_status(unsigned cpu) noexcept
+    bool get_cpu_nohz_full_status(unsigned cpu) noexcept
     {
         return g_cmdline.is_nohz_fulled(cpu);
     }
 
-    bool platform::get_cpu_rcu_nocbs_status(unsigned cpu) noexcept
+    bool get_cpu_rcu_nocbs_status(unsigned cpu) noexcept
     {
         return g_cmdline.is_rcu_nocbsed(cpu);
     }
 
-    unsigned platform::total_1gb_hugepages() noexcept
+    unsigned total_1gb_hugepages() noexcept
     {
         auto const [total, hpsize] = get_hp_info_impl();
 
         return 1048576u == hpsize ? total : 0u;
     }
 
-    unsigned platform::total_2mb_hugepages() noexcept
+    unsigned total_2mb_hugepages() noexcept
     {
         auto const [total, hpsize] = get_hp_info_impl();
 
         return 2048u == hpsize ? total : 0u;
     }
 
-    bool platform::is_hyper_threading_active() noexcept
+    bool is_hyper_threading_active() noexcept
     {
         std::ifstream file("/sys/devices/system/cpu/smt/active");
 
@@ -105,7 +105,7 @@ namespace ihft
         return value != "0";
     }
 
-    bool platform::is_swap_active() noexcept
+    bool is_swap_active() noexcept
     {
         std::ifstream file("/proc/swaps");
 
@@ -119,7 +119,7 @@ namespace ihft
         return lines != 1;
     }
 
-    bool platform::is_transparent_hugepages_active() noexcept
+    bool is_transparent_hugepages_active() noexcept
     {
         std::ifstream file("/sys/kernel/mm/transparent_hugepage/enabled");
 
@@ -136,7 +136,7 @@ namespace ihft
         return active;
     }
 
-    bool platform::is_scaling_governor_use_performance_mode() noexcept
+    bool is_scaling_governor_use_performance_mode() noexcept
     {
         if (not std::filesystem::exists("/sys/devices/system/cpu/cpufreq"))
         {
@@ -166,57 +166,57 @@ namespace ihft
 
 #else
 
-namespace ihft
+namespace ihft::platform
 {
-    void platform::set_current_thread_name(const char*) noexcept
+    void set_current_thread_name(const char*) noexcept
     {
     }
 
-    void platform::set_current_thread_cpu(unsigned) noexcept
+    void set_current_thread_cpu(unsigned) noexcept
     {
     }
 
-    bool platform::get_cpu_isolation_status(unsigned) noexcept
-    {
-        return false;
-    }
-
-    bool platform::get_cpu_nohz_full_status(unsigned) noexcept
+    bool get_cpu_isolation_status(unsigned) noexcept
     {
         return false;
     }
 
-    bool platform::get_cpu_rcu_nocbs_status(unsigned) noexcept
+    bool get_cpu_nohz_full_status(unsigned) noexcept
     {
         return false;
     }
 
-    unsigned platform::total_1gb_hugepages() noexcept
+    bool get_cpu_rcu_nocbs_status(unsigned) noexcept
+    {
+        return false;
+    }
+
+    unsigned total_1gb_hugepages() noexcept
     {
         return 0;
     }
 
-    unsigned platform::total_2mb_hugepages() noexcept
+    unsigned total_2mb_hugepages() noexcept
     {
         return 0;
     }
 
-    bool platform::is_hyper_threading_active() noexcept
+    bool is_hyper_threading_active() noexcept
     {
         return true;
     }
 
-    bool platform::is_swap_active() noexcept
+    bool is_swap_active() noexcept
     {
         return true;
     }
 
-    bool platform::is_transparent_hugepages_active() noexcept
+    bool is_transparent_hugepages_active() noexcept
     {
         return true;
     }
 
-    bool platform::is_scaling_governor_use_performance_mode() noexcept
+    bool is_scaling_governor_use_performance_mode() noexcept
     {
         return false;
     }

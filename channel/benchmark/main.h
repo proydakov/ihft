@@ -190,7 +190,7 @@ int test_main(int argc, char* argv[],
                 {
                     result.emplace_back(cpu);
                 };
-                ihft::impl::process_cpu_list(cpus, lambda);
+                ihft::platform::process_cpu_list(cpus, lambda);
             }
         }
         return result;

@@ -26,7 +26,7 @@ cmdline::cmdline(const char* file)
             {
                 list.set(cpu);
             };
-            process_cpu_list(cpus, lambda);
+            ihft::platform::process_cpu_list(cpus, lambda);
         }
     };
 

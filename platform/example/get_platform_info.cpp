@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <iostream>
 
-using plf = ihft::platform;
+namespace plf = ihft::platform;
 
 int main(int, char*[])
 {
