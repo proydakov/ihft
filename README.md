@@ -40,7 +40,8 @@ IHFT is microframework & laboratory for low latency applications.
   - [ ] non reliable delivery
   - [ ] lock-free implementation
 - [ ] network module
-  - [ ] multicast demo
+  - [x] multicast demo
+  - [ ] udp demo
   - [ ] DPDK demo
 - [ ] engine module
   - [ ] logical cpu

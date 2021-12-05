@@ -6,14 +6,14 @@ endmacro()
 ###############################################################################
 
 macro(ihft_setup_compiler_flags)
-    set(CMAKE_C_STANDARD 18)
+    set(CMAKE_C_STANDARD 11)
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_EXTENSIONS 0)
     set(CMAKE_C_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c18")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
     else()
         message(FATAL_ERROR "Unknown compiler")
