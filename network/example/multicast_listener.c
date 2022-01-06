@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     if (argc < 3) {
        printf("Command line args should be multicast group and port and [interface] optional\n");
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
         setsockopt(
             fd, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes)
         ) < 0
-    ){
+    ) {
        perror("Reusing ADDR failed");
        return 1;
     }
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         setsockopt(
             fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)
         ) < 0
-    ){
+    ) {
         perror("setsockopt");
         return 1;
     }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
             msgbuf,
             sizeof(msgbuf),
             0,
-            (struct sockaddr *) &addr,
+            (struct sockaddr*) &addr,
             &addrlen
         );
         if (nbytes < 0) {

@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     if (argc < 3) {
        printf("Command line args should be multicast group and port\n");
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         setsockopt(
             fd, IPPROTO_IP, IP_MULTICAST_IF, (char*) &mreq, sizeof(mreq)
         ) < 0
-    ){
+    ) {
         perror("setsockopt");
         return 1;
     }
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     //
     // now just sendto() our destination!
     //
-    for(unsigned i = 0; ; i++) {
+    for (unsigned i = 0; ; i++) {
         char buffer[64];
         memset(buffer, '\0', sizeof(buffer));
         snprintf(buffer, sizeof(buffer), "Hello, World! Sequence: %u", i & 0xFF);
