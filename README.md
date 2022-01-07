@@ -11,9 +11,9 @@ IHFT is microframework & laboratory for low latency applications.
 
 | Configuration | Static Runtime | Shared Runtime | ASAN+UBSAN | TSAN |
 | :---: | :---: | :---: | :--: | :--: |
-| MacOS(Clang) | - | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-tsan) |
 | Linux(GCC) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-gcc-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64) | - | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-gcc-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-gcc-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64-tsan) |
 | Linux(Clang) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64) | - | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-tsan) |
+| MacOS(Clang) | - | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-tsan) |
 
 # Goals
 
@@ -31,7 +31,6 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] one 2 one stream moveable object queue
   - [x] one 2 many stream pod data queue
   - [x] one 2 many stream moveable object queue
-  - [ ] next node consume bucket r&d
   - [ ] batch reader for all moveable object queues
   - [x] python latency analysis tool
   - [ ] add latency histograms in documentation
@@ -55,7 +54,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [ ] cpu assignment
   - [ ] configuration verification
 - [x] CI & DevOps
-  - [x] travis CI
+  - [x] github workflows CI
   - [x] static binary
   - [x] Clang support with libc++
   - [x] GCC support with libstdc++
