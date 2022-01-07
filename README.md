@@ -2,11 +2,16 @@
 
 <span style="display: inline-block;">
 
-[![Travis CI Status](https://travis-ci.org/proydakov/ihft.svg?branch=master)](https://travis-ci.org/proydakov/ihft)
 [![BSD 3 License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/proydakov/ihft/blob/master/LICENSE)
 </span>
 
 IHFT is microframework & laboratory for low latency applications.
+
+# Current building status matrix
+
+| Configuration | Static Runtime | Shared Runtime | ASAN+UBSAN | TSAN |
+| :---: | :---: | :---: | :--: | :--: |
+| MacOS(Clang) | - | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-tsan) |
 
 # Goals
 
