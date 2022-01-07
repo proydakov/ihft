@@ -12,6 +12,7 @@ IHFT is microframework & laboratory for low latency applications.
 | Configuration | Static Runtime | Shared Runtime | ASAN+UBSAN | TSAN |
 | :---: | :---: | :---: | :--: | :--: |
 | MacOS(Clang) | - | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-tsan) |
+| Linux(Clang) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64) | - | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-tsan) |
 
 # Goals
 

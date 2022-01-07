@@ -1,0 +1,31 @@
+name: linux-clang-x64
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  linux-clang-x64:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install-tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install cmake ninja-build clang-12 clang++-12 lld-12 libc++-12-dev libc++abi-12-dev
+    - name: build
+      env:
+        CC: clang-12
+        CXX: clang++-12
+        TYPE: Release
+      run: |
+        $CC --version
+        $CXX --version
+        mkdir build && cd build
+        cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_STATIC_LINK=1 ..
+        cmake --build .
+    - name: test
+      run: cd build && ctest -R
+    - name: info
+      run: cd build && ./platform_get_info
+
