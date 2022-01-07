@@ -1,2 +1,3 @@
 # apply all low-latency optimizations
+# crontab -e
 @reboot /usr/local/bin/restart.sh
