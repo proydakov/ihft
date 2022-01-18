@@ -23,13 +23,8 @@ int main(int argc, char* argv[])
     }
 
     const char* group = argv[1]; // e.g. 239.255.255.250 for SSDP
-    const int port = atoi(argv[2]); // 0 if error, which is an invalid port
+    const unsigned short port = (unsigned short) atoi(argv[2]); // 0 if error, which is an invalid port
     const char* source_iface = (argc == 4 ? argv[3] : NULL);
-
-    //
-    // !!! If test requires, make these configurable via args
-    //
-    const int delay_secs = 1;
 
     //
     // create what looks like an ordinary UDP socket
@@ -60,7 +55,7 @@ int main(int argc, char* argv[])
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = inet_addr(group);
-    addr.sin_port = htons((unsigned short)port);
+    addr.sin_port = htons(port);
 
     //
     // now just sendto() our destination!
@@ -83,9 +78,13 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-       sleep(delay_secs); // Unix sleep is seconds
+        //
+        // !!! If test requires, make these configurable via args
+        //
+        const int delay_secs = 1;
+
+        sleep(delay_secs); // Unix sleep is seconds
     }
 
     return 0;
 }
-
