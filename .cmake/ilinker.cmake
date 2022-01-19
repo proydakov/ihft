@@ -34,10 +34,8 @@ macro(ihft_setup_linker_flags)
         get_filename_component(TEST_CLANG_ROOT ${TEST_CLANG_ROOT} DIRECTORY)
 
         if(EXISTS "${TEST_CLANG_ROOT}/include/c++/v1/" AND
-           EXISTS "${TEST_CLANG_ROOT}/lib/libc++.a" AND
-           EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.a" AND
-           EXISTS "${TEST_CLANG_ROOT}/lib/libc++.so" AND
-           EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.so")
+           EXISTS "${TEST_CLANG_ROOT}/lib/libc++.a" AND EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.a" AND
+           EXISTS "${TEST_CLANG_ROOT}/lib/libc++.so" AND EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.so")
 
             message(STATUS "Detected clang root: ${TEST_CLANG_ROOT}")
             set(CLANG_ROOT ${TEST_CLANG_ROOT})
@@ -51,13 +49,6 @@ macro(ihft_setup_linker_flags)
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CLANG_EXTRA_LINKS}")
             set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CLANG_EXTRA_LINKS}")
             set(CXX_RUNTIME_LIBRARY "libc++")
-
-            # musl full static demo
-            #add_compile_options(--sysroot ${MUSL_ROOT} -nostdinc -I${MUSL_ROOT}/include -nostdinc++ -I${CLANG_ROOT}/include/c++/v1)
-                # manual link list for static glibc & libc++ & libc++abi
-                #set(CLANG_EXTRA_LINKS "-nodefaultlibs -lpthread -lc -lm -lgcc -lgcc_eh -lc++ -lc++abi -L${CLANG_ROOT}/lib")
-                # manual link list for static musl & libc++ & libc++abi
-                #set(CLANG_EXTRA_LINKS "-nodefaultlibs --sysroot ${MUSL_ROOT} -stdlib=libc++ -lc -lc++ -lc++abi -lunwind -L${CLANG_ROOT}/lib")
         else()
             message(FATAL_ERROR "Please install libc++ & libc++abi for compilation")
         endif()
