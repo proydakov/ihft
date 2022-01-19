@@ -5,5 +5,5 @@ add_executable(network_multicast_hello_sender multicast_hello_sender.cpp)
 add_executable(network_multicast_rtt_listener multicast_rtt_listener.cpp)
 add_executable(network_multicast_rtt_sender multicast_rtt_sender.cpp)
 
-add_executable(network_udp_echo_server udp_echo_server.c)
-add_executable(network_udp_rtt_client udp_rtt_client.c)
+add_executable(network_udp_echo_server udp_echo_server.cpp)
+add_executable(network_udp_rtt_client udp_rtt_client.cpp)

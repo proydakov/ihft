@@ -1,44 +1,29 @@
-#include <arpa/inet.h>
-#include <sys/socket.h>
+#include "udp_helper.h"
 
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
 int main(int argc, char* argv[])
 {
-	if (argc < 2) {
+    if (argc < 2) {
         printf("Usage: %s 'port' '[interface]' optional\n", argv[0]);
         return 1;
     }
 
-    const int server_port = atoi(argv[1]);
-    const char* source_iface = (argc == 3) ? argv[2] : NULL;
+    const unsigned short server_port = (unsigned short) atoi(argv[1]);
+    const char* const source_iface = (argc == 3) ? argv[2] : nullptr;
 
-    // socket address used for the server
-    struct sockaddr_in server_address;
-    memset(&server_address, 0, sizeof(server_address));
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons((unsigned short)server_port);
-    server_address.sin_addr.s_addr = source_iface ? inet_addr(source_iface) : htonl(INADDR_ANY);
-
-    int const sock = socket(PF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) {
-        printf("could not create socket\n");
+    auto const opt = create_udp_server(server_port, source_iface);
+    if (!opt)
+    {
         return 1;
     }
 
-    // bind it to listen to the incoming connections on the created server
-    // address, will return -1 on error
-    if ((bind(sock, (struct sockaddr*) &server_address, sizeof(server_address))) < 0) {
-        printf("could not bind socket\n");
-        return 1;
-    }
+    auto const sock = opt.value();
 
     // socket address used to store client address
     struct sockaddr_in client_address;
-	memset(&client_address, 0, sizeof(client_address));
+    memset(&client_address, 0, sizeof(client_address));
     socklen_t client_address_len = sizeof(client_address);
 
     // run indefinitely

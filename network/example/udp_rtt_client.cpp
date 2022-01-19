@@ -1,11 +1,7 @@
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <unistd.h>
+#include "udp_helper.h"
 
 #include <time.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 int main(int argc, char* argv[])
 {
@@ -14,34 +10,24 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    const char* server_name = argv[1];
-    const int server_port = atoi(argv[2]);
-    const char* data_to_send = argv[3];
-    const char* source_iface = (argc == 5) ? argv[4] : NULL;
+    const char* const server_name = argv[1];
+    const unsigned short server_port = (unsigned short) atoi(argv[2]);
+    const char* const data_to_send = argv[3];
+    const char* const source_iface = (argc == 5) ? argv[4] : nullptr;
+
+    auto const opt = create_udp_client(source_iface);
+    if (!opt)
+    {
+        return 1;
+    }
+
+    auto const sock = opt.value();
 
     struct sockaddr_in server_address;
     memset(&server_address, 0, sizeof(server_address));
     server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = inet_addr(server_name);
-    server_address.sin_port = htons((unsigned short)server_port);
-
-    // open socket
-    int const sock = socket(PF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) {
-        printf("could not create socket\n");
-        return 1;
-    }
-
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = source_iface ? inet_addr(source_iface) : htonl(INADDR_ANY);
-
-    // bind to send address
-    if (bind(sock, (struct sockaddr*) &addr, sizeof(addr)) < 0) {
-        perror("bind");
-        return 1;
-    }
+    server_address.sin_port = htons(server_port);
 
     struct timespec tp;
     clock_gettime(CLOCK_REALTIME, &tp);
@@ -69,9 +55,5 @@ int main(int argc, char* argv[])
     buffer[len] = '\0';
     printf("time delta: %ld nanoseconds, recieved: '%s'\n", delta, buffer);
 
-    // close the socket
-    close(sock);
-
     return 0;
 }
-
