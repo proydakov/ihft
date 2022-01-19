@@ -4,14 +4,10 @@
 // ./network_multicast_sender 239.255.255.251 27335 192.168.88.50
 //
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+#include "multicast_helper.h"
 
+#include <time.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 int main(int argc, char* argv[])
@@ -22,31 +18,17 @@ int main(int argc, char* argv[])
        return 1;
     }
 
-    const char* group = argv[1]; // e.g. 239.255.255.250 for SSDP
+    const char* const group = argv[1]; // e.g. 239.255.255.250 for SSDP
     const unsigned short port = (unsigned short) atoi(argv[2]); // 0 if error, which is an invalid port
-    const char* source_iface = (argc == 4 ? argv[3] : NULL);
+    const char* const source_iface = (argc == 4 ? argv[3] : NULL);
 
-    //
-    // create what looks like an ordinary UDP socket
-    //
-    const int fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (fd < 0) {
-        perror("socket");
+    auto const opt = create_multicast_sender(source_iface);
+    if (!opt)
+    {
         return 1;
     }
 
-    struct ip_mreq mreq;
-    memset(&mreq, 0, sizeof(mreq));
-    mreq.imr_interface.s_addr = source_iface ? inet_addr(source_iface) : htonl(INADDR_ANY);
-
-    if (
-        setsockopt(
-            fd, IPPROTO_IP, IP_MULTICAST_IF, (char*) &mreq, sizeof(mreq)
-        ) < 0
-    ) {
-        perror("setsockopt");
-        return 1;
-    }
+    const int fd = opt.value();
 
     //
     // set up destination address
@@ -58,17 +40,18 @@ int main(int argc, char* argv[])
     addr.sin_port = htons(port);
 
     //
-    // now just sendto() our destination!
+    // now just sendto() our destination
     //
     for (unsigned i = 0; ; i++) {
-        char buffer[64];
-        memset(buffer, '\0', sizeof(buffer));
-        snprintf(buffer, sizeof(buffer), "Hello, World! Sequence: %u", i & 0xFF);
+
+        struct timespec tp;
+        clock_gettime(CLOCK_REALTIME, &tp);
+        long const start_micro = tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec;
 
         ssize_t const nbytes = sendto(
             fd,
-            buffer,
-            sizeof(buffer),
+            &start_micro,
+            sizeof(start_micro),
             0,
             (struct sockaddr*) &addr,
             sizeof(addr)
@@ -78,10 +61,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        //
-        // !!! If test requires, make these configurable via args
-        //
-        const int delay_secs = 1;
+        constexpr int delay_secs = 1;
 
         sleep(delay_secs); // Unix sleep is seconds
     }

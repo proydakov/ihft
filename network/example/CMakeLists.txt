@@ -1,9 +1,9 @@
 # manual example apps
-add_executable(network_multicast_trace_listener multicast_trace_listener.c)
-add_executable(network_multicast_hello_sender multicast_hello_sender.c)
+add_executable(network_multicast_trace_listener multicast_trace_listener.cpp)
+add_executable(network_multicast_hello_sender multicast_hello_sender.cpp)
 
-add_executable(network_multicast_rtt_listener multicast_rtt_listener.c)
-add_executable(network_multicast_rtt_sender multicast_rtt_sender.c)
+add_executable(network_multicast_rtt_listener multicast_rtt_listener.cpp)
+add_executable(network_multicast_rtt_sender multicast_rtt_sender.cpp)
 
 add_executable(network_udp_echo_server udp_echo_server.c)
 add_executable(network_udp_rtt_client udp_rtt_client.c)
