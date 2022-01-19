@@ -60,4 +60,3 @@ function(ihft_add_benchmark NAME)
         add_executable(${NAME} EXCLUDE_FROM_ALL ${NAME}.cpp)
     endif()
 endfunction()
-
