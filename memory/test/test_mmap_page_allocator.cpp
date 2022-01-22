@@ -55,6 +55,13 @@ namespace
     }
 }
 
+TEST_CASE("check 4kb pages")
+{
+    test_impl<four_4b_page_allocator<>>(std::numeric_limits<unsigned>::max(), "pages 4kb");
+}
+
+#ifdef __linux__
+
 TEST_CASE("check 1gb hugepages")
 {
     test_impl<one_gb_huge_page_allocator<>>(ihft::platform::total_1gb_hugepages(), "hugepages 1GB");
@@ -65,7 +72,4 @@ TEST_CASE("check 2mb hugepages")
     test_impl<one_gb_huge_page_allocator<>>(ihft::platform::total_2mb_hugepages(), "hugepages 2mb");
 }
 
-TEST_CASE("check 4kb pages")
-{
-    test_impl<four_4b_page_allocator<>>(std::numeric_limits<unsigned>::max(), "pages 4kb");
-}
+#endif

@@ -27,28 +27,22 @@ struct mmap_page_allocator
         // We should check real page alignment for placement
 
 #ifdef __APPLE__
-        constexpr unsigned real_page_size = _4kb_;
-#else
-        constexpr unsigned real_page_size = psize;
+        static_assert(page_size == _4kb_, "Apple supports only the 4kb mmap pages.");
+        static_assert(is_huge == false, "Apple doesn't support hugepages.");
 #endif
 
-        static_assert(real_page_size % alignof(T) == 0, "T can't be placed on page memory directly with required alignment.");
+        static_assert(psize % alignof(T) == 0, "T can't be placed on page memory directly with required alignment.");
 
         if constexpr(is_huge)
         {
-            static_assert(page_size == _2mb_ || page_size == _1gb_,
-                "Only 2MB or 1GB hugepages are available");
+            static_assert(page_size == _2mb_ || page_size == _1gb_, "Only 2MB or 1GB hugepages are available");
         }
 
         if constexpr(!is_huge)
         {
-            static_assert(page_size == _4kb_,
-                "Only 4Kb pages are available");
+            static_assert(page_size == _4kb_, "Only 4Kb pages are available");
         }
     }
-
-    mmap_page_allocator(mmap_page_allocator const&) noexcept = default;
-    mmap_page_allocator(mmap_page_allocator&&) noexcept = default;
 
     // STL-like interface
 
