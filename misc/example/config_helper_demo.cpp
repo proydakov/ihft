@@ -14,7 +14,7 @@ int main()
 {
     {
         std::ofstream output( FNAME );
-        output << TOML;
+        output << VALID_TOML_DOC;
     }
 
     std::cout << "parsing\n";

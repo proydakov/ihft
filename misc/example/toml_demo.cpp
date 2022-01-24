@@ -13,7 +13,7 @@ int main()
 {
     {
         std::ofstream output( FNAME );
-        output << TOML;
+        output << VALID_TOML_DOC;
     }
 
     auto config = toml::parse_file( FNAME );

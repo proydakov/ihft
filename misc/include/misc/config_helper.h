@@ -15,8 +15,15 @@ class config_result;
 class config_helper final
 {
 public:
+#if defined(__clang__)
     static constexpr size_t SIZE = 72;
+#elif defined(__GNUC__) || defined(__GNUG__)
+    static constexpr size_t SIZE = 96;
+#else
+#    error "Unsupported compiler"
+#endif
     static constexpr size_t ALIGN = 8;
+
     using table_storage = std::aligned_storage_t<SIZE, ALIGN>;
 
     static config_result parse(std::string_view file_path) noexcept;

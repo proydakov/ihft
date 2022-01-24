@@ -1,6 +1,6 @@
 #pragma once
 
-const char * const TOML =
+const char * const VALID_TOML_DOC =
 R"([library]
 name = "toml++"
 authors = ["Mark Gillard <mark.gillard@outlook.com.au>"]
