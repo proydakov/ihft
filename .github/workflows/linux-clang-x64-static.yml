@@ -1,4 +1,4 @@
-name: linux-clang-x64
+name: linux-clang-x64-static
 on:
   push:
     branches: [master]
@@ -22,7 +22,7 @@ jobs:
         $CC --version
         $CXX --version
         mkdir build && cd build
-        cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} ..
+        cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_STATIC_LINK=1 ..
         cmake --build .
     - name: test
       run: cd build && ctest -R

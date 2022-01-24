@@ -22,7 +22,7 @@ jobs:
         $CC --version
         $CXX --version
         mkdir build && cd build
-        cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_STATIC_LINK=1 ..
+        cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} ..
         cmake --build .
     - name: test
       run: cd build && ctest -R
