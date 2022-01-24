@@ -49,7 +49,8 @@ struct alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_bucket final
 
     event_t& get_event() noexcept
     {
-        return reinterpret_cast<event_t&>(m_storage);
+        // Note: std::launder is needed after the change of object model in P0137R1
+        return *std::launder(reinterpret_cast<event_t*>(&m_storage));
     }
 
     std::atomic<counter_t> m_seqn;
