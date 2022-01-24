@@ -3,6 +3,7 @@ message(STATUS "Downloading dependencies...")
 include(FetchContent)
 #set(FETCHCONTENT_QUIET FALSE)
 
+# catch2
 if (IHFT_BUILD_UNITTESTS)
     FetchContent_Declare(
         Catch2
@@ -15,8 +16,15 @@ if (IHFT_BUILD_UNITTESTS)
         #message(STATUS "${catch2_SOURCE_DIR} - ${catch2_BINARY_DIR}")
         add_subdirectory(${catch2_SOURCE_DIR} ${catch2_BINARY_DIR})
     endif()
+
+    add_library(catch2_test_main OBJECT ${PROJECT_SOURCE_DIR}/.cmake/template/catch2_test_main.cpp)
+    target_link_libraries(catch2_test_main PUBLIC Catch2::Catch2)
+
+    add_library(catch2_benchmark_main OBJECT ${PROJECT_SOURCE_DIR}/.cmake/template/catch2_benchmark_main.cpp)
+    target_link_libraries(catch2_benchmark_main PUBLIC Catch2::Catch2)
 endif()
 
+# toml++
 if (IHFT_BUILD_TOML)
     FetchContent_Declare(
         tomlplusplus
