@@ -40,12 +40,12 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] page allocator for 4KB pages
   - [x] huge page allocator for 2MB & 1GB pages
 - [ ] misc module
-  - [ ] simple human-readable TOML config system
+  - [x] simple human-readable TOML config system
   - [ ] sigaction based signal handler
 - [ ] logger module
   - [ ] simple client usage
   - [ ] non reliable delivery
-  - [ ] lock-free implementation
+  - [ ] wait-free implementation
 - [ ] network module
   - [x] multicast demo
   - [x] udp demo
