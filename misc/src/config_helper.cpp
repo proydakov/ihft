@@ -100,18 +100,18 @@ namespace ihft::misc
         return get_value<std::int64_t>(section, key);
     }
 
-    std::optional<std::string> config_helper::get_string(std::string_view section, std::string_view key) const noexcept
+    std::optional<std::string_view> config_helper::get_string(std::string_view section, std::string_view key) const noexcept
     {
-        return get_value<std::string>(section, key);
+        return get_value<std::string_view, std::string>(section, key);
     }
 
-    template<typename T>
-    std::optional<T> config_helper::get_value(std::string_view section, std::string_view key) const noexcept
+    template<typename T1, typename T2>
+    std::optional<T1> config_helper::get_value(std::string_view section, std::string_view key) const noexcept
     {
         auto const& table = cref(m_table);
 
         auto const node_view = table[section][key];
-        if (auto ptr = node_view.as<T>())
+        if (auto ptr = node_view.as<T2>())
         {
             return ptr->get();
         }

@@ -41,11 +41,11 @@ public:
 
     std::optional<bool> get_boolean(std::string_view section, std::string_view key) const noexcept;
     std::optional<std::int64_t> get_integer(std::string_view section, std::string_view key) const noexcept;
-    std::optional<std::string> get_string(std::string_view section, std::string_view key) const noexcept;
+    std::optional<std::string_view> get_string(std::string_view section, std::string_view key) const noexcept;
 
 private:
-    template<typename T>
-    std::optional<T> get_value(std::string_view section, std::string_view key) const noexcept;
+    template<typename T1, typename T2 = T1>
+    std::optional<T1> get_value(std::string_view section, std::string_view key) const noexcept;
 
     config_helper() noexcept;
 
