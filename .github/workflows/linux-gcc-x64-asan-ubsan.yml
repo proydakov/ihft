@@ -22,7 +22,7 @@ jobs:
         $CC --version
         $CXX --version
         mkdir build && cd build
-        cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_ADDRESS_SANITIZER=1 -DIHFT_UB_SANITIZER=1 ..
+        cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_SANITIZER_ADDRESS=1 -DIHFT_SANITIZER_UB=1 ..
         cmake --build .
     - name: test
       run: cd build && ctest -R
