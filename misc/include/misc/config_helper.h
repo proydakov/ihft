@@ -12,6 +12,7 @@ namespace ihft::misc
 class config_result;
 
 // This class provides a simple config assist
+// Configuration data is immutable after loading
 class config_helper final
 {
 public:
@@ -38,7 +39,14 @@ public:
 
     friend std::ostream& operator<<(std::ostream&, const config_helper&);
 
+    std::optional<bool> get_boolean(std::string_view section, std::string_view key) const noexcept;
+    std::optional<std::int64_t> get_integer(std::string_view section, std::string_view key) const noexcept;
+    std::optional<std::string> get_string(std::string_view section, std::string_view key) const noexcept;
+
 private:
+    template<typename T>
+    std::optional<T> get_value(std::string_view section, std::string_view key) const noexcept;
+
     config_helper() noexcept;
 
     template<typename T>

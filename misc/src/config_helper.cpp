@@ -14,7 +14,7 @@ namespace
         return *std::launder(reinterpret_cast<toml::table*>(&storage));
     }
 
-    toml::table const& ref(ihft::misc::config_helper::table_storage const& storage) noexcept
+    toml::table const& cref(ihft::misc::config_helper::table_storage const& storage) noexcept
     {
         return *std::launder(reinterpret_cast<const toml::table*>(&storage));
     }
@@ -64,7 +64,7 @@ namespace ihft::misc
 
     config_helper::config_helper(const config_helper& other)
     {
-        std::construct_at(reinterpret_cast<toml::table*>(&m_table), ref(other.m_table));
+        std::construct_at(reinterpret_cast<toml::table*>(&m_table), cref(other.m_table));
     }
 
     config_helper::config_helper(config_helper&& other) noexcept
@@ -74,7 +74,7 @@ namespace ihft::misc
 
     std::ostream& operator<<(std::ostream& os, const config_helper& helper)
     {
-        return os << ref(helper.m_table);
+        return os << cref(helper.m_table);
     }
 
     std::ostream& operator<<(std::ostream& os, const config_result& result)
@@ -88,5 +88,36 @@ namespace ihft::misc
             os << result.error();
         }
         return os;
+    }
+
+    std::optional<bool> config_helper::get_boolean(std::string_view section, std::string_view key) const noexcept
+    {
+        return get_value<bool>(section, key);
+    }
+
+    std::optional<std::int64_t> config_helper::get_integer(std::string_view section, std::string_view key) const noexcept
+    {
+        return get_value<std::int64_t>(section, key);
+    }
+
+    std::optional<std::string> config_helper::get_string(std::string_view section, std::string_view key) const noexcept
+    {
+        return get_value<std::string>(section, key);
+    }
+
+    template<typename T>
+    std::optional<T> config_helper::get_value(std::string_view section, std::string_view key) const noexcept
+    {
+        auto const& table = cref(m_table);
+
+        auto const node_view = table[section][key];
+        if (auto ptr = node_view.as<T>())
+        {
+            return ptr->get();
+        }
+        else
+        {
+            return std::nullopt;
+        }
     }
 }
