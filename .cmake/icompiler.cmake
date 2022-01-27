@@ -26,7 +26,7 @@ macro(ihft_setup_compiler_flags)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
 
-    if(NOT IHFT_STATIC_LINK)
+    if(NOT IHFT_LINK_STATIC)
         set(IHFT_SANITIZER_OPT "-ggdb -fno-omit-frame-pointer")
         if(IHFT_SANITIZER_ADDRESS AND IHFT_SANITIZER_UB)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${IHFT_SANITIZER_OPT} -fsanitize=address -fsanitize=undefined")

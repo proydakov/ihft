@@ -7,7 +7,7 @@ function(ihft_build_report)
     set(NOOP_STRING "")
 
     set(RUNTIME_MODE "shared")
-    if(IHFT_STATIC_LINK)
+    if(IHFT_LINK_STATIC)
         set(RUNTIME_MODE "static")
     endif()
 
