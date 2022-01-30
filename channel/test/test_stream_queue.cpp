@@ -59,7 +59,7 @@ void one2_stream_queue_min_capacity()
 
     auto& queue = opt->producer;
 
-    REQUIRE( queue.capacity() == 2 );
+    REQUIRE( queue.capacity() == 4 );
 }
 
 TEST_CASE("one2*_stream_queue min capacity")

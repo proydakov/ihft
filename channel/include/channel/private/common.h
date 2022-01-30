@@ -15,8 +15,8 @@ struct queue_helper
     {
         static_assert(std::is_unsigned_v<T>, "Counter type must be unsigned.");
 
-        constexpr std::size_t min_valid_pow = 2;
-        if (0 == n)
+        constexpr std::size_t min_valid_pow = 4;
+        if (n <= min_valid_pow)
         {
             return min_valid_pow;
         }
