@@ -4,6 +4,7 @@
 #include <platform/platform.h>
 
 #include <atomic>
+#include <memory>
 #include <cstdint>
 #include <iostream>
 
@@ -29,7 +30,7 @@ struct data_t
         : m_ptr(allocator.allocate(1))
         , m_allocator(allocator)
     {
-        new (m_ptr) value_type(val);
+        std::construct_at(m_ptr, val);
         g_local_allocated.counter++;
     }
 
@@ -48,7 +49,7 @@ struct data_t
     {
         if (m_ptr != nullptr)
         {
-            m_ptr->~value_type();
+            std::destroy_at(m_ptr);
             m_allocator.deallocate(m_ptr, 1);
             m_ptr = nullptr;
             g_local_released.counter++;

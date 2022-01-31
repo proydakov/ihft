@@ -65,7 +65,7 @@ public:
         {
             auto const seqn = m_next_seq_num++;
             m_next_bucket = m_next_seq_num & m_storage_mask;
-            new (&bucket.m_storage) event_t(std::move(event));
+            std::construct_at(reinterpret_cast<event_t*>(&bucket.m_storage), std::move(event));
             bucket.m_counter.store(counter, std::memory_order_relaxed);
             bucket.m_seqn.store(seqn, std::memory_order_release);
             return true;

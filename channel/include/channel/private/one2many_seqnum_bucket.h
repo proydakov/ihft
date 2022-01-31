@@ -42,7 +42,7 @@ struct alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_bucket final
     {
         if (m_counter != one2many_seqnum_queue_constant<counter_t>::EMPTY_DATA_MARK)
         {
-            get_event().~event_t();
+            std::destroy_at(&get_event());
             m_counter.store(one2many_seqnum_queue_constant<counter_t>::EMPTY_DATA_MARK, std::memory_order_release);
         }
     }
