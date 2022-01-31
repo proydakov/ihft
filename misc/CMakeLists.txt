@@ -3,7 +3,6 @@ target_include_directories(ihft_misc PUBLIC include)
 target_link_libraries(ihft_misc PRIVATE ihft_constant)
 if(IHFT_BUILD_TOML)
     target_link_libraries(ihft_misc PRIVATE tomlplusplus::tomlplusplus)
-    target_compile_definitions(ihft_misc PRIVATE IHFT_BUILD_TOML)
 endif()
 
 add_subdirectory(test)

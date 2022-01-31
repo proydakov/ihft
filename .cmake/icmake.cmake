@@ -22,6 +22,10 @@ include(ioption)
 include(icompiler)
 include(ilinker)
 
+if(NOT IHFT_BUILD_TOML)
+    message(FATAL_ERROR "Building without toml is not supported at the moment.")
+endif()
+
 ihft_setup_compiler_flags()
 ihft_setup_linker_flags()
 ihft_setup_tools_flags()
