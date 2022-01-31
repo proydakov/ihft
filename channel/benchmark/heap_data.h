@@ -80,8 +80,12 @@ struct perf_allocated_test
         return data_t<allocator_t>(i, m_allocator);
     }
 
-    void check_data(std::uint64_t, std::uint64_t, data_t<allocator_t> const&) noexcept
+    void check_data(std::uint64_t, std::uint64_t i, data_t<allocator_t> const& cref) noexcept
     {
+        if (i != *cref.m_ptr)
+        {
+            abort();
+        }
     }
 
     void reader_done() noexcept
