@@ -46,7 +46,7 @@ namespace ihft::misc
         }
     }
 
-    config_result config_helper::parse(std::string_view file_path) noexcept
+    config_result config_helper::parse(std::string_view file_path)
     {
         return parse_impl(file_path);
     }

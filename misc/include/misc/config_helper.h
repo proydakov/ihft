@@ -27,7 +27,7 @@ public:
 
     using table_storage = std::aligned_storage_t<SIZE, ALIGN>;
 
-    static config_result parse(std::string_view file_path) noexcept;
+    static config_result parse(std::string_view file_path);
 
     ~config_helper();
 
