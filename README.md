@@ -52,7 +52,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [ ] DPDK demo
 - [ ] engine module
   - [ ] logical cpu
-  - [ ] cpu assignment
+  - [ ] task assignment
   - [ ] configuration verification
 - [x] CI & DevOps
   - [x] github workflows CI
