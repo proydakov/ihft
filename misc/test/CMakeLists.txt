@@ -2,3 +2,6 @@ ihft_add_test(test_sso)
 
 ihft_add_test(test_config_helper)
 target_link_libraries(test_config_helper PRIVATE ihft_misc)
+
+ihft_add_test(test_signal_helper)
+target_link_libraries(test_signal_helper PRIVATE ihft_misc)

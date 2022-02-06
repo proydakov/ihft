@@ -12,13 +12,13 @@ constexpr int SLEEP_TIME = 9;
 
 void mysignal(int signal)
 {
-    printf("In mysignal: %s\n", strsignal(signal));
+    printf("In mysignal: %s.\n", strsignal(signal));
     sleep(SLEEP_TIME);
 }
 
 void mysa_sigaction(int signal, siginfo_t* info, void* context)
 {
-    printf("In mysa_sigaction: %s info: %p context: %p \n", strsignal(signal), (void*)info, (void*)context);
+    printf("In mysa_sigaction: %s info: %p context: %p.\n", strsignal(signal), (void*)info, (void*)context);
     sleep(SLEEP_TIME);
 }
 
@@ -56,11 +56,11 @@ int main()
     sigaddset(&mask, SIGINT);
 
     if (sigprocmask(SIG_BLOCK, &mask, nullptr) != -1)
-        printf("Block several signals.\n");
+        printf("Block several signals {SIGINT}.\n");
 
     int val;
-    scanf("%d", &val);
-    printf("%d\n", val);
+    if(1 == scanf("%d", &val))
+        printf("scaned: %d\n", val);
 
     return 0;
 }

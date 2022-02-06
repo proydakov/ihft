@@ -38,8 +38,8 @@ using istring = std::basic_string<char, std::char_traits<char>, test_allocator<c
 
 TEST_CASE("SSO")
 {
-    REQUIRE( g_call_allocate == 0);
-    REQUIRE( g_call_deallocate == 0);
+    REQUIRE(g_call_allocate == 0);
+    REQUIRE(g_call_deallocate == 0);
 
     {
         std::cout << "sizeof: " << sizeof(istring) << std::endl;
@@ -59,6 +59,6 @@ TEST_CASE("SSO")
         }
     }
 
-    REQUIRE( g_call_allocate == 0);
-    REQUIRE( g_call_deallocate == 0);
+    REQUIRE(g_call_allocate == 0);
+    REQUIRE(g_call_deallocate == 0);
 }
