@@ -24,8 +24,8 @@ namespace
         unsigned total{};
         unsigned hpsize{};
 
-        const char * const hugepagesizeMark = "Hugepagesize:";
-        const char * const hugePagesTotalMark = "HugePages_Total:";
+        constexpr std::string_view hugepagesizeMark = "Hugepagesize:";
+        constexpr std::string_view hugePagesTotalMark = "HugePages_Total:";
 
         std::string buffer;
         while(std::getline(file, buffer))
@@ -33,14 +33,14 @@ namespace
             if (buffer.starts_with(hugepagesizeMark))
             {
                 std::string_view view(buffer);
-                view.remove_prefix(strlen(hugepagesizeMark));
+                view.remove_prefix(hugepagesizeMark.length());
                 view.remove_prefix(std::min(view.find_first_not_of(' '), view.size()));
                 std::from_chars(view.data(), view.data() + view.size(), hpsize);
             }
             else if (buffer.starts_with(hugePagesTotalMark))
             {
                 std::string_view view(buffer);
-                view.remove_prefix(strlen(hugePagesTotalMark));
+                view.remove_prefix(hugePagesTotalMark.length());
                 view.remove_prefix(std::min(view.find_first_not_of(' '), view.size()));
                 std::from_chars(view.data(), view.data() + view.size(), total);
             }
