@@ -1,5 +1,7 @@
 #pragma once
 
+#include <types/result.h>
+
 #include <iosfwd>
 #include <string>
 #include <optional>
@@ -9,13 +11,13 @@
 namespace ihft::misc
 {
 
-class config_result;
-
 // This class provides a simple config assist
 // Configuration data is immutable after loading
 class config_helper final
 {
 public:
+    using config_result = ::ihft::types::result<config_helper, std::string>;
+
 #if defined(__clang__)
     static constexpr size_t SIZE = 72;
 #elif defined(__GNUC__) || defined(__GNUG__)
@@ -54,67 +56,6 @@ private:
 
 private:
     table_storage m_table;
-};
-
-// This class contains config_helper or error
-class config_result final
-{
-public:
-    config_result(std::string error) : m_error(std::move(error))
-    {
-    }
-
-    config_result(config_helper helper) : m_config_helper(std::move(helper))
-    {
-    }
-
-    // Returns true if parsing succeeeded.
-    bool succeeded() const noexcept
-    {
-        return m_error.empty();
-    }
-
-    // Returns true if parsing failed.
-    bool failed() const noexcept
-    {
-        return not succeeded();
-    }
-
-    operator bool() const noexcept
-    {
-        return succeeded();
-    }
-
-    config_helper& value() & noexcept
-    {
-        return m_config_helper.value();
-    }
-
-    const config_helper& value() const & noexcept
-    {
-        return m_config_helper.value();
-    }
-
-    config_helper&& value() && noexcept
-    {
-        return std::move(m_config_helper).value();
-    }
-
-    const config_helper&& value() const && noexcept
-    {
-        return std::move(m_config_helper).value();
-    }
-
-    const std::string& error() const noexcept
-    {
-        return m_error;
-    }
-
-    friend std::ostream& operator<<(std::ostream&, const config_result&);
-
-private:
-    std::string m_error;
-    std::optional<config_helper> m_config_helper;
 };
 
 }

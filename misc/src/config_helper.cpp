@@ -28,7 +28,7 @@ namespace
 namespace ihft::misc
 {
     template<typename T>
-    ihft::misc::config_result config_helper::parse_impl(T file_path)
+    config_helper::config_result config_helper::parse_impl(T file_path)
     {
         auto config = toml::parse_file(file_path);
 
@@ -46,7 +46,7 @@ namespace ihft::misc
         }
     }
 
-    config_result config_helper::parse(std::string_view file_path)
+    config_helper::config_result config_helper::parse(std::string_view file_path)
     {
         return parse_impl(file_path);
     }
@@ -75,19 +75,6 @@ namespace ihft::misc
     std::ostream& operator<<(std::ostream& os, const config_helper& helper)
     {
         return os << cref(helper.m_table);
-    }
-
-    std::ostream& operator<<(std::ostream& os, const config_result& result)
-    {
-        if (result)
-        {
-            os << result.value();
-        }
-        else
-        {
-            os << result.error();
-        }
-        return os;
     }
 
     std::optional<bool> config_helper::get_boolean(std::string_view section, std::string_view key) const noexcept
