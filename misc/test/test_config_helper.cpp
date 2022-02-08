@@ -1,4 +1,4 @@
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include <misc/config_helper.h>
 #include <types/temp_file.h>

@@ -1,4 +1,4 @@
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include <channel/channel_factory.h>
 #include <channel/one2one_seqnum_stream_pod_queue.h>

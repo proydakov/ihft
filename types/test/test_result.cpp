@@ -1,6 +1,6 @@
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
-#include "types/result.h"
+#include <types/result.h>
 
 using namespace ihft::types;
 

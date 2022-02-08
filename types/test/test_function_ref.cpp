@@ -1,6 +1,6 @@
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
-#include "types/function_ref.h"
+#include <types/function_ref.h>
 
 #include <iostream>
 

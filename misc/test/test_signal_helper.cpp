@@ -1,6 +1,6 @@
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
-#include "misc/signal_helper.h"
+#include <misc/signal_helper.h>
 
 using namespace ihft::misc;
 
