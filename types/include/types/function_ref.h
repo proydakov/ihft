@@ -5,8 +5,9 @@
 /// function_ref (Extra additions to <functional>)
 /// ----------------------------------------------------------------------------
 ///
-/// This code based of my experience and some LLVM code:
+/// This code based of my experience and some code:
 /// https://llvm.org/doxygen/STLFunctionalExtras_8h_source.html
+/// https://github.com/rigtorp/Function/blob/master/Function.h
 ///
 /// An efficient, type-erasing, non-owning reference to a callable. This is
 /// intended for use as the type of a function parameter that is not used
