@@ -1,11 +1,13 @@
 #include "catch2/catch.hpp"
 
 #include <platform/private/cmdline.h>
+#include <types/temp_file.h>
 
 #include <string>
 #include <vector>
-#include <fstream>
 #include <iostream>
+
+using namespace ihft::types;
 
 namespace
 {
@@ -22,29 +24,6 @@ std::ostream& operator<<(std::ostream& os, std::vector<T> const& vec)
     return os;
 }
 
-struct temp_file
-{
-    temp_file(std::string path, std::string const& content)
-        : m_path(std::move(path))
-    {
-        std::ofstream file(m_path);
-        file << content;
-    }
-
-    ~temp_file()
-    {
-        std::remove(m_path.c_str());
-    }
-
-    const char* path() const
-    {
-        return m_path.c_str();
-    }
-
-private:
-    std::string m_path;
-};
-
 }
 
 void test_impl(temp_file const& file, std::vector<unsigned> result)
@@ -53,7 +32,7 @@ void test_impl(temp_file const& file, std::vector<unsigned> result)
     std::vector<unsigned> data_nohz_fulled;
     std::vector<unsigned> data_rcu_nocbsed;
 
-    ihft::impl::cmdline cmdline(file.path());
+    ihft::impl::cmdline cmdline(file.fpath().c_str());
 
     for(unsigned cpu = 0; cpu < 64; cpu++)
     {
