@@ -21,29 +21,29 @@
 namespace ihft::types
 {
 
-template<typename T>
+template<typename Fn>
 class function_ref;
 
-template<typename RETURN, typename ... INPUTS>
-class function_ref<RETURN(INPUTS ...)> final
+template<typename Ret, typename ... Params>
+class function_ref<Ret(Params ...)> final
 {
 public:
     //
     // static methods. They allow the client to create a function_ref.
     //
-    template<RETURN(*func)(INPUTS...)>
+    template<Ret(*func)(Params...)>
     constexpr static function_ref function() noexcept
     {
         return function_ref(&callback_function<func>);
     }
 
-    template<class T, RETURN(T::*meth)(INPUTS...)>
+    template<class T, Ret(T::*meth)(Params...)>
     constexpr static function_ref method(T& obj) noexcept
     {
         return function_ref(&obj, &callback_method<T, meth>);
     }
 
-    template<class T, RETURN(T::*meth)(INPUTS...) const>
+    template<class T, Ret(T::*meth)(Params...) const>
     constexpr static function_ref const_method(T const& obj) noexcept
     {
         return function_ref(&obj, &callback_const_method<T, meth>);
@@ -69,9 +69,9 @@ public:
     {
     }
 
-    constexpr RETURN operator()(INPUTS ... params) const
+    constexpr Ret operator()(Params ... params) const
     {
-        return (*m_func)(m_obj, std::forward<INPUTS>(params) ...);
+        return (*m_func)(m_obj, std::forward<Params>(params) ...);
     }
 
     constexpr explicit operator bool() const noexcept
@@ -82,7 +82,7 @@ public:
 private:
     using CallablePtr = void*;
     using CallableConstPtr = void const*;
-    using FunctionPtr = RETURN(*)(CallablePtr, INPUTS...);
+    using FunctionPtr = Ret(*)(CallablePtr, Params...);
 
     CallablePtr m_obj = nullptr;
     FunctionPtr m_func = nullptr;
@@ -105,24 +105,24 @@ private:
     {
     }
 
-    template<RETURN(*function)(INPUTS...)>
-    constexpr static RETURN callback_function(CallablePtr, INPUTS... params)
+    template<Ret(*function)(Params...)>
+    constexpr static Ret callback_function(CallablePtr, Params... params)
     {
-        return (*function)(std::forward<INPUTS>(params)...);
+        return (*function)(std::forward<Params>(params)...);
     }
 
-    template<typename T, RETURN(T::*method)(INPUTS...)>
-    constexpr static RETURN callback_method(CallablePtr obj, INPUTS... params)
+    template<typename T, Ret(T::*method)(Params...)>
+    constexpr static Ret callback_method(CallablePtr obj, Params... params)
     {
         auto p = reinterpret_cast<T*>(obj);
-        return (p->*method)(std::forward<INPUTS>(params)...);
+        return (p->*method)(std::forward<Params>(params)...);
     }
 
-    template<typename T, RETURN(T::*method)(INPUTS...) const>
-    constexpr static RETURN callback_const_method(CallablePtr obj, INPUTS... params)
+    template<typename T, Ret(T::*method)(Params...) const>
+    constexpr static Ret callback_const_method(CallablePtr obj, Params... params)
     {
         auto p = reinterpret_cast<const T*>(obj);
-        return (p->*method)(std::forward<INPUTS>(params)...);
+        return (p->*method)(std::forward<Params>(params)...);
     }
 };
 
