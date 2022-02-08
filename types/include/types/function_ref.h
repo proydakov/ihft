@@ -44,12 +44,6 @@ public:
     }
 
     template<class T, RETURN(T::*meth)(INPUTS...) const>
-    constexpr static function_ref const_method(T& obj) noexcept
-    {
-        return function_ref(&obj, &callback_const_method<T, meth>);
-    }
-
-    template<class T, RETURN(T::*meth)(INPUTS...) const>
     constexpr static function_ref const_method(T const& obj) noexcept
     {
         return function_ref(&obj, &callback_const_method<T, meth>);
@@ -59,12 +53,6 @@ public:
     constexpr static function_ref functor(T& obj) noexcept
     {
         return function_ref(&obj, &callback_method<T, &T::operator()>);
-    }
-
-    template<class T>
-    constexpr static function_ref const_functor(T& obj) noexcept
-    {
-        return function_ref(&obj, &callback_const_method<T, &T::operator()>);
     }
 
     template<class T>
