@@ -27,6 +27,8 @@ if grep -q "isolcpus" /proc/cmdline; then
     echo 0 > /sys/kernel/mm/ksm/run
 
     sysctl vm.stat_interval=60
+
+    find /sys/devices/system/cpu -name scaling_governor -exec sh -c 'echo performance > {}' ';'
 else
     echo isolcpus not found
 fi
