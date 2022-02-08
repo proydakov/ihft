@@ -1,2 +1,5 @@
 ihft_add_test(test_result)
 target_link_libraries(test_result PRIVATE ihft_types)
+
+ihft_add_test(test_function_ref)
+target_link_libraries(test_function_ref PRIVATE ihft_types)
