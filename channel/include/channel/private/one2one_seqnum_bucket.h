@@ -6,7 +6,7 @@
 
 #include "common.h"
 
-namespace ihft::channel
+namespace ihft::channel::impl
 {
 
 template<typename T>

@@ -5,10 +5,10 @@
 #include <limits>
 #include <cstdint>
 
-namespace ihft::channel
+namespace ihft::channel::impl
 {
 
-struct queue_helper
+struct queue_helper final
 {
     template<typename T>
     constexpr static std::size_t to2pow(std::size_t n) noexcept

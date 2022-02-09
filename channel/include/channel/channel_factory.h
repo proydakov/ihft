@@ -4,7 +4,7 @@
 #include <memory>
 #include <optional>
 
-namespace ihft
+namespace ihft::channel
 {
 
 class channel_factory

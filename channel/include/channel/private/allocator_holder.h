@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ihft::channel
+namespace ihft::channel::impl
 {
 
 struct empty_allocator
@@ -30,7 +30,7 @@ public:
 };
 
 template<>
-struct allocator_holder<channel::empty_allocator>
+struct allocator_holder<empty_allocator>
 {
 };
 

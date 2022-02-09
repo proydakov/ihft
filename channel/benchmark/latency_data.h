@@ -83,7 +83,7 @@ struct latency_test
     }
 
 private:
-    struct alignas(constant::CPU_CACHE_LINE_SIZE) line_t
+    struct alignas(ihft::constant::CPU_CACHE_LINE_SIZE) line_t
     {
         unsigned tick{};
         unsigned val{default_delta};

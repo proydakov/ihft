@@ -7,7 +7,7 @@
 #include <optional>
 #include <type_traits>
 
-namespace ihft
+namespace ihft::channel
 {
 
 // predeclaration
@@ -27,7 +27,7 @@ template<typename event_t, typename counter_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_reader final
 {
 public:
-    using ring_buffer_t = channel::one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_t = impl::one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
     using event_type = event_t;
 
 public:
@@ -40,13 +40,13 @@ public:
     std::optional<event_t> try_read() noexcept
     {
         auto& bucket = m_storage.get()[m_next_bucket];
-        counter_t const next = m_next_seq_num & channel::one2one_seqnum_queue_constant<counter_t>::SEQNUM_MASK;
+        counter_t const next = m_next_seq_num & impl::one2one_seqnum_queue_constant<counter_t>::SEQNUM_MASK;
         if (bucket.m_seqn.load(std::memory_order_acquire) == next)
         {
             m_next_seq_num++;
             m_next_bucket = m_next_seq_num & m_storage_mask;
             std::optional<event_t> opt(std::in_place, bucket.get_event());
-            bucket.m_seqn.store(channel::one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
+            bucket.m_seqn.store(impl::one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
             return opt;
         }
         else
@@ -63,16 +63,16 @@ public:
 private:
     one2one_seqnum_stream_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t id) noexcept
         : m_storage(std::move(storage))
-        , m_next_bucket(channel::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM & storage_mask)
+        , m_next_bucket(impl::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM & storage_mask)
         , m_storage_mask(storage_mask)
-        , m_next_seq_num(channel::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_seq_num(impl::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_id(id)
     {
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
 private:
-    friend class channel::one2one_seqnum_stream_queue_impl<event_t, counter_t>;
+    friend class impl::one2one_seqnum_stream_queue_impl<event_t, counter_t>;
 
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
@@ -87,8 +87,8 @@ class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_queue fin
 {
 public:
     using reader_type = one2one_seqnum_stream_pod_reader<event_t, counter_t>;
-    using ring_buffer_t = channel::one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
-    using bucket_type = channel::one2one_seqnum_bucket<event_t, counter_t>;
+    using ring_buffer_t = impl::one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using bucket_type = impl::one2one_seqnum_bucket<event_t, counter_t>;
 
 public:
     one2one_seqnum_stream_pod_queue(one2one_seqnum_stream_pod_queue&&) noexcept = default;
@@ -120,7 +120,7 @@ public:
 
 private:
     one2one_seqnum_stream_pod_queue(std::size_t n)
-        : m_impl(channel::queue_helper::to2pow<counter_t>(n))
+        : m_impl(impl::queue_helper::to2pow<counter_t>(n))
     {
         static_assert(sizeof(one2one_seqnum_stream_pod_queue<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
         static_assert(std::is_trivially_copyable<event_t>::value);
@@ -134,7 +134,7 @@ private:
 private:
     friend class channel_factory;
 
-    channel::one2one_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
+    impl::one2one_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
 };
 
 } // ihft

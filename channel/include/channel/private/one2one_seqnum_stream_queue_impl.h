@@ -3,7 +3,7 @@
 #include "ring_buffer_factory.h"
 #include "one2one_seqnum_bucket.h"
 
-namespace ihft::channel
+namespace ihft::channel::impl
 {
 
 // buffer
@@ -63,7 +63,7 @@ public:
         auto& bucket = m_storage.get()[m_next_bucket];
         if (bucket.m_seqn.load(std::memory_order_acquire) == one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
         {
-            counter_t const seqn = (m_next_seq_num++) & channel::one2one_seqnum_queue_constant<counter_t>::SEQNUM_MASK;
+            counter_t const seqn = (m_next_seq_num++) & impl::one2one_seqnum_queue_constant<counter_t>::SEQNUM_MASK;
             m_next_bucket = m_next_seq_num & m_storage_mask;
             std::construct_at(reinterpret_cast<event_t*>(&bucket.m_storage), std::move(event));
             bucket.m_seqn.store(seqn, std::memory_order_release);

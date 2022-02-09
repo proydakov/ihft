@@ -7,7 +7,7 @@
 #include <optional>
 #include <type_traits>
 
-namespace ihft
+namespace ihft::channel
 {
 
 // predeclaration
@@ -27,7 +27,7 @@ template<typename event_t, typename counter_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_reader final
 {
 public:
-    using ring_buffer_t = channel::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_t = impl::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
     using event_type = event_t;
 
 public:
@@ -71,7 +71,7 @@ private:
     }
 
 private:
-    friend class channel::one2many_seqnum_stream_queue_impl<event_t, counter_t>;
+    friend class impl::one2many_seqnum_stream_queue_impl<event_t, counter_t>;
 
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
@@ -86,8 +86,8 @@ class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_queue fi
 {
 public:
     using reader_type = one2many_seqnum_stream_pod_reader<event_t, counter_t>;
-    using ring_buffer_t = channel::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
-    using bucket_type = channel::one2many_seqnum_bucket<event_t, counter_t>;
+    using ring_buffer_t = impl::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using bucket_type = impl::one2many_seqnum_bucket<event_t, counter_t>;
 
 public:
     one2many_seqnum_stream_pod_queue(one2many_seqnum_stream_pod_queue&&) noexcept = default;
@@ -120,7 +120,7 @@ public:
 
 private:
     one2many_seqnum_stream_pod_queue(std::size_t n)
-        : m_impl(channel::queue_helper::to2pow<counter_t>(n))
+        : m_impl(impl::queue_helper::to2pow<counter_t>(n))
     {
     }
 
@@ -132,7 +132,7 @@ private:
 private:
     friend class channel_factory;
 
-    channel::one2many_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
+    impl::one2many_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
 };
 
 } // ihft

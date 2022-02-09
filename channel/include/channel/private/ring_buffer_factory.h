@@ -2,10 +2,10 @@
 
 #include <memory>
 
-namespace ihft::channel
+namespace ihft::channel::impl
 {
 
-class ring_buffer_factory
+class ring_buffer_factory final
 {
 public:
     // RA - region allocator type. Used for ring buffer allocation

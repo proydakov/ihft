@@ -8,7 +8,7 @@
 #include <optional>
 #include <type_traits>
 
-namespace ihft
+namespace ihft::channel
 {
 
 // predeclaration
@@ -34,7 +34,7 @@ template<typename event_t, typename counter_t>
 class one2many_seqnum_stream_object_guard final
 {
 public:
-    using bucket_type = channel::one2many_seqnum_bucket<event_t, counter_t>;
+    using bucket_type = impl::one2many_seqnum_bucket<event_t, counter_t>;
 
     one2many_seqnum_stream_object_guard(bucket_type& bucket, counter_t owner) noexcept
         : m_bucket(bucket)
@@ -46,7 +46,7 @@ public:
         : m_bucket(data.m_bucket)
         , m_owner(data.m_owner)
     {
-        data.m_owner = channel::one2many_seqnum_queue_constant<counter_t>::DUMMY_READER_ID;
+        data.m_owner = impl::one2many_seqnum_queue_constant<counter_t>::DUMMY_READER_ID;
     }
 
     one2many_seqnum_stream_object_guard& operator=(one2many_seqnum_stream_object_guard&& data) = delete;
@@ -55,15 +55,15 @@ public:
 
     ~one2many_seqnum_stream_object_guard() noexcept
     {
-        if (m_owner != channel::one2many_seqnum_queue_constant<counter_t>::DUMMY_READER_ID)
+        if (m_owner != impl::one2many_seqnum_queue_constant<counter_t>::DUMMY_READER_ID)
         {
-            auto constexpr release_etalon(channel::one2many_seqnum_queue_constant<counter_t>::CONSTRUCTED_DATA_MARK + 1);
+            auto constexpr release_etalon(impl::one2many_seqnum_queue_constant<counter_t>::CONSTRUCTED_DATA_MARK + 1);
             auto const before = m_bucket.m_counter.fetch_sub(1, std::memory_order_relaxed);
 
             if (before == release_etalon)
             {
                 m_bucket.get_event().~event_t();
-                m_bucket.m_counter.store(channel::one2many_seqnum_queue_constant<counter_t>::EMPTY_DATA_MARK, std::memory_order_release);
+                m_bucket.m_counter.store(impl::one2many_seqnum_queue_constant<counter_t>::EMPTY_DATA_MARK, std::memory_order_release);
             }
         }
     }
@@ -83,7 +83,7 @@ class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_reade
 {
 public:
     using guard_type = one2many_seqnum_stream_object_guard<event_t, counter_t>;
-    using ring_buffer_type = channel::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using ring_buffer_type = impl::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
 
 public:
     one2many_seqnum_stream_object_reader(one2many_seqnum_stream_object_reader&&) noexcept = default;
@@ -124,7 +124,7 @@ private:
     }
 
 private:
-    friend class channel::one2many_seqnum_stream_queue_impl<event_t, counter_t>;
+    friend class impl::one2many_seqnum_stream_queue_impl<event_t, counter_t>;
 
     ring_buffer_type m_storage;
     std::size_t m_next_bucket;
@@ -133,8 +133,8 @@ private:
     counter_t m_id;
 };
 
-template<typename event_t, typename content_allocator_t = channel::empty_allocator, typename counter_t = std::uint32_t>
-class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_queue final : public channel::allocator_holder<content_allocator_t>
+template<typename event_t, typename content_allocator_t = impl::empty_allocator, typename counter_t = std::uint32_t>
+class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_queue final : public impl::allocator_holder<content_allocator_t>
 {
 public:
     using allocator_type = content_allocator_t;
@@ -150,7 +150,7 @@ public:
     bool try_write(event_t&& event) noexcept
     {
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
-        counter_t const counter = static_cast<counter_t>(m_impl.readers_count()) + channel::one2many_seqnum_queue_constant<counter_t>::CONSTRUCTED_DATA_MARK;
+        counter_t const counter = static_cast<counter_t>(m_impl.readers_count()) + impl::one2many_seqnum_queue_constant<counter_t>::CONSTRUCTED_DATA_MARK;
         return m_impl.try_write(std::move(event), counter);
     }
 
@@ -171,18 +171,18 @@ public:
 
 private:
     // empty_allocator ctor
-    template<typename A = content_allocator_t> requires (std::is_same_v<A, channel::empty_allocator>)
+    template<typename A = content_allocator_t> requires (std::is_same_v<A, impl::empty_allocator>)
     one2many_seqnum_stream_object_queue(std::size_t n)
-        : m_impl(channel::queue_helper::to2pow<counter_t>(n))
+        : m_impl(impl::queue_helper::to2pow<counter_t>(n))
     {
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
     // custom content allocator ctor
-    template<typename deleter_t = std::default_delete<content_allocator_t>, typename A = content_allocator_t> requires (!std::is_same_v<A, channel::empty_allocator>)
+    template<typename deleter_t = std::default_delete<content_allocator_t>, typename A = content_allocator_t> requires (!std::is_same_v<A, impl::empty_allocator>)
     one2many_seqnum_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, deleter_t> content_allocator)
-        : channel::allocator_holder<content_allocator_t>(content_allocator.get())
-        , m_impl(channel::queue_helper::to2pow<counter_t>(n), std::move(content_allocator))
+        : impl::allocator_holder<content_allocator_t>(content_allocator.get())
+        , m_impl(impl::queue_helper::to2pow<counter_t>(n), std::move(content_allocator))
     {
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
@@ -195,7 +195,7 @@ private:
 private:
     friend class channel_factory;
 
-    channel::one2many_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
+    impl::one2many_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
 };
 
 } // ihft
