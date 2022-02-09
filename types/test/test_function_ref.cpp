@@ -124,3 +124,21 @@ TEST_CASE("const_functor_test")
         }
     }
 }
+
+TEST_CASE("swap")
+{
+    callback f1 = callback::function<&function>();
+    callback f2;
+
+    REQUIRE(f1);
+    REQUIRE(!f2);
+
+    REQUIRE(f1(7) == 7);
+
+    std::swap(f1, f2);
+
+    REQUIRE(!f1);
+    REQUIRE(f2);
+
+    REQUIRE(f2(7) == 7);
+}
