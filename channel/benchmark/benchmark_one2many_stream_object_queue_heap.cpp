@@ -2,6 +2,8 @@
 #include <heap_data.h>
 #include <channel/one2many_seqnum_stream_object_queue.h>
 
+using namespace ihft::channel;
+
 int main(int argc, char* argv[])
 {
     using allocator_t = std::allocator<std::uint64_t>;

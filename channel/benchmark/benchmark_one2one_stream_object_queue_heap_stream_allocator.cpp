@@ -3,6 +3,8 @@
 #include <memory/stream_fixed_pool_allocator.h>
 #include <channel/one2one_seqnum_stream_object_queue.h>
 
+using namespace ihft::channel;
+
 int main(int argc, char* argv[])
 {
     using allocator_t = ihft::stream_fixed_pool_allocator<std::uint64_t>;

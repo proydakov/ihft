@@ -19,8 +19,6 @@
 
 #include <x86intrin.h>
 
-using namespace ihft::channel;
-
 struct alignas(ihft::constant::CPU_CACHE_LINE_SIZE) wait_t
 {
     long waitCounter = 0;
@@ -157,11 +155,11 @@ auto make_queue_with_readers(std::size_t QUEUE_SIZE, std::size_t NUM_READERS)
         {
             allocator = std::make_unique<A>();
         }
-        return channel_factory::make<Q>(QUEUE_SIZE, NUM_READERS, std::move(allocator));
+        return ihft::channel::channel_factory::make<Q>(QUEUE_SIZE, NUM_READERS, std::move(allocator));
     }
     else
     {
-        return channel_factory::make<Q>(QUEUE_SIZE, NUM_READERS);
+        return ihft::channel::channel_factory::make<Q>(QUEUE_SIZE, NUM_READERS);
     }
 }
 
