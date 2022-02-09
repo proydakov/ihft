@@ -16,21 +16,21 @@ namespace ihft
 class channel_factory;
 
 // guard
-template<class event_t, typename counter_t>
+template<typename event_t, typename counter_t>
 class one2many_seqnum_stream_object_guard;
 
 // reader
-template<class event_t, typename counter_t>
+template<typename event_t, typename counter_t>
 class one2many_seqnum_stream_object_reader;
 
 // queue
-template<class event_t, typename content_allocator_t, typename counter_t>
+template<typename event_t, typename content_allocator_t, typename counter_t>
 class one2many_seqnum_stream_object_queue;
 
 // implementation
 
 // guard
-template<class event_t, typename counter_t>
+template<typename event_t, typename counter_t>
 class one2many_seqnum_stream_object_guard final
 {
 public:
@@ -78,7 +78,7 @@ private:
     counter_t m_owner;
 };
 
-template<class event_t, typename counter_t>
+template<typename event_t, typename counter_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_reader final
 {
 public:
@@ -133,7 +133,7 @@ private:
     counter_t m_id;
 };
 
-template<class event_t, typename content_allocator_t = channel::empty_allocator, typename counter_t = std::uint32_t>
+template<typename event_t, typename content_allocator_t = channel::empty_allocator, typename counter_t = std::uint32_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_queue final : public channel::allocator_holder<content_allocator_t>
 {
 public:
