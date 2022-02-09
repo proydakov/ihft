@@ -67,7 +67,7 @@ private:
         , m_next_read_index(read_from)
         , m_id(id)
     {
-        static_assert(sizeof(one2many_seqnum_stream_pod_reader<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
 private:

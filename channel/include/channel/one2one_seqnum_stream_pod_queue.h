@@ -68,7 +68,7 @@ private:
         , m_next_seq_num(channel::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
         , m_id(id)
     {
-        static_assert(sizeof(one2one_seqnum_stream_pod_reader<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
 private:
