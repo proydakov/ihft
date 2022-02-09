@@ -5,9 +5,11 @@
 /// function_ref (Extra additions to <functional>)
 /// ----------------------------------------------------------------------------
 ///
-/// This code based of my experience and some code:
+/// This code based on my own experience and some public code:
+///
 /// https://llvm.org/doxygen/STLFunctionalExtras_8h_source.html
 /// https://github.com/rigtorp/Function/blob/master/Function.h
+/// https://www.codeproject.com/Articles/7150/Member-Function-Pointers-and-the-Fastest-Possible
 ///
 /// An efficient, type-erasing, non-owning reference to a callable. This is
 /// intended for use as the type of a function parameter that is not used
@@ -26,104 +28,59 @@ template<typename Fn>
 class function_ref;
 
 template<typename Ret, typename ... Params>
-class function_ref<Ret(Params ...)> final
+class function_ref<Ret(Params...)> final
 {
 public:
-    //
-    // static methods. They allow the client to create a function_ref.
-    //
-    template<Ret(*func)(Params...)>
-    constexpr static function_ref function() noexcept
-    {
-        return function_ref(&callback_function<func>);
-    }
-
-    template<class T, Ret(T::*meth)(Params...)>
-    constexpr static function_ref method(T& obj) noexcept
-    {
-        return function_ref(&obj, &callback_method<T, meth>);
-    }
-
-    template<class T, Ret(T::*meth)(Params...) const>
-    constexpr static function_ref const_method(T const& obj) noexcept
-    {
-        return function_ref(&obj, &callback_const_method<T, meth>);
-    }
-
-    template<class T>
-    constexpr static function_ref functor(T& obj) noexcept
-    {
-        return function_ref(&obj, &callback_method<T, &T::operator()>);
-    }
-
-    template<class T>
-    constexpr static function_ref const_functor(T const& obj) noexcept
-    {
-        return function_ref(&obj, &callback_const_method<T, &T::operator()>);
-    }
-
-    //
-    // normal methods.
-    //
     constexpr function_ref() noexcept = default;
     constexpr function_ref(std::nullptr_t) noexcept
     {
     }
 
+    constexpr function_ref(Ret(*ptr)(Params...)) noexcept
+        : m_callable(reinterpret_cast<intptr_t>(ptr))
+        , m_callback(callback<Ret(Params...)>)
+    {
+    }
+
+    template<typename Callable> requires
+    // This is not the copy-constructor.
+    (!std::is_same_v<std::remove_cvref_t<Callable>, function_ref>) &&
+    // Functor must be callable and return a suitable type.
+    (std::is_void_v<Ret> || std::is_convertible_v<decltype(std::declval<Callable>()(std::declval<Params>()...)), Ret>)
+    constexpr function_ref(Callable&& callable) noexcept
+        : m_callable(reinterpret_cast<intptr_t>(&callable))
+        , m_callback(callback<typename std::remove_reference<Callable>::type>)
+    {
+    }
+
     constexpr Ret operator()(Params ... params) const
     {
-        return (*m_func)(m_obj, std::forward<Params>(params) ...);
+        return m_callback(m_callable, std::forward<Params>(params) ...);
     }
 
     constexpr explicit operator bool() const noexcept
     {
-        return m_func != nullptr;
+        return m_callback != nullptr;
+    }
+
+    friend constexpr void swap(function_ref& f1, function_ref& f2) noexcept
+    {
+        std::swap(f1.m_callable, f2.m_callable);
+        std::swap(f1.m_callback, f2.m_callback);
     }
 
 private:
-    using CallablePtr = void*;
-    using CallableConstPtr = void const*;
-    using FunctionPtr = Ret(*)(CallablePtr, Params...);
+    using callable_ptr = intptr_t;
+    using callback_ptr = Ret(*)(callable_ptr, Params...);
 
-    CallablePtr m_obj = nullptr;
-    FunctionPtr m_func = nullptr;
+    callable_ptr m_callable = reinterpret_cast<callable_ptr>(nullptr);
+    callback_ptr m_callback = nullptr;
 
-    constexpr function_ref(FunctionPtr func) noexcept
-        : m_obj(nullptr)
-        , m_func(func)
+    template<typename Callable>
+    static Ret callback(callable_ptr callable, Params ... params)
     {
-    }
-
-    constexpr function_ref(CallablePtr obj, FunctionPtr func) noexcept
-        : m_obj(obj)
-        , m_func(func)
-    {
-    }
-
-    constexpr function_ref(CallableConstPtr obj, FunctionPtr func) noexcept
-        : m_obj(const_cast<CallablePtr>(obj))
-        , m_func(func)
-    {
-    }
-
-    template<Ret(*function)(Params...)>
-    constexpr static Ret callback_function(CallablePtr, Params... params)
-    {
-        return (*function)(std::forward<Params>(params)...);
-    }
-
-    template<typename T, Ret(T::*method)(Params...)>
-    constexpr static Ret callback_method(CallablePtr obj, Params... params)
-    {
-        auto p = reinterpret_cast<T*>(obj);
-        return (p->*method)(std::forward<Params>(params)...);
-    }
-
-    template<typename T, Ret(T::*method)(Params...) const>
-    constexpr static Ret callback_const_method(CallablePtr obj, Params... params)
-    {
-        auto p = reinterpret_cast<const T*>(obj);
-        return (p->*method)(std::forward<Params>(params)...);
+        auto ptr = reinterpret_cast<Callable*>(callable);
+        return (*ptr)(std::forward<Params>(params) ...);
     }
 };
 

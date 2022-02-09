@@ -24,7 +24,7 @@ TEST_CASE("plain_function benchmark")
 TEST_CASE("function_ref for plain_function benchmark")
 {
     using function_ref = ihft::types::function_ref<std::size_t(std::size_t&, std::size_t)>;
-    function_ref plaing_function_ref = function_ref::function<&plain_function>();
+    function_ref plaing_function_ref = plain_function;
 
     std::size_t counter = 0;
 
@@ -37,12 +37,12 @@ TEST_CASE("function_ref for plain_function benchmark")
 TEST_CASE("std_function for plain_function benchmark")
 {
     using function = std::function<std::size_t(std::size_t&, std::size_t)>;
-    function plain_function_stl = plain_function;
+    function plain_std_function = plain_function;
 
     std::size_t counter = 0;
 
     BENCHMARK("std_function(1)")
     {
-        return plain_function_stl(counter, 1);
+        return plain_std_function(counter, 1);
     };
 }
