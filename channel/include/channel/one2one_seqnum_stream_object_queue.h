@@ -163,7 +163,7 @@ public:
 
 private:
     // empty_allocator ctor
-    template<bool IsEnabled = true, typename std::enable_if_t<(IsEnabled && std::is_same_v<content_allocator_t, channel::empty_allocator>), int> = 0>
+    template<typename A = content_allocator_t> requires (std::is_same_v<A, channel::empty_allocator>)
     one2one_seqnum_stream_object_queue(std::size_t n)
         : m_impl(channel::queue_helper::to2pow<counter_t>(n))
     {
@@ -171,7 +171,7 @@ private:
     }
 
     // custom content allocator ctor
-    template<bool IsEnabled = true, typename deleter_t = std::default_delete<content_allocator_t>, typename std::enable_if_t<(IsEnabled && !std::is_same_v<content_allocator_t, channel::empty_allocator>), int> = 0>
+    template<typename deleter_t = std::default_delete<content_allocator_t>, typename A = content_allocator_t> requires (!std::is_same_v<A, channel::empty_allocator>)
     one2one_seqnum_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, deleter_t> content_allocator)
         : channel::allocator_holder<content_allocator_t>(content_allocator.get())
         , m_impl(channel::queue_helper::to2pow<counter_t>(n), std::move(content_allocator))
