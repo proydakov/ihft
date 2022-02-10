@@ -89,6 +89,8 @@ IHFT is microframework & laboratory for low latency applications.
 
 # DevOps Links
 
+[Osnoise tracer](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/trace/osnoise-tracer.rst/)
+
 [Disable cpu frecuency scaling](https://nixcp.com/disable-cpu-frecuency-scaling/)
 
 [Eric Rigtorp Low Latency Tuning](https://rigtorp.se/low-latency-guide/)
