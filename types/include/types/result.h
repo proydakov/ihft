@@ -2,6 +2,15 @@
 
 #include <variant>
 
+//
+// This code was inspired by:
+//
+// https://doc.rust-lang.org/std/result/enum.Result.html
+// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0323r10.html
+//
+// Class template result<T, E> is a vocabulary type which contains an expected value of type T, or an error E.
+//
+
 namespace ihft::types
 {
 
@@ -9,71 +18,76 @@ template<typename T, typename E>
 class result final
 {
 public:
-    result(T data) : m_variant(std::move(data))
+    constexpr result(T data) : m_variant(std::move(data))
     {
     }
 
-    result(E error) : m_variant(std::move(error))
+    constexpr result(E error) : m_variant(std::move(error))
     {
     }
 
-    // Returns true if parsing succeeeded.
-    bool succeeded() const noexcept
+    constexpr bool has_value() const noexcept
     {
         return std::holds_alternative<T>(m_variant);
     }
 
+    // Returns true if parsing succeeeded.
+    constexpr bool succeeded() const noexcept
+    {
+        return has_value();
+    }
+
     // Returns true if parsing failed.
-    bool failed() const noexcept
+    constexpr bool failed() const noexcept
     {
         return std::holds_alternative<E>(m_variant);
     }
 
-    operator bool() const noexcept
+    constexpr operator bool() const noexcept
     {
-        return succeeded();
+        return has_value();
     }
 
     // Get value
 
-    T& value() & noexcept
+    constexpr T& value() & noexcept
     {
         return std::get<T>(m_variant);
     }
 
-    const T& value() const & noexcept
+    constexpr const T& value() const & noexcept
     {
         return std::get<T>(m_variant);
     }
 
-    T&& value() && noexcept
+    constexpr T&& value() && noexcept
     {
         return std::get<T>(std::move(m_variant));
     }
 
-    const T&& value() const && noexcept
+    constexpr const T&& value() const && noexcept
     {
         return std::get<T>(std::move(m_variant));
     }
 
     // Get error
 
-    E& error() & noexcept
+    constexpr E& error() & noexcept
     {
         return std::get<E>(m_variant);
     }
 
-    const E& error() const & noexcept
+    constexpr const E& error() const & noexcept
     {
         return std::get<E>(m_variant);
     }
 
-    E&& error() && noexcept
+    constexpr E&& error() && noexcept
     {
         return std::get<E>(std::move(m_variant));
     }
 
-    const E&& error() const && noexcept
+    constexpr const E&& error() const && noexcept
     {
         return std::get<E>(std::move(m_variant));
     }
