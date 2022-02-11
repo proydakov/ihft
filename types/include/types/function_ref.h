@@ -60,7 +60,7 @@ public:
 
     constexpr explicit operator bool() const noexcept
     {
-        return m_callback != nullptr;
+        return m_callable != 0;
     }
 
     friend constexpr void swap(function_ref& f1, function_ref& f2) noexcept
@@ -73,7 +73,7 @@ private:
     using callable_ptr = intptr_t;
     using callback_ptr = Ret(*)(callable_ptr, Params...);
 
-    callable_ptr m_callable = reinterpret_cast<callable_ptr>(nullptr);
+    callable_ptr m_callable = 0;
     callback_ptr m_callback = nullptr;
 
     template<typename Callable>
