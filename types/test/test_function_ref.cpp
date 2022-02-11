@@ -242,3 +242,91 @@ TEST_CASE("swap")
 
     REQUIRE(f2(7) == 7);
 }
+
+TEST_CASE("call by valye : move vs copy")
+{
+    static int i_ctor{};
+    static int i_copy{};
+    static int i_move{};
+    static int i_dtor{};
+
+    struct data_t final
+    {
+        explicit data_t(int data) : m_data(data) { i_ctor++; }
+        ~data_t() { i_dtor++; }
+
+        data_t(data_t const& other) : m_data(other.m_data) { i_copy++; }
+        data_t(data_t&& other) noexcept : m_data(other.m_data) { i_move++; }
+
+        static int call(data_t data)
+        {
+            std::cout << "data_t::call() " << data.m_data << "\n";
+            return data.m_data;
+        }
+
+        int m_data;
+    };
+
+    using datacall_t = ihft::types::function_ref<int(data_t)>;
+
+    datacall_t callback = data_t::call;
+
+    REQUIRE(i_ctor == 0);
+    REQUIRE(i_copy == 0);
+    REQUIRE(i_move == 0);
+    REQUIRE(i_dtor == 0);
+
+    {
+        data_t d(777);
+        REQUIRE(callback(d) == 777);
+    }
+
+    REQUIRE(i_ctor == 1);
+    REQUIRE(i_copy == 1);
+    REQUIRE(i_move == 2);
+    REQUIRE(i_dtor == 4);
+}
+
+TEST_CASE("call by reference")
+{
+    static int i_ctor{};
+    static int i_copy{};
+    static int i_move{};
+    static int i_dtor{};
+
+    struct ref_t final
+    {
+        explicit ref_t(int data) : m_data(data) { i_ctor++; }
+        ~ref_t() { i_dtor++; }
+
+        ref_t(ref_t const& other) : m_data(other.m_data) { i_copy++; }
+        ref_t(ref_t&& other) noexcept : m_data(other.m_data) { i_move++; }
+
+        static int call(ref_t const& data)
+        {
+            std::cout << "ref_t::call() " << data.m_data << "\n";
+            return data.m_data;
+        }
+
+        int m_data;
+    };
+
+    using datacall_t = ihft::types::function_ref<int(ref_t const&)>;
+
+    datacall_t callback = ref_t::call;
+
+    REQUIRE(i_ctor == 0);
+    REQUIRE(i_copy == 0);
+    REQUIRE(i_move == 0);
+    REQUIRE(i_dtor == 0);
+
+    {
+        ref_t d(888);
+        REQUIRE(callback(d) == 888);
+    }
+
+    REQUIRE(i_ctor == 1);
+    REQUIRE(i_copy == 0);
+    REQUIRE(i_move == 0);
+    REQUIRE(i_dtor == 1);
+}
