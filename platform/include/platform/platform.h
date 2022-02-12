@@ -12,15 +12,23 @@ namespace ihft::platform
     // The name can be up to 16 bytes long, including the terminating null byte.
     // (If the length of the string, including the terminating null byte,
     // exceeds 16 bytes, the string is silently truncated.)
-    void set_current_thread_name(const char* name) noexcept;
+    bool set_current_thread_name(const char* name) noexcept;
 
-    // CPU isolation
+    // What CPU isolation is?
     // https://lwn.net/Articles/816298/
     // https://www.suse.com/support/kb/doc/?id=000017747
     // https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_for_real_time/7/html/tuning_guide/isolating_cpus_using_tuned-profiles-realtime
 
     // Change current thread cpu
-    void set_current_thread_cpu(unsigned cpu) noexcept;
+    bool set_current_thread_cpu(unsigned cpu) noexcept;
+
+    // This call locks all pages mapped into the address space of the calling process.
+    // This includes the pages of the code, data, and stack segment,
+    // as well as shared libraries, user space kernel data, shared memory, and memory-mapped files.
+    // All mapped pages are guaranteed to be resident in RAM when the call returns successfully.
+    // The pages are guaranteed to stay in RAM until later unlocked.
+    // https://man7.org/linux/man-pages/man2/mlock.2.html
+    bool lock_memory_pages(bool current, bool future) noexcept;
 
     // Check cpu isolation
     bool get_cpu_isolation_status(unsigned cpu) noexcept;

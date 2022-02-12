@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include <sched.h>
+#include <sys/mman.h>
 #include <sys/prctl.h>
 
 namespace
@@ -52,18 +53,30 @@ namespace
 
 namespace ihft::platform
 {
-    void set_current_thread_name(const char* name) noexcept
+    bool set_current_thread_name(const char* name) noexcept
     {
-        prctl(PR_SET_NAME, name, 0, 0, 0);
+        return 0 == prctl(PR_SET_NAME, name, 0, 0, 0);
     }
 
-    void set_current_thread_cpu(unsigned cpu) noexcept
+    bool set_current_thread_cpu(unsigned cpu) noexcept
     {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
         CPU_SET(static_cast<unsigned long>(cpu), &cpuset);
 
-        sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
+        return 0 == sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
+    }
+
+    bool lock_memory_pages(bool current, bool future) noexcept
+    {
+        int flags = 0;
+
+        if (current)
+            flags |= MCL_CURRENT;
+        if (future)
+            flags |= MCL_FUTURE;
+
+        return 0 == mlockall(flags);
     }
 
     bool get_cpu_isolation_status(unsigned cpu) noexcept
@@ -168,12 +181,19 @@ namespace ihft::platform
 
 namespace ihft::platform
 {
-    void set_current_thread_name(const char*) noexcept
+    bool set_current_thread_name(const char*) noexcept
     {
+        return true;
     }
 
-    void set_current_thread_cpu(unsigned) noexcept
+    bool set_current_thread_cpu(unsigned) noexcept
     {
+        return true;
+    }
+
+    bool lock_memory_pages(bool, bool) noexcept
+    {
+        return true;
     }
 
     bool get_cpu_isolation_status(unsigned) noexcept

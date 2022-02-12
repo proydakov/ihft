@@ -14,10 +14,17 @@ TEST_CASE("get_cpu_isolation_status")
 
 TEST_CASE("set_current_thread_name")
 {
-    ihft::platform::set_current_thread_name("test");
+    REQUIRE(ihft::platform::set_current_thread_name("test"));
 }
 
 TEST_CASE("set_current_thread_cpu")
 {
-    ihft::platform::set_current_thread_cpu(0);
+    REQUIRE(ihft::platform::set_current_thread_cpu(0));
+}
+
+TEST_CASE("lock_memory_pages")
+{
+    // Github CI platforms has problem with mlockall.
+    // I decided to skip this test in CI env.
+    (ihft::platform::lock_memory_pages(true, true));
 }
