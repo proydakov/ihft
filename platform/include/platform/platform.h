@@ -22,6 +22,9 @@ namespace ihft::platform
     // Change current thread cpu
     bool set_current_thread_cpu(unsigned cpu) noexcept;
 
+    // Reset current thread cpu mask
+    bool reset_current_thread_cpu() noexcept;
+
     // This call locks all pages mapped into the address space of the calling process.
     // This includes the pages of the code, data, and stack segment,
     // as well as shared libraries, user space kernel data, shared memory, and memory-mapped files.

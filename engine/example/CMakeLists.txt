@@ -7,3 +7,6 @@ target_link_libraries(engine_china_cities ihft_platform)
 
 add_executable(engine_bogatyr bogatyr.cpp)
 target_link_libraries(engine_bogatyr ihft_platform)
+
+add_executable(engine_logical_cpu_demo logical_cpu_demo.cpp)
+target_link_libraries(engine_logical_cpu_demo ihft_engine)

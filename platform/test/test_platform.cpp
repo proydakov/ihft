@@ -22,6 +22,11 @@ TEST_CASE("set_current_thread_cpu")
     REQUIRE(ihft::platform::set_current_thread_cpu(0));
 }
 
+TEST_CASE("reset_current_thread_cpu")
+{
+    REQUIRE(ihft::platform::reset_current_thread_cpu());
+}
+
 TEST_CASE("lock_memory_pages")
 {
     // Github CI platforms has problem with mlockall.

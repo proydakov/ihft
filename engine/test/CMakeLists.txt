@@ -1,0 +1,2 @@
+ihft_add_test(test_logical_cpu)
+target_link_libraries(test_logical_cpu PRIVATE ihft_engine)

@@ -18,6 +18,15 @@ namespace
 {
     static const ihft::impl::cmdline g_cmdline("/proc/cmdline");
 
+    cpu_set_t load_default_cpuset() noexcept
+    {
+        cpu_set_t set;
+        sched_getaffinity(0, sizeof(cpu_set_t), &set);
+        return set;
+    }
+
+    cpu_set_t const g_default_cpuset = load_default_cpuset();
+
     std::pair<unsigned, unsigned> get_hp_info_impl() noexcept
     {
         std::ifstream file("/proc/meminfo");
@@ -65,6 +74,11 @@ namespace ihft::platform
         CPU_SET(static_cast<unsigned long>(cpu), &cpuset);
 
         return 0 == sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
+    }
+
+    bool reset_current_thread_cpu() noexcept
+    {
+        return 0 == sched_setaffinity(0, sizeof(cpu_set_t), &g_default_cpuset);
     }
 
     bool lock_memory_pages(bool current, bool future) noexcept
@@ -187,6 +201,11 @@ namespace ihft::platform
     }
 
     bool set_current_thread_cpu(unsigned) noexcept
+    {
+        return true;
+    }
+
+    bool reset_current_thread_cpu() noexcept
     {
         return true;
     }
