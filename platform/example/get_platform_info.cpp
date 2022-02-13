@@ -1,3 +1,7 @@
+//
+// A tool to get linux system configuration details for low latency applications.
+//
+
 #include <platform/platform.h>
 
 #include <thread>
@@ -7,7 +11,7 @@
 
 namespace plf = ihft::platform;
 
-int main(int, char*[])
+int main()
 {
     std::cout << "IHFT platform information\n" << std::endl;
 

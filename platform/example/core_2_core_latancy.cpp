@@ -73,6 +73,7 @@ int main()
         }
     }
 
+    std::cout << "Core <-> Core latency report. Units: (nanoseconds)\n";
     std::cout << std::setw(4) << "CPU";
     for (size_t i = 0; i < cpus.size(); ++i)
     {
