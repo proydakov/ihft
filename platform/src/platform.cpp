@@ -62,12 +62,12 @@ namespace
 
 namespace ihft::platform
 {
-    bool set_current_thread_name(const char* name) noexcept
+    bool trait::set_current_thread_name(const char* name) noexcept
     {
         return 0 == prctl(PR_SET_NAME, name, 0, 0, 0);
     }
 
-    bool set_current_thread_cpu(unsigned cpu) noexcept
+    bool trait::set_current_thread_cpu(unsigned cpu) noexcept
     {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
@@ -76,12 +76,12 @@ namespace ihft::platform
         return 0 == sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
     }
 
-    bool reset_current_thread_cpu() noexcept
+    bool trait::reset_current_thread_cpu() noexcept
     {
         return 0 == sched_setaffinity(0, sizeof(cpu_set_t), &g_default_cpuset);
     }
 
-    bool lock_memory_pages(bool current, bool future) noexcept
+    bool trait::lock_memory_pages(bool current, bool future) noexcept
     {
         int flags = 0;
 
@@ -93,36 +93,36 @@ namespace ihft::platform
         return 0 == mlockall(flags);
     }
 
-    bool get_cpu_isolation_status(unsigned cpu) noexcept
+    bool trait::get_cpu_isolation_status(unsigned cpu) noexcept
     {
         return g_cmdline.is_isolated(cpu);
     }
 
-    bool get_cpu_nohz_full_status(unsigned cpu) noexcept
+    bool trait::get_cpu_nohz_full_status(unsigned cpu) noexcept
     {
         return g_cmdline.is_nohz_fulled(cpu);
     }
 
-    bool get_cpu_rcu_nocbs_status(unsigned cpu) noexcept
+    bool trait::get_cpu_rcu_nocbs_status(unsigned cpu) noexcept
     {
         return g_cmdline.is_rcu_nocbsed(cpu);
     }
 
-    unsigned total_1gb_hugepages() noexcept
+    unsigned trait::total_1gb_hugepages() noexcept
     {
         auto const [total, hpsize] = get_hp_info_impl();
 
         return 1048576u == hpsize ? total : 0u;
     }
 
-    unsigned total_2mb_hugepages() noexcept
+    unsigned trait::total_2mb_hugepages() noexcept
     {
         auto const [total, hpsize] = get_hp_info_impl();
 
         return 2048u == hpsize ? total : 0u;
     }
 
-    bool is_hyper_threading_active() noexcept
+    bool trait::is_hyper_threading_active() noexcept
     {
         std::ifstream file("/sys/devices/system/cpu/smt/active");
 
@@ -132,7 +132,7 @@ namespace ihft::platform
         return value != "0";
     }
 
-    bool is_swap_active() noexcept
+    bool trait::is_swap_active() noexcept
     {
         std::ifstream file("/proc/swaps");
 
@@ -146,7 +146,7 @@ namespace ihft::platform
         return lines != 1;
     }
 
-    bool is_transparent_hugepages_active() noexcept
+    bool trait::is_transparent_hugepages_active() noexcept
     {
         std::ifstream file("/sys/kernel/mm/transparent_hugepage/enabled");
 
@@ -163,7 +163,7 @@ namespace ihft::platform
         return active;
     }
 
-    bool is_scaling_governor_use_performance_mode() noexcept
+    bool trait::is_scaling_governor_use_performance_mode() noexcept
     {
         if (not std::filesystem::exists("/sys/devices/system/cpu/cpufreq"))
         {
@@ -195,67 +195,67 @@ namespace ihft::platform
 
 namespace ihft::platform
 {
-    bool set_current_thread_name(const char*) noexcept
+    bool trait::set_current_thread_name(const char*) noexcept
     {
         return true;
     }
 
-    bool set_current_thread_cpu(unsigned) noexcept
+    bool trait::set_current_thread_cpu(unsigned) noexcept
     {
         return true;
     }
 
-    bool reset_current_thread_cpu() noexcept
+    bool trait::reset_current_thread_cpu() noexcept
     {
         return true;
     }
 
-    bool lock_memory_pages(bool, bool) noexcept
+    bool trait::lock_memory_pages(bool, bool) noexcept
     {
         return true;
     }
 
-    bool get_cpu_isolation_status(unsigned) noexcept
+    bool trait::get_cpu_isolation_status(unsigned) noexcept
     {
         return false;
     }
 
-    bool get_cpu_nohz_full_status(unsigned) noexcept
+    bool trait::get_cpu_nohz_full_status(unsigned) noexcept
     {
         return false;
     }
 
-    bool get_cpu_rcu_nocbs_status(unsigned) noexcept
+    bool trait::get_cpu_rcu_nocbs_status(unsigned) noexcept
     {
         return false;
     }
 
-    unsigned total_1gb_hugepages() noexcept
+    unsigned trait::total_1gb_hugepages() noexcept
     {
         return 0;
     }
 
-    unsigned total_2mb_hugepages() noexcept
+    unsigned trait::total_2mb_hugepages() noexcept
     {
         return 0;
     }
 
-    bool is_hyper_threading_active() noexcept
+    bool trait::is_hyper_threading_active() noexcept
     {
         return true;
     }
 
-    bool is_swap_active() noexcept
+    bool trait::is_swap_active() noexcept
     {
         return true;
     }
 
-    bool is_transparent_hugepages_active() noexcept
+    bool trait::is_transparent_hugepages_active() noexcept
     {
         return true;
     }
 
-    bool is_scaling_governor_use_performance_mode() noexcept
+    bool trait::is_scaling_governor_use_performance_mode() noexcept
     {
         return false;
     }

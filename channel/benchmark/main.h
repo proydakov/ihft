@@ -24,6 +24,8 @@ struct alignas(ihft::constant::CPU_CACHE_LINE_SIZE) wait_t
     long waitCounter = 0;
 };
 
+using plf = ihft::platform::trait;
+
 template<typename reader_t, typename controller_t>
 long IHFT_NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader, controller_t& controller)
 {
@@ -52,10 +54,10 @@ template<typename reader_t, typename controller_t>
 void reader_method(reader_t reader, controller_t& controller, std::size_t total_events, std::atomic<std::uint64_t>& waitinig, wait_t& stat, std::optional<unsigned> cpu)
 {
     auto const name = "reader_" + std::to_string(reader.get_id());
-    ihft::platform::set_current_thread_name(name.c_str());
+    plf::set_current_thread_name(name.c_str());
     if (cpu)
     {
-        ihft::platform::set_current_thread_cpu(*cpu);
+        plf::set_current_thread_cpu(*cpu);
     }
 
     waitinig--;
@@ -103,10 +105,10 @@ label:
 template<typename queue_t, typename controller_t>
 void writer_method(queue_t queue, controller_t& controller, std::size_t total_events, std::atomic<std::uint64_t>& waitinig, wait_t& stat, std::optional<unsigned> cpu)
 {
-    ihft::platform::set_current_thread_name("writer");
+    plf::set_current_thread_name("writer");
     if (cpu)
     {
-        ihft::platform::set_current_thread_cpu(*cpu);
+        plf::set_current_thread_cpu(*cpu);
     }
 
     while(waitinig.load(std::memory_order_consume) > 0);
@@ -171,7 +173,7 @@ int test_main(int argc, char* argv[],
 {
     std::cout << "usage: app <cpu-list or #> <num_readers> <total_events> * 10^6 <queue_capacity>" << std::endl;
 
-    if (not ihft::platform::is_scaling_governor_use_performance_mode())
+    if (not plf::is_scaling_governor_use_performance_mode())
     {
         std::cout << "WARNING. Benchmark started on cpu without performance mode." << std::endl;
     }
@@ -213,7 +215,7 @@ int test_main(int argc, char* argv[],
     {
         for (auto const cpu : cpus)
         {
-            if (not ihft::platform::get_cpu_isolation_status(cpu))
+            if (not plf::get_cpu_isolation_status(cpu))
             {
                 std::cout << "WARNING. cpu: " << cpu << " doesn't have system isolation. " << std::endl;
             }

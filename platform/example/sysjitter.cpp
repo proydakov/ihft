@@ -88,7 +88,7 @@ int main(const int argc, char* argv[])
 
     std::vector<std::atomic<bool>> valid_experiment(cores);
 
-    if (!ihft::platform::lock_memory_pages(true, true))
+    if (!ihft::platform::trait::lock_memory_pages(true, true))
     {
         std::cerr << "WARNING failed to lock memory, increase RLIMIT_MEMLOCK "
             "or run with CAP_IPC_LOC capability.\n";
@@ -100,14 +100,14 @@ int main(const int argc, char* argv[])
     {
         auto& output = results[cpu];
 
-        if (!ihft::platform::set_current_thread_cpu(cpu))
+        if (!ihft::platform::trait::set_current_thread_cpu(cpu))
         {
             std::cerr << "can't set thread cpu" << std::endl;
             return false;
         }
 
         std::string const tname("sysjitter_" + std::to_string(cpu));
-        if (!ihft::platform::set_current_thread_name(tname.c_str()))
+        if (!ihft::platform::trait::set_current_thread_name(tname.c_str()))
         {
             std::cerr << "can't set thread name" << std::endl;
             return false;

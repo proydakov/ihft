@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <iostream>
 
-namespace plf = ihft::platform;
+using plf = ihft::platform::trait;
 
 int main()
 {

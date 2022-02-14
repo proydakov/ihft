@@ -21,7 +21,7 @@ int main()
     {
         threads.emplace_back([i](){
             auto const ptr = russian_bogatyrs[i];
-            ihft::platform::set_current_thread_name(ptr);
+            ihft::platform::trait::set_current_thread_name(ptr);
 
             using namespace std::chrono_literals;
             std::this_thread::sleep_for(60s);
