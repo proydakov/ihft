@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  linux-clang-x64:
+  cloud-ci:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -28,4 +28,3 @@ jobs:
       run: cd build && ctest -R
     - name: info
       run: cd build && ./platform_get_info
-
