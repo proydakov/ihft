@@ -92,19 +92,53 @@ namespace ihft::misc
         return get_value<std::string_view, std::string>(section, key);
     }
 
+    void config_helper::enumerate_boolean(std::string_view section, ihft::types::function_ref<void(std::string_view, bool)> callback) const noexcept
+    {
+        enumerate<bool>(section, callback);
+    }
+
+    void config_helper::enumerate_integer(std::string_view section, ihft::types::function_ref<void(std::string_view, std::int64_t)> callback) const noexcept
+    {
+        enumerate<std::int64_t>(section, callback);
+    }
+
+    void config_helper::enumerate_string(std::string_view section, ihft::types::function_ref<void(std::string_view, std::string_view)> callback) const noexcept
+    {
+        enumerate<std::string_view, std::string>(section, callback);
+    }
+
     template<typename T1, typename T2>
     std::optional<T1> config_helper::get_value(std::string_view section, std::string_view key) const noexcept
     {
         auto const& table = cref(m_table);
 
         auto const node_view = table[section][key];
-        if (auto ptr = node_view.as<T2>())
+        if (auto const ptr = node_view.template as<T2>())
         {
             return ptr->get();
         }
         else
         {
             return std::nullopt;
+        }
+    }
+
+    template<typename T1, typename T2>
+    void config_helper::enumerate(std::string_view section, ihft::types::function_ref<void(std::string_view, T1)> callback) const noexcept
+    {
+        auto const& table = cref(m_table);
+
+        auto const node_view = table.at_path(section);
+        if (auto const ptr = node_view.as_table())
+        {
+            auto const& table = *ptr;
+            for(auto const& [k, v] : table)
+            {
+                if (auto const p = v.template as<T2>())
+                {
+                    callback(k, p->get());
+                }
+            }
         }
     }
 }

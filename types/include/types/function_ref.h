@@ -19,6 +19,7 @@
 /// a function_ref.
 ///
 
+#include <cstdint>
 #include <utility>
 
 namespace ihft::types

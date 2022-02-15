@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types/result.h>
+#include <types/function_ref.h>
 
 #include <iosfwd>
 #include <string>
@@ -45,9 +46,16 @@ public:
     std::optional<std::int64_t> get_integer(std::string_view section, std::string_view key) const noexcept;
     std::optional<std::string_view> get_string(std::string_view section, std::string_view key) const noexcept;
 
+    void enumerate_boolean(std::string_view section, ihft::types::function_ref<void(std::string_view, bool)>) const noexcept;
+    void enumerate_integer(std::string_view section, ihft::types::function_ref<void(std::string_view, std::int64_t)>) const noexcept;
+    void enumerate_string(std::string_view section, ihft::types::function_ref<void(std::string_view, std::string_view)>) const noexcept;
+
 private:
     template<typename T1, typename T2 = T1>
     std::optional<T1> get_value(std::string_view section, std::string_view key) const noexcept;
+
+    template<typename T1, typename T2 = T1>
+    void enumerate(std::string_view section, ihft::types::function_ref<void(std::string_view, T1)>) const noexcept;
 
     config_helper() noexcept;
 
