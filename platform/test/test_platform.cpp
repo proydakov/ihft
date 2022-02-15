@@ -27,6 +27,11 @@ TEST_CASE("reset_current_thread_cpu")
     REQUIRE(ihft::platform::trait::reset_current_thread_cpu());
 }
 
+TEST_CASE("get_total_cpus")
+{
+    REQUIRE(ihft::platform::trait::get_total_cpus() > 0);
+}
+
 TEST_CASE("lock_memory_pages")
 {
     // Github CI platforms has problem with mlockall.

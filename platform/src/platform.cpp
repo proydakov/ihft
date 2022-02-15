@@ -1,4 +1,5 @@
 #include <platform/platform.h>
+#include <thread>
 
 #ifdef __linux__
 
@@ -60,8 +61,18 @@ namespace
     }
 }
 
+#endif
+
 namespace ihft::platform
 {
+
+    unsigned trait::get_total_cpus() noexcept
+    {
+        return std::thread::hardware_concurrency();
+    }
+
+#ifdef __linux__
+
     bool trait::set_current_thread_name(const char* name) noexcept
     {
         return 0 == prctl(PR_SET_NAME, name, 0, 0, 0);
@@ -189,12 +200,9 @@ namespace ihft::platform
         }
         return total_cpus > 0 && total_cpus == total_performance;
     }
-}
 
 #else
 
-namespace ihft::platform
-{
     bool trait::set_current_thread_name(const char*) noexcept
     {
         return true;
@@ -259,6 +267,7 @@ namespace ihft::platform
     {
         return false;
     }
-}
 
 #endif
+
+}

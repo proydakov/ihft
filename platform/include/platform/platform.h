@@ -28,6 +28,9 @@ struct trait
     // Reset current thread cpu mask
     static bool reset_current_thread_cpu() noexcept;
 
+    // Get total cpus count on current machine
+    static unsigned get_total_cpus() noexcept;
+
     // This call locks all pages mapped into the address space of the calling process.
     // This includes the pages of the code, data, and stack segment,
     // as well as shared libraries, user space kernel data, shared memory, and memory-mapped files.
