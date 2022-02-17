@@ -5,33 +5,37 @@
 #include <map>
 #include <string>
 
-namespace ihft::misc
-{
-class config_helper;
-}
-
 namespace ihft::engine
 {
 
-class cpus_configuration
+class cpus_configuration final
 {
 public:
-    using cconfiguration_result_t = ihft::types::result<cpus_configuration, std::string>;
+    using configuration_result_t = ihft::types::result<cpus_configuration, std::string>;
 
     template<typename platform, typename config>
-    static cconfiguration_result_t parse(config const& cfg)
+    static configuration_result_t parse(config const& cfg)
     {
+        std::string_view const section = "engine.cpu";
+        if (!cfg.exists(section))
+        {
+            return std::string("Section [")
+                .append(section)
+                .append("] doesn't exist at source: ")
+                .append(cfg.source());
+        }
+
         std::map<std::string, unsigned> map;
-        cfg.enumerate_integer("engine.cpu", [&](std::string_view key, std::int64_t val)  mutable {
+        cfg.enumerate_integer(section, [&](std::string_view key, std::int64_t val) mutable {
             map[std::string(key)] = static_cast<unsigned>(val);
         });
         return parse<platform>(std::move(map));
     }
 
     template<typename platform>
-    static cconfiguration_result_t parse(std::map<std::string, unsigned> cfg)
+    static configuration_result_t parse(std::map<std::string, unsigned> cfg)
     {
-        const std::string prefix = "Invalid configuration. ";
+        std::string const prefix = "Invalid configuration. ";
 
         if(cfg.empty())
         {
@@ -74,8 +78,6 @@ public:
         return cpus_configuration(std::move(cfg));
     }
 
-    ~cpus_configuration();
-
     auto const& get_name_2_cpu() const noexcept
     {
         return m_name_2_id;
@@ -95,7 +97,10 @@ public:
     }
 
 private:
-    cpus_configuration(std::map<std::string, unsigned>);
+    cpus_configuration(std::map<std::string, unsigned> map)
+        : m_name_2_id(std::move(map))
+    {
+    }
 
 private:
     std::map<std::string, unsigned> m_name_2_id;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <platform/platform.h>
-
 #include <string>
 #include <string_view>
 
@@ -55,7 +53,5 @@ private:
     unsigned m_cpu_id;
     std::string m_cpu_name;
 };
-
-using logical_cpu = logical_cpu_impl<ihft::platform::trait>;
 
 }

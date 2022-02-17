@@ -47,7 +47,7 @@ namespace
     }
 }
 
-TEST_CASE("cpus_configuration : config_helper")
+TEST_CASE("cpus_configuration : valid config_helper")
 {
     const char* const VALID_TOML_DOC =
     R"([engine]
@@ -57,16 +57,39 @@ cpu.logger = 13
 #cpu.backup = 12
 )";
 
-    temp_file file("cpus_configuration_config_helper", VALID_TOML_DOC);
+    temp_file file("cpus_configuration_valid.toml", VALID_TOML_DOC);
     auto const result = config_helper::parse(file.fpath());
     REQUIRE(result);
 
-    auto const cpus_config = cpus_configuration::parse<test_isolated_platform>(result.value());
+    auto const& cfg = result.value();
+
+    auto const cpus_config = cpus_configuration::parse<test_isolated_platform>(cfg);
     REQUIRE(cpus_config);
 
     auto const& name2cpu = cpus_config.value();
 
     REQUIRE(name2cpu.get_name_2_cpu().size() == 3);
+}
+
+TEST_CASE("cpus_configuration : invalid config_helper")
+{
+    const char* const INVALID_TOML_DOC =
+    R"([engine.zone]
+netio = 6
+strategy = 7
+logger = 13
+)";
+
+    temp_file file("cpus_configuration_invalid.toml", INVALID_TOML_DOC);
+    auto const result = config_helper::parse(file.fpath());
+    REQUIRE(result);
+
+    auto const& cfg = result.value();
+
+    auto const cpus_config = cpus_configuration::parse<test_isolated_platform>(cfg);
+    REQUIRE(!cpus_config);
+
+    REQUIRE(cpus_config.error() == "Section [engine.cpu] doesn't exist at source: cpus_configuration_invalid.toml");
 }
 
 TEST_CASE("cpus_configuration : valid")

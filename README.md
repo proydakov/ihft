@@ -37,7 +37,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [ ] batch reader for all moveable object queues
   - [x] python latency analysis tool
   - [ ] add latency histograms in documentation
-- [ ] memory module
+- [x] memory module
   - [ ] arena allocator
   - [x] stream fixed pool allocator
   - [x] page allocator for 4KB pages
@@ -56,11 +56,11 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] multicast demo
   - [x] udp demo
   - [ ] DPDK demo
-- [ ] engine module
+- [x] engine module
   - [x] logical cpu
-  - [ ] task assignment
+  - [x] task assignment
   - [x] configuration verification
-  - [ ] intelligent component loading
+  - [x] intelligent component loading
 - [x] CI & DevOps
   - [x] github workflows CI
   - [x] static binary

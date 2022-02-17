@@ -34,9 +34,7 @@ namespace ihft::misc
 
         if (config)
         {
-            ihft::misc::config_helper helper;
-            std::construct_at(reinterpret_cast<toml::table*>(&helper.m_table), std::move(config).table());
-            return helper;
+            return config_helper(std::move(config.table()));
         }
         else
         {
@@ -51,8 +49,11 @@ namespace ihft::misc
         return parse_impl(file_path);
     }
 
-    config_helper::config_helper() noexcept
+    template<typename T>
+    config_helper::config_helper(T table) noexcept
     {
+        std::construct_at(reinterpret_cast<toml::table*>(&m_table), std::move(table));
+
         static_assert(SIZE == sizeof(toml::table));
         static_assert(ALIGN == alignof(toml::table));
     }
@@ -60,11 +61,6 @@ namespace ihft::misc
     config_helper::~config_helper()
     {
         std::destroy_at(&ref(m_table));
-    }
-
-    config_helper::config_helper(const config_helper& other)
-    {
-        std::construct_at(reinterpret_cast<toml::table*>(&m_table), cref(other.m_table));
     }
 
     config_helper::config_helper(config_helper&& other) noexcept
@@ -75,6 +71,13 @@ namespace ihft::misc
     std::ostream& operator<<(std::ostream& os, const config_helper& helper)
     {
         return os << cref(helper.m_table);
+    }
+
+    std::string_view config_helper::source() const noexcept
+    {
+        auto const& table = cref(m_table);
+        auto const& region = table.source();
+        return region.path ? *region.path : std::string_view("");
     }
 
     std::optional<bool> config_helper::get_boolean(std::string_view section, std::string_view key) const noexcept
@@ -105,6 +108,13 @@ namespace ihft::misc
     void config_helper::enumerate_string(std::string_view section, ihft::types::function_ref<void(std::string_view, std::string_view)> callback) const noexcept
     {
         enumerate<std::string_view, std::string>(section, callback);
+    }
+
+    bool config_helper::exists(std::string_view path) const noexcept
+    {
+        auto const& table = cref(m_table);
+
+        return static_cast<bool>(table.at_path(path));
     }
 
     template<typename T1, typename T2>

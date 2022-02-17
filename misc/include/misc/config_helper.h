@@ -17,7 +17,7 @@ namespace ihft::misc
 class config_helper final
 {
 public:
-    using config_result = ::ihft::types::result<config_helper, std::string>;
+    using config_result = types::result<config_helper, std::string>;
 
 #if defined(__clang__)
     static constexpr size_t SIZE = 72;
@@ -28,19 +28,21 @@ public:
 #endif
     static constexpr size_t ALIGN = 8;
 
+    config_helper(config_helper const&) = delete;
+    config_helper(config_helper&&) noexcept;
+
+    config_helper& operator=(config_helper const&) = delete;
+    config_helper& operator=(config_helper&&) noexcept = delete;
+
     using table_storage = std::aligned_storage_t<SIZE, ALIGN>;
 
     static config_result parse(std::string_view file_path);
 
     ~config_helper();
 
-    config_helper(config_helper const&);
-    config_helper(config_helper&&) noexcept;
-
-    config_helper& operator=(config_helper const&) = delete;
-    config_helper& operator=(config_helper&&) noexcept = delete;
-
     friend std::ostream& operator<<(std::ostream&, const config_helper&);
+
+    std::string_view source() const noexcept;
 
     std::optional<bool> get_boolean(std::string_view section, std::string_view key) const noexcept;
     std::optional<std::int64_t> get_integer(std::string_view section, std::string_view key) const noexcept;
@@ -50,6 +52,8 @@ public:
     void enumerate_integer(std::string_view section, ihft::types::function_ref<void(std::string_view, std::int64_t)>) const noexcept;
     void enumerate_string(std::string_view section, ihft::types::function_ref<void(std::string_view, std::string_view)>) const noexcept;
 
+    bool exists(std::string_view path) const noexcept;
+
 private:
     template<typename T1, typename T2 = T1>
     std::optional<T1> get_value(std::string_view section, std::string_view key) const noexcept;
@@ -57,7 +61,8 @@ private:
     template<typename T1, typename T2 = T1>
     void enumerate(std::string_view section, ihft::types::function_ref<void(std::string_view, T1)>) const noexcept;
 
-    config_helper() noexcept;
+    template<typename T>
+    config_helper(T) noexcept;
 
     template<typename T>
     static config_result parse_impl(T file_path);

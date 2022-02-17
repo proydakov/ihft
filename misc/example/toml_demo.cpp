@@ -27,6 +27,8 @@ int main()
 
     auto const& config = result.table();
 
+    std::cout << "source: " <<  config.source() << "\n";
+
     std::cout << "sizeof(toml::parse_result): " << sizeof(config) << "\n";
     std::cout << "alignof(toml::parse_result): " << alignof(decltype(config)) << "\n";
 

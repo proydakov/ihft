@@ -18,7 +18,6 @@ bool setup_sigaction_handler(sa_sigaction_t action, std::initializer_list<int> s
         newhandler.sa_flags = *flags;
     }
 
-
     sigemptyset(&newhandler.sa_mask);
     for(auto const signal : signals)
     {

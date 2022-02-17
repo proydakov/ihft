@@ -1,9 +1,12 @@
-#include <engine/logical_cpu.h>
+#include <engine/private/logical_cpu.h>
+#include <platform/platform.h>
 
 #include <string>
 #include <chrono>
 #include <cstdlib>
 #include <iostream>
+
+using logical_cpu = ihft::engine::logical_cpu_impl<ihft::platform::trait>;
 
 std::chrono::nanoseconds calc_cpu_cycle()
 {
@@ -40,7 +43,7 @@ int main(int const argc, char const * const argv[])
     {
         std::cout << "step1" << std::endl;
 
-        ihft::engine::logical_cpu cpu(cpu_id, cpu_name);
+        logical_cpu cpu(cpu_id, cpu_name);
         cpu.bind();
 
         delta1 = calc_cpu_cycle();

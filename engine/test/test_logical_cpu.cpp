@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <engine/logical_cpu.h>
+#include <engine/private/logical_cpu.h>
 
 namespace
 {

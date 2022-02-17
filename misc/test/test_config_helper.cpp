@@ -20,6 +20,13 @@ operation_system = "linux"
 native = true
 )";
 
+const char * const COMPLEX_TOML_DOC =
+R"([engine.cpu]
+alpha = 7
+omega = 9
+omicron = 11
+)";
+
 const char * const INVALID_TOML_DOC =
 R"([dependencies]
 operation_system = "lin
@@ -52,13 +59,15 @@ using namespace ihft::types;
 
 TEST_CASE("SUCCESS")
 {
-    temp_file file("test_misc_success", VALID_TOML_DOC);
+    temp_file file("test_misc_success.toml", VALID_TOML_DOC);
 
     auto result = config_helper::parse( file.fpath() );
 
     REQUIRE( result.succeeded() );
 
-    auto const config(std::move(result).value());
+    auto const& config = result.value();
+
+    REQUIRE( config.source() == file.fpath() );
 
     REQUIRE( config.get_boolean("dependencies", "native") == true );
 
@@ -71,9 +80,28 @@ TEST_CASE("SUCCESS")
     REQUIRE( config.get_string("dependencies", "lang") == "C++" );
 }
 
+TEST_CASE("SUCCESS EXISTS")
+{
+    temp_file file("test_misc_success_exists.toml", COMPLEX_TOML_DOC);
+
+    auto result = config_helper::parse( file.fpath() );
+
+    REQUIRE( result.succeeded() );
+
+    auto const& config = result.value();
+
+    REQUIRE( config.exists("engine.cpu") );
+
+    REQUIRE( config.exists("engine.cpu.alpha") );
+    REQUIRE( config.exists("engine.cpu.omega") );
+    REQUIRE( config.exists("engine.cpu.omicron") );
+
+    REQUIRE( !config.exists("engine.affinity") );
+}
+
 TEST_CASE("PROBLEM")
 {
-    temp_file file("test_misc_problem", INVALID_TOML_DOC);
+    temp_file file("test_misc_problem.toml", INVALID_TOML_DOC);
 
     auto config = config_helper::parse( file.fpath() );
 
@@ -82,7 +110,7 @@ TEST_CASE("PROBLEM")
 
 TEST_CASE("ENUMERATE_BOOLEAN")
 {
-    temp_file file("test_misc_enumerate_boolean", VALID_ENUMERATE_BOOLEAN);
+    temp_file file("test_misc_enumerate_boolean.toml", VALID_ENUMERATE_BOOLEAN);
 
     auto result = config_helper::parse( file.fpath() );
 
@@ -103,7 +131,7 @@ TEST_CASE("ENUMERATE_BOOLEAN")
 
 TEST_CASE("ENUMERATE_INTEGER")
 {
-    temp_file file("test_misc_enumerate_integer", VALID_ENUMERATE_INTEGER);
+    temp_file file("test_misc_enumerate_integer.toml", VALID_ENUMERATE_INTEGER);
 
     auto result = config_helper::parse( file.fpath() );
 
@@ -124,7 +152,7 @@ TEST_CASE("ENUMERATE_INTEGER")
 
 TEST_CASE("ENUMERATE_STRING")
 {
-    temp_file file("test_misc_enumerate_string", VALID_ENUMERATE_STRING);
+    temp_file file("test_misc_enumerate_string.toml", VALID_ENUMERATE_STRING);
 
     auto result = config_helper::parse( file.fpath() );
 
