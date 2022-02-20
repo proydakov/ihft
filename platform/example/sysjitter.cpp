@@ -9,6 +9,7 @@
 //
 
 #include <compiler/compiler.h>
+#include <constant/constant.h>
 #include <platform/platform.h>
 
 #include <atomic>
@@ -26,7 +27,7 @@
 
 using cclock_t = std::chrono::steady_clock;
 using nanosec_t = std::chrono::nanoseconds;
-using samples_t = std::vector<nanosec_t>;
+using samples_t = struct alignas(ihft::constant::CPU_CACHE_LINE_SIZE) impl : public std::vector<nanosec_t>{};
 using time_point_t = std::chrono::time_point<cclock_t>;
 using resultvec_t = std::vector<samples_t>;
 using sync_t = std::atomic<size_t>;
