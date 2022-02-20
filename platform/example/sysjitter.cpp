@@ -43,7 +43,8 @@ struct options_t
 void help();
 nanosec_t calculate_default_threshold();
 std::optional<int> parse_options(const int argc, char* const argv[], options_t& opt);
-bool measure(unsigned cpu, size_t cores, sync_t& active, resultvec_t& results, nanosec_t threshold, time_point_t until);
+bool measure(unsigned cpu, sync_t& active, resultvec_t&, nanosec_t threshold, time_point_t until);
+void trace_results(std::vector<std::atomic_bool> const&, resultvec_t&, options_t const&);
 
 int main(const int argc, char* argv[])
 {
@@ -73,8 +74,7 @@ int main(const int argc, char* argv[])
 
     if (!ihft::platform::trait::lock_memory_pages(true, true))
     {
-        std::cerr << "WARNING failed to lock memory, increase RLIMIT_MEMLOCK "
-            "or run with CAP_IPC_LOC capability.\n";
+        std::cerr << "WARNING failed to lock memory, increase RLIMIT_MEMLOCK or run with CAP_IPC_LOC capability.\n";
     }
 
     sync_t active_threads = 0;
@@ -85,15 +85,70 @@ int main(const int argc, char* argv[])
     {
         threads.emplace_back([&, cpu = i]()
         {
-            valid_experiment[cpu] = measure(cpu, cores, active_threads, results, param.threshold, until);
+            valid_experiment[cpu] = measure(cpu, active_threads, results, param.threshold, until);
         });
     }
 
-    valid_experiment[0] = measure(0, cores, active_threads, results, param.threshold, until);
+    valid_experiment[0] = measure(0, active_threads, results, param.threshold, until);
 
     for (auto& t : threads)
         t.join();
 
+    trace_results(valid_experiment, results, param);
+
+    return 0;
+}
+
+bool measure(unsigned cpu, sync_t& active, resultvec_t& results, nanosec_t threshold, time_point_t until)
+{
+    auto& output = results[cpu];
+
+    if (!ihft::platform::trait::set_current_thread_cpu(cpu))
+    {
+        std::cerr << "can't set thread cpu" << std::endl;
+        return false;
+    }
+
+    std::string const tname("sysjitter_" + std::to_string(cpu));
+    if (!ihft::platform::trait::set_current_thread_name(tname.c_str()))
+    {
+        std::cerr << "can't set thread name" << std::endl;
+        return false;
+    }
+
+    active++;
+
+    while (active.load(std::memory_order_relaxed) != results.size());
+
+    auto ts1 = cclock_t::now();
+    while (ts1 < until)
+    {
+        auto const ts2 = cclock_t::now();
+        auto const delta = ts2 - ts1;
+        if (delta < threshold)
+        {
+            ts1 = ts2;
+        }
+        else
+        {
+            if (output.size() == output.capacity()) {
+                [](unsigned cpu) IHFT_COLD {
+                    auto const str = "WARNING preallocated sample space exceeded for cpu: "
+                        + std::to_string(cpu)
+                        + ", increase threshold or number of samples.\n";
+                    std::cerr << str;
+                }(cpu);
+            }
+            output.emplace_back(delta);
+            ts1 = cclock_t::now();
+        }
+    }
+
+    return true;
+}
+
+void trace_results(std::vector<std::atomic_bool> const& valid_experiment, resultvec_t& results, options_t const& param)
+{
     auto const cpuof = std::setw(4);
     auto const offset = std::setw(12);
     auto const thof = std::setw(15);
@@ -105,7 +160,7 @@ int main(const int argc, char* argv[])
         << offset << "pct999_ns" << " "
         << offset << "max_ns\n";
 
-    for (size_t cpu = 0; cpu < cores; cpu++) {
+    for (size_t cpu = 0; cpu < valid_experiment.size(); cpu++) {
         auto& s = results[cpu];
 
         if (valid_experiment[cpu])
@@ -135,56 +190,6 @@ int main(const int argc, char* argv[])
 
         std::cout << std::endl;
     }
-
-    return 0;
-}
-
-bool measure(unsigned cpu, size_t cores, sync_t& active, resultvec_t& results, nanosec_t threshold, time_point_t until)
-{
-    auto& output = results[cpu];
-
-    if (!ihft::platform::trait::set_current_thread_cpu(cpu))
-    {
-        std::cerr << "can't set thread cpu" << std::endl;
-        return false;
-    }
-
-    std::string const tname("sysjitter_" + std::to_string(cpu));
-    if (!ihft::platform::trait::set_current_thread_name(tname.c_str()))
-    {
-        std::cerr << "can't set thread name" << std::endl;
-        return false;
-    }
-
-    active++;
-
-    while (active.load(std::memory_order_relaxed) != cores);
-
-    auto ts1 = cclock_t::now();
-    while (ts1 < until)
-    {
-        auto const ts2 = cclock_t::now();
-        auto const delta = ts2 - ts1;
-        if (delta < threshold)
-        {
-            ts1 = ts2;
-        }
-        else
-        {
-            if (output.size() == output.capacity()) {
-                [](unsigned cpu) IHFT_COLD {
-                    auto const str = "WARNING preallocated sample space exceeded for cpu: "
-                        + std::to_string(cpu)
-                        + ", increase threshold or number of samples.\n";
-                    std::cerr << str;
-                }(cpu);
-            }
-            output.emplace_back(delta);
-            ts1 = cclock_t::now();
-        }
-    }
-
-    return true;
 }
 
 void help()
