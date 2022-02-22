@@ -61,7 +61,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] task assignment
   - [x] configuration verification
   - [x] intelligent component loading
-- [x] CI & DevOps
+- [x] CI
   - [x] github workflows CI
   - [x] static binary
   - [x] Clang support with libc++
@@ -70,6 +70,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] address sanitizer
   - [x] thread sanitizer
   - [x] ub sanitizer
+  - [ ] clang format
 - [x] DevOps
   - [x] script for system latency optimization
 
