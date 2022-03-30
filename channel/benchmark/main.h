@@ -33,7 +33,7 @@ long IHFT_NOINLINE reader_method_impl(std::size_t total_events, reader_t& reader
 
     for (std::size_t j = 0; j < total_events;)
     {
-//        _mm_lfence();
+        //_mm_lfence();
         auto opt = reader.try_read();
         if (opt)
         {
@@ -78,14 +78,15 @@ long IHFT_NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, 
 
         // some examples use stream_fixed_pool_allocator
         // we must create only one item for many try_write attemps
+
 label:
 
-        if(queue.try_write(std::move(data)))
+        if (queue.try_write(std::move(data)))
         {
             if constexpr(controller_t::flush)
             {
-//                _mm_mfence();
-//                _mm_sfence();
+                //_mm_mfence();
+                //_mm_sfence();
                 std::atomic_thread_fence(std::memory_order_seq_cst);
             }
             j++;
@@ -194,10 +195,12 @@ int test_main(int argc, char* argv[],
         }
         return result;
     }();
+
     auto const NUM_READERS = [&](){
         auto const readers = static_cast<std::size_t>(argc > 2 ? std::stoul(argv[2]) : num_readers);
         return SINGLE_READER ? 1 : std::max(std::size_t{1}, readers);
     }();
+
     auto const TOTAL_EVENTS = static_cast<std::size_t>((argc > 3 ? std::stoul(argv[3]) : total_events) * std::mega::num);
     auto const QUEUE_CAPACITY = static_cast<std::size_t>(argc > 4 ? std::stoul(argv[4]) : queue_capacity);
 
