@@ -186,11 +186,10 @@ int test_main(int argc, char* argv[],
             auto const cpus = std::string_view(argv[1]);
             if (cpus != std::string_view("#"))
             {
-                auto lambda = [&](unsigned cpu) mutable
+                ihft::platform::process_cpu_list(cpus, [&](unsigned cpu) mutable
                 {
                     result.emplace_back(cpu);
-                };
-                ihft::platform::process_cpu_list(cpus, lambda);
+                });
             }
         }
         return result;

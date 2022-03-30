@@ -22,11 +22,10 @@ cmdline::cmdline(const char* file)
         if (index != std::string::npos)
         {
             auto const cpus = std::string_view(text).substr(index + strlen(pattern));
-            auto lambda = [&](unsigned cpu) mutable
+            ihft::platform::process_cpu_list(cpus, [&](unsigned cpu) mutable
             {
                 list.set(cpu);
-            };
-            ihft::platform::process_cpu_list(cpus, lambda);
+            });
         }
     };
 

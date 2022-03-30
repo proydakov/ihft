@@ -80,3 +80,19 @@ TEST_CASE("test_3")
 
     test_impl(file, {8,9,10,11,17});
 }
+
+TEST_CASE("test_4")
+{
+    temp_file file("cmdline_4.txt",
+        "BOOT_IMAGE=/boot/vmlinuz-3.16.0-44-generic auto noprompt priority=critical quiet isolcpus=1-abc locale=en_US\r\n");
+
+    test_impl(file, {});
+}
+
+TEST_CASE("test_5")
+{
+    temp_file file("cmdline_5.txt",
+        "BOOT_IMAGE=/boot/vmlinuz-3.16.0-44-generic auto noprompt priority=critical quiet isolcpus=1A3 locale=en_US\r\n");
+
+    test_impl(file, {});
+}
