@@ -4,6 +4,7 @@
 #include <types/function_ref.h>
 
 #include <iosfwd>
+#include <memory>
 #include <string>
 #include <optional>
 #include <type_traits>
@@ -19,22 +20,11 @@ class config_helper final
 public:
     using config_result = types::result<config_helper, std::string>;
 
-#if defined(__clang__)
-    static constexpr size_t SIZE = 72;
-#elif defined(__GNUC__) || defined(__GNUG__)
-    static constexpr size_t SIZE = 96;
-#else
-#    error "Unsupported compiler"
-#endif
-    static constexpr size_t ALIGN = 8;
-
     config_helper(config_helper const&) = delete;
     config_helper(config_helper&&) noexcept;
 
     config_helper& operator=(config_helper const&) = delete;
-    config_helper& operator=(config_helper&&) noexcept = delete;
-
-    using table_storage = std::aligned_storage_t<SIZE, ALIGN>;
+    config_helper& operator=(config_helper&&) noexcept;
 
     static config_result parse(std::string_view file_path);
 
@@ -68,7 +58,8 @@ private:
     static config_result parse_impl(T file_path);
 
 private:
-    table_storage m_table;
+    struct impl;
+    std::unique_ptr<impl> m_impl;
 };
 
 }

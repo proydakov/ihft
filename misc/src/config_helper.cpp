@@ -7,26 +7,15 @@
 #include <sstream>
 #include <ostream>
 
-namespace
-{
-    toml::table& ref(ihft::misc::config_helper::table_storage& storage) noexcept
-    {
-        return *std::launder(reinterpret_cast<toml::table*>(&storage));
-    }
-
-    toml::table const& cref(ihft::misc::config_helper::table_storage const& storage) noexcept
-    {
-        return *std::launder(reinterpret_cast<const toml::table*>(&storage));
-    }
-
-    toml::table&& borrow(ihft::misc::config_helper::table_storage& storage) noexcept
-    {
-        return std::move(*std::launder(reinterpret_cast<toml::table*>(&storage)));
-    }
-}
-
 namespace ihft::misc
 {
+    struct config_helper::impl
+    {
+        impl(toml::table t) : table(std::move(t)) {}
+
+        toml::table table;
+    };
+
     template<typename T>
     config_helper::config_result config_helper::parse_impl(T file_path)
     {
@@ -51,31 +40,36 @@ namespace ihft::misc
 
     template<typename T>
     config_helper::config_helper(T table) noexcept
+        : m_impl(std::make_unique<impl>(std::move(table)))
     {
-        std::construct_at(reinterpret_cast<toml::table*>(&m_table), std::move(table));
-
-        static_assert(SIZE == sizeof(toml::table));
-        static_assert(ALIGN == alignof(toml::table));
     }
 
     config_helper::~config_helper()
     {
-        std::destroy_at(&ref(m_table));
     }
 
     config_helper::config_helper(config_helper&& other) noexcept
     {
-        std::construct_at(reinterpret_cast<toml::table*>(&m_table), borrow(other.m_table));
+        m_impl = std::move(other.m_impl);
+    }
+
+    config_helper& config_helper::operator=(config_helper&& other) noexcept
+    {
+        if (&other != this)
+        {
+            m_impl = std::move(other.m_impl);
+        }
+        return *this;
     }
 
     std::ostream& operator<<(std::ostream& os, const config_helper& helper)
     {
-        return os << cref(helper.m_table);
+        return os << helper.m_impl->table;
     }
 
     std::string_view config_helper::source() const noexcept
     {
-        auto const& table = cref(m_table);
+        auto const& table = m_impl->table;
         auto const& region = table.source();
         return region.path ? *region.path : std::string_view("");
     }
@@ -112,7 +106,7 @@ namespace ihft::misc
 
     bool config_helper::exists(std::string_view path) const noexcept
     {
-        auto const& table = cref(m_table);
+        auto const& table = m_impl->table;;
 
         return static_cast<bool>(table.at_path(path));
     }
@@ -120,7 +114,7 @@ namespace ihft::misc
     template<typename T1, typename T2>
     std::optional<T1> config_helper::get_value(std::string_view section, std::string_view key) const noexcept
     {
-        auto const& table = cref(m_table);
+        auto const& table = m_impl->table;;
 
         auto const node_view = table[section][key];
         if (auto const ptr = node_view.template as<T2>())
@@ -136,7 +130,7 @@ namespace ihft::misc
     template<typename T1, typename T2>
     void config_helper::enumerate(std::string_view section, ihft::types::function_ref<void(std::string_view, T1)> callback) const noexcept
     {
-        auto const& table = cref(m_table);
+        auto const& table = m_impl->table;;
 
         auto const node_view = table.at_path(section);
         if (auto const ptr = node_view.as_table())
