@@ -1,4 +1,4 @@
-# measures
+# measures. these are programs for manual measurement of code characteristics
 
 # main library
 

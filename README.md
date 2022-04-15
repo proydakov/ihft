@@ -36,7 +36,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] one 2 many stream moveable object queue
   - [ ] batch reader for all moveable object queues
   - [x] python latency analysis tool
-  - [ ] add latency histograms in documentation
+  - [ ] documentation with latency histograms
 - [x] memory module
   - [ ] arena allocator
   - [x] stream fixed pool allocator
@@ -71,6 +71,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] thread sanitizer
   - [x] ub sanitizer
   - [ ] clang format
+  - [ ] regressive run of benchmarks for different CPUs/compilers
 - [x] DevOps
   - [x] script for system latency optimization
 
