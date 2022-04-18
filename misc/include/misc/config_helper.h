@@ -38,9 +38,9 @@ public:
     std::optional<std::int64_t> get_integer(std::string_view section, std::string_view key) const noexcept;
     std::optional<std::string_view> get_string(std::string_view section, std::string_view key) const noexcept;
 
-    void enumerate_boolean(std::string_view section, ihft::types::function_ref<void(std::string_view, bool)>) const noexcept;
-    void enumerate_integer(std::string_view section, ihft::types::function_ref<void(std::string_view, std::int64_t)>) const noexcept;
-    void enumerate_string(std::string_view section, ihft::types::function_ref<void(std::string_view, std::string_view)>) const noexcept;
+    void enumerate_boolean(std::string_view section, types::function_ref<void(std::string_view, bool)>) const noexcept;
+    void enumerate_integer(std::string_view section, types::function_ref<void(std::string_view, std::int64_t)>) const noexcept;
+    void enumerate_string (std::string_view section, types::function_ref<void(std::string_view, std::string_view)>) const noexcept;
 
     bool exists(std::string_view path) const noexcept;
 

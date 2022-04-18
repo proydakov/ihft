@@ -39,7 +39,6 @@ void one2_stream_queue_simple_methods()
     REQUIRE( queue.capacity() == qsize );
 }
 
-
 TEST_CASE("one2*_stream_queue simple methods")
 {
     one2_stream_queue_simple_methods<one2one_seqnum_stream_pod_queue<packet_t>>();

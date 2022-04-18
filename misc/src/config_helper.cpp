@@ -89,17 +89,17 @@ namespace ihft::misc
         return get_value<std::string_view, std::string>(section, key);
     }
 
-    void config_helper::enumerate_boolean(std::string_view section, ihft::types::function_ref<void(std::string_view, bool)> callback) const noexcept
+    void config_helper::enumerate_boolean(std::string_view section, types::function_ref<void(std::string_view, bool)> callback) const noexcept
     {
         enumerate<bool>(section, callback);
     }
 
-    void config_helper::enumerate_integer(std::string_view section, ihft::types::function_ref<void(std::string_view, std::int64_t)> callback) const noexcept
+    void config_helper::enumerate_integer(std::string_view section, types::function_ref<void(std::string_view, std::int64_t)> callback) const noexcept
     {
         enumerate<std::int64_t>(section, callback);
     }
 
-    void config_helper::enumerate_string(std::string_view section, ihft::types::function_ref<void(std::string_view, std::string_view)> callback) const noexcept
+    void config_helper::enumerate_string(std::string_view section, types::function_ref<void(std::string_view, std::string_view)> callback) const noexcept
     {
         enumerate<std::string_view, std::string>(section, callback);
     }
@@ -128,7 +128,7 @@ namespace ihft::misc
     }
 
     template<typename T1, typename T2>
-    void config_helper::enumerate(std::string_view section, ihft::types::function_ref<void(std::string_view, T1)> callback) const noexcept
+    void config_helper::enumerate(std::string_view section, types::function_ref<void(std::string_view, T1)> callback) const noexcept
     {
         auto const& table = m_impl->table;;
 
