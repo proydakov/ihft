@@ -11,38 +11,32 @@ target_link_libraries(ihft_queue_measure_main INTERFACE ihft_compiler)
 # one2many_stream
 
 add_executable(measure_one2many_stream_object_queue_perf_plain
-    plain_data.h
     measure_one2many_stream_object_queue_plain.cpp
 )
 target_link_libraries(measure_one2many_stream_object_queue_perf_plain ihft_queue_measure_main)
 
 add_executable(measure_one2many_stream_object_queue_perf_heap
-    heap_data.h
     measure_one2many_stream_object_queue_heap.cpp
 )
 target_link_libraries(measure_one2many_stream_object_queue_perf_heap ihft_queue_measure_main)
 
 add_executable(measure_one2many_stream_object_queue_perf_heap_stream_allocator
-    plain_data.h
     measure_one2many_stream_object_queue_heap_stream_allocator.cpp
 )
 target_link_libraries(measure_one2many_stream_object_queue_perf_heap_stream_allocator ihft_queue_measure_main)
 target_link_libraries(measure_one2many_stream_object_queue_perf_heap_stream_allocator ihft_memory)
 
 add_executable(measure_one2many_stream_object_queue_latency
-    latency_data.h
     measure_one2many_stream_object_queue_latency.cpp
 )
 target_link_libraries(measure_one2many_stream_object_queue_latency ihft_queue_measure_main)
 
 add_executable(measure_one2many_stream_pod_queue_perf_plain
-    plain_data.h
     measure_one2many_stream_pod_queue_plain.cpp
 )
 target_link_libraries(measure_one2many_stream_pod_queue_perf_plain ihft_queue_measure_main)
 
 add_executable(measure_one2many_stream_pod_queue_latency
-    latency_data.h
     measure_one2many_stream_pod_queue_latency.cpp
 )
 target_link_libraries(measure_one2many_stream_pod_queue_latency ihft_queue_measure_main)
@@ -50,38 +44,32 @@ target_link_libraries(measure_one2many_stream_pod_queue_latency ihft_queue_measu
 # one2one_stream
 
 add_executable(measure_one2one_stream_object_queue_perf_plain
-    plain_data.h
     measure_one2one_stream_object_queue_plain.cpp
 )
 target_link_libraries(measure_one2one_stream_object_queue_perf_plain ihft_queue_measure_main)
 
 add_executable(measure_one2one_stream_object_queue_perf_heap
-    plain_data.h
     measure_one2one_stream_object_queue_heap.cpp
 )
 target_link_libraries(measure_one2one_stream_object_queue_perf_heap ihft_queue_measure_main)
 
 add_executable(measure_one2one_stream_object_queue_perf_heap_stream_allocator
-    plain_data.h
     measure_one2one_stream_object_queue_heap_stream_allocator.cpp
 )
 target_link_libraries(measure_one2one_stream_object_queue_perf_heap_stream_allocator ihft_queue_measure_main)
 target_link_libraries(measure_one2one_stream_object_queue_perf_heap_stream_allocator ihft_memory)
 
 add_executable(measure_one2one_stream_object_queue_latency
-    latency_data.h
     measure_one2one_stream_object_queue_latency.cpp
 )
 target_link_libraries(measure_one2one_stream_object_queue_latency ihft_queue_measure_main)
 
 add_executable(measure_one2one_stream_pod_queue_perf_plain
-    latency_data.h
     measure_one2one_stream_pod_queue_plain.cpp
 )
 target_link_libraries(measure_one2one_stream_pod_queue_perf_plain ihft_queue_measure_main)
 
 add_executable(measure_one2one_stream_pod_queue_latency
-    latency_data.h
     measure_one2one_stream_pod_queue_latency.cpp
 )
 target_link_libraries(measure_one2one_stream_pod_queue_latency ihft_queue_measure_main)
