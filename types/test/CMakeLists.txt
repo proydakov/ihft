@@ -1,3 +1,5 @@
+ihft_add_test(test_sso)
+
 ihft_add_test(test_result)
 target_link_libraries(test_result PRIVATE ihft_types)
 
