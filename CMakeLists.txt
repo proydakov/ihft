@@ -16,14 +16,15 @@ include(.cmake/icmake.cmake)
 
 enable_testing()
 
-add_subdirectory(types)
 add_subdirectory(compiler)
 add_subdirectory(constant)
+add_subdirectory(types)
 add_subdirectory(misc)
 add_subdirectory(memory)
-add_subdirectory(network)
 add_subdirectory(channel)
 add_subdirectory(platform)
+add_subdirectory(logger)
+add_subdirectory(network)
 add_subdirectory(engine)
 
 ihft_build_report()

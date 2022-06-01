@@ -49,6 +49,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] simple human-readable TOML config system
   - [x] sigaction based signal handler
 - [ ] logger module
+  - [x] compile-time formatting pattern check
   - [ ] simple client usage
   - [ ] non reliable delivery
   - [ ] wait-free implementation
