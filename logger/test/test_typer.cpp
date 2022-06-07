@@ -53,12 +53,12 @@ decltype(auto) to_tuple(Args&& ...)
     return std::tuple<typename typer<Args>::type ...>();
 }
 
-TEST_CASE("serrialize")
+TEST_CASE("typer")
 {
     char* ptr0 = nullptr;
+    const char* ptr1 = nullptr;
     char* const ptr2 = nullptr;
-    const char* ptr3 = nullptr;
-    const char* const ptr1 = nullptr;
+    const char* const ptr3 = nullptr;
 
     static_assert(std::is_same_v<typer<decltype(ptr0)>::type, void*>);
     static_assert(std::is_same_v<typer<decltype(ptr1)>::type, void*>);
