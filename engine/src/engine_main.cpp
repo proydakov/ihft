@@ -129,6 +129,12 @@ namespace ihft::engine
         std::cout << "registering tasks..." << std::endl;
 
         {
+            if (cpu_cfg.get_name_2_cpu().empty())
+            {
+                std::cerr << "cpu configuration can't be empty: " << path_to_config << std::endl;
+                return EXIT_FAILURE;
+            }
+
             // the correct cpus configuration can't be empty
             // we are going to move initialization into the first isolated cpu
             unsigned const cpu_id = cpu_cfg.get_name_2_cpu().begin()->second;
