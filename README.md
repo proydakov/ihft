@@ -50,6 +50,9 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] sigaction based signal handler
 - [ ] logger module
   - [x] compile-time formatting pattern check
+  - [x] smart serializer for input arguments
+  - [ ] std::format as formatting backend
+  - [ ] std::source_location as logging info
   - [ ] simple client usage
   - [ ] non reliable delivery
   - [ ] wait-free implementation
