@@ -66,5 +66,4 @@ TEST_CASE("typer")
     static_assert(std::is_same_v<typer<decltype(ptr3)>::type, void*>);
     static_assert(std::is_same_v<typer<nullptr_t>::type, void*>);
     static_assert(std::is_same_v<std::tuple<long, double, std::string_view>, decltype(to_tuple(int{}, float{}, std::string{}))>);
-
 }

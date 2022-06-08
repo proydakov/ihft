@@ -52,4 +52,3 @@ TEST_CASE("compiletime")
     //std::string str("{}");
     //CHECK_ME(str, 1);
 }
-
