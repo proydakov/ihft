@@ -27,10 +27,9 @@ struct data_t
     using value_type = typename allocator_t::value_type;
 
     data_t(std::uint64_t val, allocator_t& allocator) noexcept
-        : m_ptr(allocator.allocate(1))
+        : m_ptr(std::construct_at(allocator.allocate(1), val))
         , m_allocator(allocator)
     {
-        std::construct_at(m_ptr, val);
         g_local_allocated.counter++;
     }
 

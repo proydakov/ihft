@@ -3,6 +3,7 @@
 #include <constant/constant.h>
 
 #include <memory>
+#include <type_traits>
 
 namespace ihft
 {
@@ -11,7 +12,7 @@ namespace ihft
     {
         struct alignas(constant::CPU_CACHE_LINE_SIZE) holder
         {
-            T data;
+            std::aligned_storage_t<sizeof(T), alignof(T)> data;
         };
 
         using RegionHolderAllocator = typename std::allocator_traits<RegionAllocator>::template rebind_alloc<holder>;
@@ -41,6 +42,12 @@ namespace ihft
             m_allocator.deallocate(m_data, m_size);
         }
 
+        stream_fixed_pool_allocator(const stream_fixed_pool_allocator&) = delete;
+        stream_fixed_pool_allocator(stream_fixed_pool_allocator&&) noexcept = default;
+
+        stream_fixed_pool_allocator& operator=(const stream_fixed_pool_allocator&) = delete;
+        stream_fixed_pool_allocator& operator=(stream_fixed_pool_allocator&&) noexcept = default;
+
         // STL-like interface
 
         [[nodiscard]] T* allocate(std::size_t n) noexcept
@@ -67,7 +74,7 @@ namespace ihft
         [[nodiscard]] T* active_slab() const noexcept
         {
             auto& res = m_data[m_next];
-            return std::addressof(res.data);
+            return reinterpret_cast<T*>(&res.data);
         }
 
         void seek_to_next_slab() noexcept
