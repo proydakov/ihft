@@ -21,7 +21,7 @@ void trace(std::ostream& os, Tuple const& t)
     trace_impl(os, t, indices{});
 }
 
-TEST_CASE("compiletime")
+TEST_CASE("print")
 {
     auto const t = std::tuple<char, long, double>('a', 1024, 3.14);
     std::stringstream stream;
