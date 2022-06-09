@@ -220,7 +220,6 @@ public:
         header.print_to(stream);
     }
 
-private:
     using print_function_t = void (*)(void*, std::ostream&);
     using clean_function_t = void (*)(void*);
 
@@ -257,6 +256,8 @@ private:
     buffer_t buffer;
 };
 
+static_assert(sizeof(logger_event::header_t) == 64);
+static_assert(sizeof(logger_event::buffer_t) == 4032);
 static_assert(sizeof(logger_event) == logger_event::PAGE_SIZE, "Logger event should use a single memory page.");
 
 // Unit tests
