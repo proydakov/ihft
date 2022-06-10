@@ -3,6 +3,13 @@
 # Based on Erik Rigtorp tuning guide
 # https://rigtorp.se/low-latency-guide/
 #
+# Kernel cmdline example
+# $ cat /proc/cmdline
+# BOOT_IMAGE=/boot/vmlinuz-5.13.0-28-generic root=UUID=76a2a6bf-b3b0-6fb6-9ab7-25cacb4c5f34 ro default_hugepagesz=1G isolcpus=6-11 nohz_full=6-11 rcu_nocbs=6-11 quiet splash vt.handoff=7
+#
+# Reserve several hugepages
+# $ echo 8 > /proc/sys/vm/nr_hugepages
+#
 
 if grep -q "isolcpus" /proc/cmdline; then
     echo isolcpus found

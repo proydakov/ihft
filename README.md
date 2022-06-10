@@ -51,11 +51,11 @@ IHFT is microframework & laboratory for low latency applications.
 - [ ] logger module
   - [x] compile-time formatting pattern check
   - [x] smart serializer for input arguments
-  - [ ] std::format as formatting backend
-  - [ ] std::source_location as logging info
   - [ ] simple client usage
   - [ ] non reliable delivery
   - [ ] wait-free implementation
+  - [ ] std::format as formatting backend
+  - [ ] std::source_location as logging info
 - [ ] network module
   - [x] multicast demo
   - [x] udp demo
