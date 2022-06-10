@@ -58,7 +58,7 @@ namespace
 
 namespace ihft::engine
 {
-    int engine_main(int const argc, char const * const argv[], reg_tasks_callback_t register_tasks)
+    int engine_main(int const argc, char const * const argv[], register_tasks_callback_t register_tasks, invalid_configuration_callback_t invalid_cfg)
     {
         // we are going to use a pure C++ application
         std::ios::sync_with_stdio(false);
@@ -70,9 +70,10 @@ namespace ihft::engine
             return EXIT_FAILURE;
         }
 
-        auto const usage = [argv]()
+        auto const usage = [argv, invalid_cfg]()
         {
             std::cerr << "Usage: " << argv[0] << " <path/to/config>" << std::endl;
+	    invalid_cfg();
         };
 
         if (argc < 2)

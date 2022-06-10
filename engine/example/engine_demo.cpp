@@ -5,6 +5,14 @@
 #include <chrono>
 #include <iostream>
 
+static const char * const DEMO_CFG = R"(
+$ cat engine.toml # example
+[engine]
+cpu.netio = 6
+cpu.algo = 7
+cpu.logger = 8
+)";
+
 using namespace ihft::engine;
 
 namespace
@@ -21,7 +29,7 @@ namespace
         auto res = std::chrono::nanoseconds::max();
 
         auto t1 = std::chrono::steady_clock::now();
-        for(int i = 0; i < 1'000'000'000 and until; i++)
+        for(int i = 0; i < 1'000'000 and until; i++)
         {
             auto const t2 = std::chrono::steady_clock::now();
             auto const delta = t2 - t1;
@@ -33,11 +41,18 @@ namespace
 
         std::cout << "cpu threshold_ns: " << res.count() << std::endl;
     }
+
+    void invalid_config()
+    {
+	std::cerr << DEMO_CFG;
+	std::cerr.flush();
+    }
 }
 
 int main(int const argc, const char * const argv[])
 {
-    reg_tasks_callback_t callback = register_items;
+    register_tasks_callback_t reg_callback = register_items;
+    invalid_configuration_callback_t inv_callback = invalid_config;
 
     std::cout << "Hello, %Username%.\n";
     std::cout << "This demo loading on any isolated CPU from config.\n";
@@ -45,5 +60,5 @@ int main(int const argc, const char * const argv[])
     std::cout << "And then waits for the SIGINT signal from the user.\n";
     std::cout.flush();
 
-    return engine_main(argc, argv, callback);
+    return engine_main(argc, argv, reg_callback, inv_callback);
 }
