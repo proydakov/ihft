@@ -5,6 +5,23 @@
 
 #include <type_traits>
 
+/*
+
+-------------------------------------------------------------------------------
+../memory/benchmark/benchmark_stream_fixed_pool_allocator.cpp:18
+...............................................................................
+
+benchmark name                       samples       iterations    estimated
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+allocate(1)                                    100         36774     3.6774 ms
+                                        1.13102 ns    1.12934 ns    1.13343 ns
+                                      0.0101578 ns 0.00741728 ns  0.0169453 ns
+-------------------------------------------------------------------------------
+
+ */
+
 using namespace ihft;
 
 struct A
