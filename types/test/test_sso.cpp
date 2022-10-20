@@ -18,7 +18,7 @@ namespace
         {
             g_call_allocate++;
             auto bytes = size * sizeof(T);
-            auto ptr = reinterpret_cast<T*>(malloc(bytes));
+            auto ptr = reinterpret_cast<T*>(std::malloc(bytes));
             std::cout << "allocate: " << ptr << " size: " <<size << std::endl;
             return ptr;
         }

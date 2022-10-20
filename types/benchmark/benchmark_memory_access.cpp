@@ -7,7 +7,7 @@
 
 namespace
 {
-int64_t g_counter{};
+static int64_t g_counter{};
 }
 
 IHFT_NOINLINE int64_t accumulate_global()
@@ -26,7 +26,7 @@ TEST_CASE("global_variable benchmark")
 
 namespace
 {
-thread_local int64_t g_tl_counter{};
+static thread_local int64_t g_tl_counter{};
 }
 
 IHFT_NOINLINE int64_t accumulate_thread_local()

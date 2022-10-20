@@ -2,19 +2,19 @@
 
 #include <string_view>
 
-struct SourceInfo
+struct source_info
 {
     std::string_view file{};
     std::string_view func{};
     unsigned line{};
 };
 
-SourceInfo sourceLog(std::string_view file, std::string_view func, unsigned line)
+source_info source_log(std::string_view file, std::string_view func, unsigned line)
 {
     return {file, func, line};
 }
 
-consteval std::string_view prepareFilePath(std::string_view rawfile)
+consteval std::string_view prepare_file_path(std::string_view rawfile)
 {
     size_t const pos = rawfile.rfind("/");
     if (pos == std::string_view::npos)
@@ -27,7 +27,7 @@ consteval std::string_view prepareFilePath(std::string_view rawfile)
     }
 }
 
-#define LOG( ) sourceLog( prepareFilePath(__FILE__), __PRETTY_FUNCTION__, __LINE__ )
+#define LOG( ) source_log( prepare_file_path(__FILE__), __PRETTY_FUNCTION__, __LINE__ )
 
 // Unit tests
 
@@ -60,6 +60,25 @@ struct Holder
 TEST_CASE("source info 2")
 {
     Holder::source_info2();
+}
+
+struct Helper
+{
+    void source_info3() const
+    {
+        auto const info = LOG( );
+
+        REQUIRE(info.file == "test_source_info.cpp");
+        REQUIRE(info.func == "void Helper::source_info3() const");
+        REQUIRE(info.line == 69u);
+    }
+};
+
+TEST_CASE("source info 3")
+{
+    Helper helper;
+
+    helper.source_info3();
 }
 
 #undef LOG
