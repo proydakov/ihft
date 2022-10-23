@@ -1,2 +1,5 @@
 ihft_add_benchmark(benchmark_stream_fixed_pool_allocator)
 target_link_libraries(benchmark_stream_fixed_pool_allocator PRIVATE ihft_memory)
+
+ihft_add_benchmark(benchmark_arena_allocator)
+target_link_libraries(benchmark_arena_allocator PRIVATE ihft_memory)

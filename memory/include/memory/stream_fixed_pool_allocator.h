@@ -26,15 +26,20 @@ namespace ihft
         using value_type = T;
 
     public:
-        stream_fixed_pool_allocator(std::size_t queue_capacity, const RegionAllocator& allocator = RegionAllocator())
+        stream_fixed_pool_allocator(std::size_t queue_capacity, std::size_t extra, const RegionAllocator& allocator = RegionAllocator())
             : m_data(nullptr)
             , m_next(0)
             // The queue has maximum of queue_capacity elements.
             // Allow the client to prepare the next record before the queue space becomes available
-            , m_size(queue_capacity + 1)
+            , m_size(queue_capacity + extra)
             , m_allocator(allocator)
         {
             m_data = m_allocator.allocate(m_size);
+        }
+
+        stream_fixed_pool_allocator(std::size_t queue_capacity, const RegionAllocator& allocator = RegionAllocator())
+            : stream_fixed_pool_allocator(queue_capacity, 1, allocator)
+        {
         }
 
         ~stream_fixed_pool_allocator() noexcept
@@ -52,13 +57,13 @@ namespace ihft
 
         [[nodiscard]] T* allocate(std::size_t n) noexcept
         {
-            if (n == 1)
+            if (n == 1) [[likely]]
             {
                 auto ptr = active_slab();
                 seek_to_next_slab();
                 return ptr;
             }
-            else
+            else [[unlikely]]
             {
                 return nullptr;
             }
@@ -80,7 +85,7 @@ namespace ihft
         void seek_to_next_slab() noexcept
         {
             m_next++;
-            if (m_next >= m_size)
+            if (m_next >= m_size) [[unlikely]]
             {
                 m_next = 0;
             }

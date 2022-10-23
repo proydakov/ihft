@@ -38,7 +38,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] python latency analysis tool
   - [ ] documentation with latency histograms
 - [x] memory module
-  - [ ] arena allocator
+  - [x] arena allocator
   - [x] stream fixed pool allocator
   - [x] page allocator for 4KB pages
   - [x] huge page allocator for 2MB & 1GB pages

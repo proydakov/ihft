@@ -1,6 +1,9 @@
 ihft_add_test(test_stream_fixed_pool_allocator)
 target_link_libraries(test_stream_fixed_pool_allocator PRIVATE ihft_memory)
 
+ihft_add_test(test_arena_allocator)
+target_link_libraries(test_arena_allocator PRIVATE ihft_memory)
+
 ihft_add_test(test_mmap_page_allocator)
 target_link_libraries(test_mmap_page_allocator PRIVATE ihft_memory)
 target_link_libraries(test_mmap_page_allocator PRIVATE ihft_platform)

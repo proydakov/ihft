@@ -44,8 +44,8 @@ namespace
 
     void invalid_config()
     {
-	std::cerr << DEMO_CFG;
-	std::cerr.flush();
+        std::cerr << DEMO_CFG;
+        std::cerr.flush();
     }
 }
 
