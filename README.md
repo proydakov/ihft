@@ -11,9 +11,33 @@ IHFT is microframework & laboratory for low latency applications.
 
 | Configuration | Static Runtime | Shared Runtime | ASAN+UBSAN | TSAN |
 | :---: | :---: | :---: | :--: | :--: |
-| Linux(GCC) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-gcc-x64-static)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64-static) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-gcc-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-gcc-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-gcc-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64-tsan) |
-| Linux(Clang) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64-static)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-static) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/linux-clang-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-tsan) |
-| MacOS(Clang) | - | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-asan-ubsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-asan-ubsan) | [![Build Status](https://img.shields.io/github/workflow/status/proydakov/ihft/macos-x64-tsan)](https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-tsan) |
+| Linux(GCC) | [![Build Status][pass-linux-gcc-x64-static]][ci-linux-gcc-x64-static] | [![Build Status][pass-linux-gcc-x64-shared]][ci-linux-gcc-x64-shared] | [![Build Status][pass-linux-gcc-x64-asan]][ci-linux-gcc-x64-asan] | [![Build Status][pass-linux-gcc-x64-tsan]][ci-linux-gcc-x64-tsan] |
+| Linux(Clang) | [![Build Status][pass-linux-clang-x64-static]][ci-linux-clang-x64-static] | [![Build Status][pass-linux-clang-x64-shared]][ci-linux-clang-x64-shared] | [![Build Status][pass-linux-clang-x64-asan]][ci-linux-clang-x64-asan] | [![Build Status][pass-linux-clang-x64-tsan]][ci-linux-clang-x64-tsan] |
+| MacOS(Clang) | - | [![Build Status][pass-macos-x64-shared]][ci-macos-x64-shared] | [![Build Status][pass-macos-x64-asan]][ci-macos-x64-asan] | [![Build Status][pass-macos-x64-tsan]][ci-macos-x64-tsan] |
+
+[pass-linux-gcc-x64-static]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-gcc-x64-static.yml?branch=master
+[pass-linux-gcc-x64-shared]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-gcc-x64.yml?branch=master
+[pass-linux-gcc-x64-asan]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-gcc-x64-asan-ubsan.yml?branch=master
+[pass-linux-gcc-x64-tsan]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-gcc-x64-tsan.yml?branch=master
+[pass-linux-clang-x64-static]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-clang-x64-static.yml?branch=master
+[pass-linux-clang-x64-shared]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-clang-x64.yml?branch=master
+[pass-linux-clang-x64-asan]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-clang-x64-asan-ubsan.yml?branch=master
+[pass-linux-clang-x64-tsan]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-clang-x64-tsan.yml?branch=master
+[pass-macos-x64-shared]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/macos-x64.yml?branch=master
+[pass-macos-x64-asan]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/macos-x64-asan-ubsan.yml?branch=master
+[pass-macos-x64-tsan]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/macos-x64-tsan.yml?branch=master
+
+[ci-linux-gcc-x64-static]: https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64-static
+[ci-linux-gcc-x64-shared]: https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64
+[ci-linux-gcc-x64-asan]: https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64-asan-ubsan
+[ci-linux-gcc-x64-tsan]: https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-gcc-x64-tsan
+[ci-linux-clang-x64-static]: https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-static
+[ci-linux-clang-x64-shared]: https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64
+[ci-linux-clang-x64-asan]: https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-asan-ubsan
+[ci-linux-clang-x64-tsan]: https://github.com/proydakov/ihft/actions?query=workflow%3Alinux-clang-x64-tsan
+[ci-macos-x64-shared]: https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64
+[ci-macos-x64-asan]: https://github.com/proydakov/ihft/actions?query=workflow%3Amacosx64-asan-ubsan
+[ci-macos-x64-tsan]: https://github.com/proydakov/ihft/actions?query=workflow%3Amacos-x64-tsan
 
 # Goals
 
@@ -85,6 +109,8 @@ IHFT is microframework & laboratory for low latency applications.
 
 [Compiler Explorer](https://godbolt.org)
 
+[Compiler Flags and Options](https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html)
+
 [Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)
 
 [Agner Fog’s instruction tables](https://agner.org/optimize/instruction_tables.pdf)
@@ -96,6 +122,8 @@ IHFT is microframework & laboratory for low latency applications.
 [AMD hardware information](https://www.amd.com/ru/products/epyc-server)
 
 [TOML config file format](https://toml.io/en/)
+
+[TCP/IP stack recommendations](http://mails.dpdk.org/archives/dev/2022-September/249265.html)
 
 # DevOps Links
 
