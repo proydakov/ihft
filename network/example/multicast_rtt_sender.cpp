@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     //
     // now just sendto() our destination
     //
-    for (unsigned i = 0; ; i++) {
+    for (unsigned i = 0; i < 1'000'000'000; i++) {
 
         struct timespec tp;
         clock_gettime(CLOCK_REALTIME, &tp);
