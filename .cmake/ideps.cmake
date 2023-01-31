@@ -1,5 +1,9 @@
 message(STATUS "Downloading dependencies...")
 
+if(${CMAKE_VERSION} VERSION_GREATER "3.23")
+    cmake_policy(SET CMP0135 OLD)
+endif()
+
 include(FetchContent)
 #set(FETCHCONTENT_QUIET FALSE)
 
@@ -8,7 +12,7 @@ if (IHFT_BUILD_UNITTESTS)
     FetchContent_Declare(
         Catch2
         URL https://codeload.github.com/catchorg/Catch2/tar.gz/refs/tags/v2.13.10
-        URL_HASH MD5=4fe03ff55a8f25b0e093fbc964992ffa
+        URL_HASH MD5=7a4dd2fd14fb9f46198eb670ac7834b7
     )
     FetchContent_GetProperties(Catch2)
     if(NOT Catch2_POPULATED)
@@ -29,7 +33,7 @@ if (IHFT_BUILD_TOML)
     FetchContent_Declare(
         tomlplusplus
         URL https://codeload.github.com/marzer/tomlplusplus/tar.gz/refs/tags/v3.3.0
-        URL_HASH MD5=0a39749cc3881cadeebd0c1baac472c8
+        URL_HASH MD5=a50999cb3ec1b05fd4ba535b5fee5e62
     )
     FetchContent_GetProperties(tomlplusplus)
     if(NOT tomlplusplus_POPULATED)
