@@ -1,3 +1,4 @@
 .vscode
 ctags_tag
 build*/
+Testing/*
