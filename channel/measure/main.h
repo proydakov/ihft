@@ -72,31 +72,21 @@ long IHFT_NOINLINE writer_method_impl(std::size_t total_events, queue_t& queue, 
 {
     long waitCounter = 0;
 
-    for (std::size_t j = 0; j < total_events;)
+    for (std::size_t j = 0; j < total_events; j++)
     {
         auto data = controller.create_data(j);
 
-        // some examples use stream_fixed_pool_allocator
-        // we must create only one item for many try_write attemps
-
-label:
-
-        if (queue.try_write(std::move(data)))
-        {
-            if constexpr(controller_t::flush)
-            {
-                //_mm_mfence();
-                //_mm_sfence();
-                std::atomic_thread_fence(std::memory_order_seq_cst);
-            }
-            j++;
-        }
-        else
+        while (not queue.try_write(std::move(data)))
         {
             waitCounter++;
             //_mm_pause();
+        }
 
-            goto label;
+        if constexpr(controller_t::flush)
+        {
+            //_mm_mfence();
+            //_mm_sfence();
+            std::atomic_thread_fence(std::memory_order_seq_cst);
         }
     }
 
