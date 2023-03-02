@@ -26,9 +26,11 @@ public:
     }
 
 private:
-    std::bitset<512> m_isolated;
-    std::bitset<512> m_nohz_fulled;
-    std::bitset<512> m_rcu_nocbsed;
+    static constexpr size_t MAX_CPUS = 512;
+
+    std::bitset<MAX_CPUS> m_isolated;
+    std::bitset<MAX_CPUS> m_nohz_fulled;
+    std::bitset<MAX_CPUS> m_rcu_nocbsed;
 };
 
 }
