@@ -145,7 +145,7 @@ struct logger_contract<T*>
 // how to pack origin arguments into internal buffer
 struct alignas(ihft::constant::CPU_CACHE_LINE_SIZE) logger_event final
 {
-    static constexpr size_t PAGE_SIZE = 4096;
+    static constexpr size_t ITEM_SIZE = 1024;
 
 private:
     template<typename T>
@@ -198,7 +198,7 @@ public:
             static_assert(alignof(buffer_t) % alignof(result_t) == 0, "Input has unsupportable alignment.");
 
             auto memory_ptr = reinterpret_cast<result_t*>(&buffer);
-            char* extra_data_ptr = static_cast<char*>(buffer.data) + sizeof(result_t);
+            auto extra_data_ptr = static_cast<char*>(buffer.data) + sizeof(result_t);
             constexpr size_t extra_data_size = sizeof(buffer_t) - sizeof(result_t);
             logger_extra_data extra_data_ctx(extra_data_ptr, extra_data_size);
 
@@ -247,7 +247,7 @@ public:
 
     struct alignas(ihft::constant::CPU_CACHE_LINE_SIZE) buffer_t final
     {
-        char data[PAGE_SIZE - sizeof(header_t)];
+        char data[ITEM_SIZE - sizeof(header_t)];
     };
 
 private:
@@ -256,8 +256,8 @@ private:
 };
 
 static_assert(sizeof(logger_event::header_t) == 64);
-static_assert(sizeof(logger_event::buffer_t) == 4032);
-static_assert(sizeof(logger_event) == logger_event::PAGE_SIZE, "Logger event should use a single memory page.");
+static_assert(sizeof(logger_event::buffer_t) == 1024 - 64);
+static_assert(sizeof(logger_event) == logger_event::ITEM_SIZE, "Logger event should use a single memory page.");
 
 // Unit tests
 

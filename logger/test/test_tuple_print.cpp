@@ -24,7 +24,7 @@ void trace(std::ostream& os, Tuple const& t)
 TEST_CASE("print")
 {
     auto const t = std::tuple<char, long, double>('a', 1024, 3.14);
-    std::stringstream stream;
+    std::ostringstream stream;
     trace(stream, t);
 
     REQUIRE(stream.str() == "(a, 1024, 3.14)");

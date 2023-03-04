@@ -44,7 +44,7 @@ bool format(std::ostream& os, std::string_view expr, Tuple const& t)
         return false;
     }
 
-    array.back() = expr.substr(from, pos - from);
+    array.back() = expr.substr(from);
 
     using indices = std::make_index_sequence<tuple_size>;
     format_impl(os, array, t, indices{});
@@ -59,7 +59,7 @@ TEST_CASE("format success 1")
     auto const t = std::tuple<char, long, double>('a', 1024, 3.14);
     std::string_view const expr = "arg1: '{}', arg2: {}, arg3: {}f";
 
-    std::stringstream stream;
+    std::ostringstream stream;
     REQUIRE(format(stream, expr, t));
 
     REQUIRE(stream.str() == "arg1: 'a', arg2: 1024, arg3: 3.14f");
@@ -70,7 +70,7 @@ TEST_CASE("format success 2")
     auto const t = std::tuple<int, int, int>(1024, 512, 256);
     std::string_view const expr = "{}{}{}";
 
-    std::stringstream stream;
+    std::ostringstream stream;
     REQUIRE(format(stream, expr, t));
 
     REQUIRE(stream.str() == "1024512256");
@@ -81,7 +81,7 @@ TEST_CASE("format success 3")
     auto const t = std::tuple<char, char>('Q', 'Q');
     std::string_view const expr = "#{}@{}$";
 
-    std::stringstream stream;
+    std::ostringstream stream;
     REQUIRE(format(stream, expr, t));
 
     REQUIRE(stream.str() == "#Q@Q$");
@@ -92,7 +92,7 @@ TEST_CASE("format success 4")
     auto const t = std::tuple<char>('Z');
     std::string_view const expr = "{{}}";
 
-    std::stringstream stream;
+    std::ostringstream stream;
     REQUIRE(format(stream, expr, t));
 
     REQUIRE(stream.str() == "{Z}");
@@ -103,7 +103,7 @@ TEST_CASE("format invalid 1")
     auto const t = std::tuple<char, long, double>('a', 1024, 3.14);
     std::string_view const expr = "{} - {}";
 
-    std::stringstream stream;
+    std::ostringstream stream;
     REQUIRE(!format(stream, expr, t));
 
     REQUIRE(stream.str().empty());
@@ -114,7 +114,7 @@ TEST_CASE("format invalid 2")
     auto const t = std::tuple<char, long, double>('a', 1024, 3.14);
     std::string_view const expr = "{} - {} - {} - {}";
 
-    std::stringstream stream;
+    std::ostringstream stream;
     REQUIRE(!format(stream, expr, t));
 
     REQUIRE(stream.str().empty());
@@ -125,7 +125,7 @@ TEST_CASE("format invalid 3")
     auto const t = std::tuple<char>('c');
     std::string_view const expr = "";
 
-    std::stringstream stream;
+    std::ostringstream stream;
     REQUIRE(!format(stream, expr, t));
 
     REQUIRE(stream.str().empty());
