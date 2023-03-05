@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 
-namespace ihft::engine
+namespace ihft::engine::impl
 {
 
 template<typename platform>

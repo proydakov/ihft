@@ -25,7 +25,6 @@ public:
         }
 
         queue_t producer;
-
         std::vector<typename queue_t::reader_type> consumers;
     };
 

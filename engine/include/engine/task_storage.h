@@ -7,6 +7,11 @@
 namespace ihft::engine
 {
 
+namespace impl
+{
+    class engine;
+}
+
 class task_storage
 {
 public:
@@ -23,7 +28,7 @@ public:
     }
 
 private:
-    friend class engine;
+    friend class impl::engine;
 
     std::multimap<std::string, task_t> m_tasks;
 };

@@ -73,7 +73,7 @@ namespace ihft::engine
         auto const usage = [argv, invalid_cfg]()
         {
             std::cerr << "Usage: " << argv[0] << " <path/to/config>" << std::endl;
-	    invalid_cfg();
+            invalid_cfg();
         };
 
         if (argc < 2)
@@ -139,7 +139,7 @@ namespace ihft::engine
             // the correct cpus configuration can't be empty
             // we are going to move initialization into the first isolated cpu
             unsigned const cpu_id = cpu_cfg.get_name_2_cpu().begin()->second;
-            logical_cpu_impl<plf> logical_cpu(cpu_id, "main");
+            impl::logical_cpu_impl<plf> logical_cpu(cpu_id, "main");
             if (!logical_cpu.bind())
             {
                 std::cerr << "runtime error: can't bind thread into core" << std::endl;
@@ -156,7 +156,7 @@ namespace ihft::engine
 
         std::cout << "creating engine..." << std::endl;
 
-        auto engine_res = engine::create(cpu_cfg, std::move(storage), g_until);
+        auto engine_res = impl::engine::create(cpu_cfg, std::move(storage), g_until);
         if (!engine_res)
         {
             usage();

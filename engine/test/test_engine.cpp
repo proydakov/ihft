@@ -5,6 +5,7 @@
 #include <engine/cpus_configuration.h>
 
 using namespace ihft::engine;
+using namespace ihft::engine::impl;
 
 namespace
 {

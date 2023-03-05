@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <iostream>
 
-using logical_cpu = ihft::engine::logical_cpu_impl<ihft::platform::trait>;
+using logical_cpu = ihft::engine::impl::logical_cpu_impl<ihft::platform::trait>;
 
 std::chrono::nanoseconds calc_cpu_cycle()
 {

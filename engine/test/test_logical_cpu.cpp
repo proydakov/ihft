@@ -35,7 +35,7 @@ namespace
 TEST_CASE("logical_cpu")
 {
     {
-        using test_logical_cpu = ihft::engine::logical_cpu_impl<test_platform>;
+        using test_logical_cpu = ihft::engine::impl::logical_cpu_impl<test_platform>;
 
         test_logical_cpu cpu(7, "omega");
         REQUIRE(cpu.get_id() == 7);

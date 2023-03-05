@@ -5,7 +5,7 @@
 
 #include <set>
 
-namespace ihft::engine
+namespace ihft::engine::impl
 {
     engine::engine_result_t engine::create(cpus_configuration cfg, task_storage storage, std::atomic_bool const& until)
     {

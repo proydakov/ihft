@@ -9,7 +9,7 @@
 #include <thread>
 #include <vector>
 
-namespace ihft::engine
+namespace ihft::engine::impl
 {
 
 class engine
