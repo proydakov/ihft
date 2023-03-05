@@ -1,6 +1,7 @@
 ihft_add_test(test_compiletime)
 
-ihft_add_test(test_source_info)
+ihft_add_test(test_source_location)
+target_link_libraries(test_source_location PRIVATE ihft_logger)
 
 ihft_add_test(test_typer)
 
