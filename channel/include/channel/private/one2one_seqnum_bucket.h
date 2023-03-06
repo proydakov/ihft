@@ -4,7 +4,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "common.h"
+#include "channel_helper.h"
 
 namespace ihft::channel::impl
 {
@@ -21,14 +21,20 @@ struct one2one_seqnum_queue_constant
     enum : T { SEQNUM_MASK = std::numeric_limits<T>::max() >> T(1) };
 };
 
+static_assert(one2one_seqnum_queue_constant<std::uint8_t>::SEQNUM_MASK == 127ul);
+static_assert(one2one_seqnum_queue_constant<std::uint16_t>::SEQNUM_MASK == 32'767ul);
+static_assert(one2one_seqnum_queue_constant<std::uint32_t>::SEQNUM_MASK == 2'147'483'647ul);
+static_assert(one2one_seqnum_queue_constant<std::uint64_t>::SEQNUM_MASK == 9'223'372'036'854'775'807ul);
+
 // bucket
 template<typename event_t, typename counter_t>
 struct alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_bucket final
 {
-    using storage_t = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
+    using storage_type = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
+    using counter_type = one2one_seqnum_queue_constant<counter_t>;
 
     one2one_seqnum_bucket() noexcept
-        : m_seqn(one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
+        : m_seqn(counter_type::DUMMY_EVENT_SEQ_NUM)
     {
     }
 
@@ -39,10 +45,10 @@ struct alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_bucket final
 
     ~one2one_seqnum_bucket() noexcept
     {
-        if (m_seqn != one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
+        if (m_seqn != counter_type::DUMMY_EVENT_SEQ_NUM)
         {
             std::destroy_at(&get_event());
-            m_seqn.store(one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
+            m_seqn.store(counter_type::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
         }
     }
 
@@ -53,7 +59,7 @@ struct alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_bucket final
     }
 
     std::atomic<counter_t> m_seqn;
-    storage_t m_storage;
+    storage_type m_storage;
 };
 
 }

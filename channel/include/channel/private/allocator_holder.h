@@ -34,4 +34,4 @@ struct allocator_holder<empty_allocator>
 {
 };
 
-} // ihft::channel
+} // ihft::channel::impl

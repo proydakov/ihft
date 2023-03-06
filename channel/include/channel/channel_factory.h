@@ -7,11 +7,11 @@
 namespace ihft::channel
 {
 
-class channel_factory
+class channel_factory final
 {
 public:
     template<typename queue_t>
-    struct producer_and_consumers
+    struct producer_and_consumers final
     {
         producer_and_consumers(std::size_t n)
             : producer(n)
@@ -31,6 +31,11 @@ public:
     template<typename queue_t>
     static std::optional<producer_and_consumers<queue_t>> make(std::size_t queue_capacity, std::size_t readers_count)
     {
+        if (0 == readers_count)
+        {
+            return std::nullopt;
+        }
+
         auto result = std::make_optional<producer_and_consumers<queue_t>>(queue_capacity);
         if (not result)
         {
@@ -52,6 +57,11 @@ public:
     template<typename queue_t, typename content_allocator_t, typename deleter_t = std::default_delete<content_allocator_t>>
     static std::optional<producer_and_consumers<queue_t>> make(std::size_t queue_capacity, std::size_t readers_count, std::unique_ptr<content_allocator_t, deleter_t> content_allocator)
     {
+        if (0 == readers_count)
+        {
+            return std::nullopt;
+        }
+
         auto result = std::make_optional<producer_and_consumers<queue_t>>(queue_capacity, std::move(content_allocator));
         if (not result)
         {

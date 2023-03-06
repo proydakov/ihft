@@ -60,6 +60,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] one 2 many stream moveable object queue
   - [ ] batch reader for all moveable object queues
   - [x] python latency analysis tool
+  - [ ] C++20 concepts
   - [ ] documentation with latency histograms
 - [x] memory module
   - [x] arena allocator

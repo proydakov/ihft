@@ -27,8 +27,9 @@ template<typename event_t, typename counter_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_reader final
 {
 public:
-    using ring_buffer_t = impl::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
     using event_type = event_t;
+    using ring_buffer_t = impl::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using counter_type = impl::one2many_seqnum_queue_constant<counter_t>;
 
 public:
     one2many_seqnum_stream_pod_reader(one2many_seqnum_stream_pod_reader&&) noexcept = default;
@@ -40,10 +41,11 @@ public:
     std::optional<event_t> try_read() noexcept
     {
         auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_seqn.load(std::memory_order_acquire) == m_next_read_index)
+        counter_t const next = m_next_seq_num & counter_type::SEQNUM_MASK;
+        if (bucket.m_seqn.load(std::memory_order_acquire) == next)
         {
-            m_next_read_index++;
-            m_next_bucket = m_next_read_index & m_storage_mask;
+            m_next_seq_num++;
+            m_next_bucket = m_next_seq_num & m_storage_mask;
             std::optional<event_t> opt(std::in_place, bucket.get_event());
             bucket.m_counter.fetch_sub(1, std::memory_order_release);
             return opt;
@@ -60,11 +62,11 @@ public:
     }
 
 private:
-    one2many_seqnum_stream_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t read_from, counter_t id) noexcept
+    one2many_seqnum_stream_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t id) noexcept
         : m_storage(std::move(storage))
-        , m_next_bucket(read_from & storage_mask)
+        , m_next_bucket(counter_type::MIN_EVENT_SEQ_NUM & storage_mask)
         , m_storage_mask(storage_mask)
-        , m_next_read_index(read_from)
+        , m_next_seq_num(counter_type::MIN_EVENT_SEQ_NUM)
         , m_id(id)
     {
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
@@ -76,12 +78,12 @@ private:
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
     std::size_t m_storage_mask;
-    counter_t m_next_read_index;
+    counter_t m_next_seq_num;
     counter_t m_id;
 };
 
 // queue
-template<typename event_t, typename counter_t = std::uint32_t>
+template<typename event_t, typename counter_t = std::uint64_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_queue final
 {
 public:
@@ -120,8 +122,11 @@ public:
 
 private:
     one2many_seqnum_stream_pod_queue(std::size_t n)
-        : m_impl(impl::queue_helper::to2pow<counter_t>(n))
+        : m_impl(impl::channel_helper::to2pow<counter_t>(n))
     {
+        static_assert(std::is_unsigned<counter_t>::value);
+        static_assert(std::is_trivially_copyable<event_t>::value);
+        static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
     std::optional<reader_type> create_reader() noexcept

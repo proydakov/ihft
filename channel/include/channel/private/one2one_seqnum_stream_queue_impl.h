@@ -16,6 +16,7 @@ class one2one_seqnum_stream_queue_impl final
 public:
     using bucket_type = one2one_seqnum_bucket<event_t, counter_t>;
     using ring_buffer_type = one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using counter_type = one2one_seqnum_queue_constant<counter_t>;
 
     // CA - content allocator type
     // CD - content deleter type
@@ -23,10 +24,10 @@ public:
     template<typename CA, typename CD, typename RA = std::allocator<bucket_type>>
     one2one_seqnum_stream_queue_impl(std::size_t n, std::unique_ptr<CA, CD> content_allocator, RA region_allocator = RA())
         : m_storage(ring_buffer_factory::make(n, std::move(content_allocator), std::move(region_allocator)))
-        , m_next_bucket(one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_bucket(counter_type::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(n - 1)
-        , m_next_seq_num(one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_next_reader_id(one2one_seqnum_queue_constant<counter_t>::MIN_READER_ID)
+        , m_next_seq_num(counter_type::MIN_EVENT_SEQ_NUM)
+        , m_next_reader_id(counter_type::MIN_READER_ID)
     {
     }
 
@@ -34,10 +35,10 @@ public:
     template<typename RA = std::allocator<bucket_type>>
     one2one_seqnum_stream_queue_impl(std::size_t n, RA region_allocator = RA())
         : m_storage(ring_buffer_factory::make(n, std::move(region_allocator)))
-        , m_next_bucket(one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_bucket(counter_type::MIN_EVENT_SEQ_NUM)
         , m_storage_mask(n - 1)
-        , m_next_seq_num(one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
-        , m_next_reader_id(one2one_seqnum_queue_constant<counter_t>::MIN_READER_ID)
+        , m_next_seq_num(counter_type::MIN_EVENT_SEQ_NUM)
+        , m_next_reader_id(counter_type::MIN_READER_ID)
     {
     }
 
@@ -45,7 +46,7 @@ public:
     std::optional<R> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
-        if (next_id != one2one_seqnum_queue_constant<counter_t>::DUMMY_READER_ID)
+        if (next_id != counter_type::DUMMY_READER_ID)
         {
             return R(m_storage, m_storage_mask, next_id);
         }
@@ -61,12 +62,17 @@ public:
         static_assert(std::is_nothrow_move_constructible<event_t>::value);
 
         auto& bucket = m_storage.get()[m_next_bucket];
-        if (bucket.m_seqn.load(std::memory_order_acquire) == one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM)
+
+        if (bucket.m_seqn.load(std::memory_order_acquire) == counter_type::DUMMY_EVENT_SEQ_NUM)
         {
-            counter_t const seqn = (m_next_seq_num++) & impl::one2one_seqnum_queue_constant<counter_t>::SEQNUM_MASK;
-            m_next_bucket = m_next_seq_num & m_storage_mask;
+            // The std::numeric_limits<counter_t>::max() uses as empty cell.
+            counter_t const seqn = m_next_seq_num & counter_type::SEQNUM_MASK;
             std::construct_at(reinterpret_cast<event_t*>(&bucket.m_storage), std::move(event));
             bucket.m_seqn.store(seqn, std::memory_order_release);
+
+            m_next_seq_num++;
+            m_next_bucket = m_next_seq_num & m_storage_mask;
+
             return true;
         }
         else

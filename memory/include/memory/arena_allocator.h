@@ -74,9 +74,9 @@ struct arena_allocator
         return typed_arena_allocator<T>(*this);
     }
 
-    // Reset the current pointer and reuse memory.
-    // This method doesn't call any dtors.
-    // The user must call dtors before.
+    // Reset the current pointer and reuse memory
+    // This method doesn't call any dtors
+    // The user must call dtors itself before
 
     void reset()
     {

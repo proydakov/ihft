@@ -33,6 +33,7 @@ class one2one_seqnum_stream_object_guard final
 {
 public:
     using bucket_type = impl::one2one_seqnum_bucket<event_t, counter_t>;
+    using counter_type = impl::one2one_seqnum_queue_constant<counter_t>;
 
     one2one_seqnum_stream_object_guard(bucket_type& bucket, counter_t owner) noexcept
         : m_bucket(bucket)
@@ -44,7 +45,7 @@ public:
         : m_bucket(data.m_bucket)
         , m_owner(data.m_owner)
     {
-        data.m_owner = impl::one2one_seqnum_queue_constant<counter_t>::DUMMY_READER_ID;
+        data.m_owner = counter_type::DUMMY_READER_ID;
     }
 
     one2one_seqnum_stream_object_guard& operator=(one2one_seqnum_stream_object_guard&& data) = delete;
@@ -53,10 +54,10 @@ public:
 
     ~one2one_seqnum_stream_object_guard() noexcept
     {
-        if (m_owner != impl::one2one_seqnum_queue_constant<counter_t>::DUMMY_READER_ID)
+        if (m_owner != counter_type::DUMMY_READER_ID)
         {
             m_bucket.get_event().~event_t();
-            m_bucket.m_seqn.store(impl::one2one_seqnum_queue_constant<counter_t>::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
+            m_bucket.m_seqn.store(counter_type::DUMMY_EVENT_SEQ_NUM, std::memory_order_release);
         }
     }
 
@@ -76,6 +77,7 @@ class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_object_reader
 public:
     using guard_type = one2one_seqnum_stream_object_guard<event_t, counter_t>;
     using ring_buffer_t = impl::one2one_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using counter_type = impl::one2one_seqnum_queue_constant<counter_t>;
 
 public:
     one2one_seqnum_stream_object_reader(one2one_seqnum_stream_object_reader&&) noexcept = default;
@@ -87,7 +89,7 @@ public:
     std::optional<guard_type> try_read() noexcept
     {
         auto& bucket = m_storage.get()[m_next_bucket];
-        counter_t const next = m_next_seq_num & impl::one2one_seqnum_queue_constant<counter_t>::SEQNUM_MASK;
+        counter_t const next = m_next_seq_num & counter_type::SEQNUM_MASK;
         if (bucket.m_seqn.load(std::memory_order_acquire) == next)
         {
             m_next_seq_num++;
@@ -108,12 +110,12 @@ public:
 private:
     one2one_seqnum_stream_object_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t id) noexcept
         : m_storage(std::move(storage))
-        , m_next_bucket(impl::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM & storage_mask)
+        , m_next_bucket(counter_type::MIN_EVENT_SEQ_NUM & storage_mask)
         , m_storage_mask(storage_mask)
-        , m_next_seq_num(impl::one2one_seqnum_queue_constant<counter_t>::MIN_EVENT_SEQ_NUM)
+        , m_next_seq_num(counter_type::MIN_EVENT_SEQ_NUM)
         , m_id(id)
     {
-        static_assert(sizeof(one2one_seqnum_stream_object_reader<event_t, counter_t>) <= constant::CPU_CACHE_LINE_SIZE);
+        static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
 private:
@@ -126,7 +128,7 @@ private:
     counter_t m_id;
 };
 
-template<typename event_t, typename content_allocator_t = impl::empty_allocator, typename counter_t = std::uint32_t>
+template<typename event_t, typename content_allocator_t = impl::empty_allocator, typename counter_t = std::uint64_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_object_queue final : public impl::allocator_holder<content_allocator_t>
 {
 public:
@@ -165,8 +167,9 @@ private:
     // empty_allocator ctor
     template<typename A = content_allocator_t> requires (std::is_same_v<A, impl::empty_allocator>)
     one2one_seqnum_stream_object_queue(std::size_t n)
-        : m_impl(impl::queue_helper::to2pow<counter_t>(n))
+        : m_impl(impl::channel_helper::to2pow<counter_t>(n))
     {
+        static_assert(std::is_unsigned<counter_t>::value);
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
@@ -174,8 +177,9 @@ private:
     template<typename deleter_t = std::default_delete<content_allocator_t>, typename A = content_allocator_t> requires (!std::is_same_v<A, impl::empty_allocator>)
     one2one_seqnum_stream_object_queue(std::size_t n, std::unique_ptr<content_allocator_t, deleter_t> content_allocator)
         : impl::allocator_holder<content_allocator_t>(content_allocator.get())
-        , m_impl(impl::queue_helper::to2pow<counter_t>(n), std::move(content_allocator))
+        , m_impl(impl::channel_helper::to2pow<counter_t>(n), std::move(content_allocator))
     {
+        static_assert(std::is_unsigned<counter_t>::value);
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
