@@ -61,6 +61,12 @@ struct arena_allocator
     {
     }
 
+    template<size_t N>
+    explicit arena_allocator(char (&charArr)[N])
+        : arena_allocator(charArr, sizeof(charArr))
+    {
+    }
+
     // The typed_arena_allocator contains a reference into main arena_allocator
     arena_allocator(arena_allocator const&) = delete;
     arena_allocator& operator=(arena_allocator const&) = delete;

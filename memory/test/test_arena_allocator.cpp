@@ -117,7 +117,7 @@ TEST_CASE("struct with extra data")
     struct network_data final
     {
         network_data(std::string_view iname, std::string_view ilocation)
-            : arena(extra_data, sizeof(extra_data))
+            : arena(extra_data)
             , name(iname, arena.typed_allocator<char>())
             , location(ilocation, arena.typed_allocator<char>())
         {
