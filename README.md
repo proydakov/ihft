@@ -104,6 +104,14 @@ IHFT is microframework & laboratory for low latency applications.
 - [x] DevOps
   - [x] script for system latency optimization
 
+# Docs
+
+[Channel](channel/README.md)
+
+[Compiler](compiler/README.md)
+
+[Constant](constant/README.md)
+
 # Dev Links
 
 [C++ reference](https://en.cppreference.com/w/)
