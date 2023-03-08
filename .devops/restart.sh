@@ -26,7 +26,6 @@ if grep -q "isolcpus" /proc/cmdline; then
     done
 
     /usr/sbin/irqbalance --foreground --oneshot
-
     /usr/sbin/swapoff -a
 
     echo never > /sys/kernel/mm/transparent_hugepage/enabled
@@ -36,6 +35,9 @@ if grep -q "isolcpus" /proc/cmdline; then
     sysctl vm.stat_interval=60
 
     find /sys/devices/system/cpu -name scaling_governor -exec sh -c 'echo performance > {}' ';'
+
+    # https://stackoverflow.com/questions/70521621/sending-and-receiving-multicast-on-the-same-linux-machine-from-different-interfa
+    sysctl -w net.ipv4.conf.all.accept_local=1
 else
     echo isolcpus not found
 fi
