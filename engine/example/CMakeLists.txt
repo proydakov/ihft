@@ -1,15 +1,9 @@
 # manual example apps
-add_executable(engine_greek_alphabet greek_alphabet.cpp)
-target_link_libraries(engine_greek_alphabet ihft_platform)
-
-add_executable(engine_china_cities china_cities.cpp)
-target_link_libraries(engine_china_cities ihft_platform)
-
-add_executable(engine_bogatyr bogatyr.cpp)
-target_link_libraries(engine_bogatyr ihft_platform)
-
 add_executable(engine_logical_cpu_demo logical_cpu_demo.cpp)
 target_link_libraries(engine_logical_cpu_demo ihft_engine ihft_platform)
 
-add_executable(engine_demo engine_demo.cpp)
-target_link_libraries(engine_demo ihft_engine)
+add_executable(engine_perimeter engine_perimeter.cpp)
+target_link_libraries(engine_perimeter ihft_engine ihft_platform)
+
+add_executable(engine_manual_config engine_manual_config.cpp)
+target_link_libraries(engine_manual_config ihft_engine)

@@ -92,7 +92,9 @@ int main(const int argc, char* argv[])
     valid_experiment[0] = measure(0, active_threads, results, param.threshold, until);
 
     for (auto& t : threads)
+    {
         t.join();
+    }
 
     trace_results(valid_experiment, results, param);
 

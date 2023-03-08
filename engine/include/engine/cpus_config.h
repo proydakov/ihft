@@ -8,13 +8,13 @@
 namespace ihft::engine
 {
 
-class cpus_configuration final
+class cpus_config final
 {
 public:
-    using configuration_result_t = ihft::types::result<cpus_configuration, std::string>;
+    using config_result_t = ihft::types::result<cpus_config, std::string>;
 
     template<typename platform, typename config>
-    static configuration_result_t parse(config const& cfg)
+    static config_result_t parse(config const& cfg)
     {
         std::string_view const section = "engine.cpu";
         if (!cfg.exists(section))
@@ -33,7 +33,7 @@ public:
     }
 
     template<typename platform>
-    static configuration_result_t parse(std::map<std::string, unsigned> cfg)
+    static config_result_t parse(std::map<std::string, unsigned> cfg)
     {
         std::string const prefix = "Invalid configuration. ";
 
@@ -75,7 +75,7 @@ public:
             }
         }
 
-        return cpus_configuration(std::move(cfg));
+        return cpus_config(std::move(cfg));
     }
 
     auto const& get_name_2_cpu() const noexcept
@@ -84,7 +84,7 @@ public:
     }
 
     template<typename S>
-    friend S& operator<<(S& os, const cpus_configuration& cfg)
+    friend S& operator<<(S& os, const cpus_config& cfg)
     {
         os << "{";
         for(auto const& [k, v] : cfg.m_name_2_id)
@@ -97,7 +97,7 @@ public:
     }
 
 private:
-    cpus_configuration(std::map<std::string, unsigned> map)
+    cpus_config(std::map<std::string, unsigned> map)
         : m_name_2_id(std::move(map))
     {
     }

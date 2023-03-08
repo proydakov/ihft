@@ -1,7 +1,7 @@
 #pragma once
 
 #include <engine/task_storage.h>
-#include <engine/cpus_configuration.h>
+#include <engine/cpus_config.h>
 
 #include <types/result.h>
 
@@ -17,7 +17,7 @@ class engine
 public:
     using engine_result_t = ihft::types::result<engine, std::string>;
 
-    static engine_result_t create(cpus_configuration, task_storage, std::atomic_bool const&);
+    static engine_result_t create(cpus_config, task_storage, std::atomic_bool const&);
     ~engine();
 
     engine(engine const&) = delete;
@@ -29,7 +29,7 @@ public:
     void join();
 
 private:
-    engine(cpus_configuration, task_storage, std::atomic_bool const&);
+    engine(cpus_config, task_storage, std::atomic_bool const&);
 
 private:
     std::vector<std::thread> m_threads;

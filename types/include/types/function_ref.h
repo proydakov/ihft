@@ -15,8 +15,7 @@
 /// intended for use as the type of a function parameter that is not used
 /// after the function in question returns.
 ///
-/// This class does not own the callable, so it is not in general safe to store
-/// a function_ref.
+/// This class does not own the callable, so it is not in general safe to store a function_ref.
 ///
 
 #include <cstdint>

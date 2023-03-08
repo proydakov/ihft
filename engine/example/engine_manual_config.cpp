@@ -1,5 +1,5 @@
 #include <engine/engine_main.h>
-#include <engine/cpus_configuration.h>
+#include <engine/cpus_config.h>
 #include <engine/task_storage.h>
 
 #include <chrono>
@@ -17,7 +17,7 @@ using namespace ihft::engine;
 
 namespace
 {
-    void register_items(cpus_configuration const& cfg, task_storage& storage, std::atomic_bool const& until)
+    bool register_items(cpus_config const& cfg, task_storage& storage, std::atomic_bool const& until)
     {
         for(auto const& [name, _] : cfg.get_name_2_cpu())
         {
@@ -40,6 +40,8 @@ namespace
         }
 
         std::cout << "cpu threshold_ns: " << res.count() << std::endl;
+
+        return true;
     }
 
     void invalid_config()
@@ -51,14 +53,11 @@ namespace
 
 int main(int const argc, const char * const argv[])
 {
-    register_tasks_callback_t reg_callback = register_items;
-    invalid_configuration_callback_t inv_callback = invalid_config;
-
     std::cout << "Hello, %Username%.\n";
     std::cout << "This demo loading on any isolated CPU from config.\n";
     std::cout << "Generates several threads from configuration file.\n";
     std::cout << "And then waits for the SIGINT signal from the user.\n";
     std::cout.flush();
 
-    return engine_main(argc, argv, reg_callback, inv_callback);
+    return engine_main(argc, argv, register_items, invalid_config);
 }
