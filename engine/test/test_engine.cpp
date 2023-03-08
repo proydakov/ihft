@@ -2,7 +2,7 @@
 
 #include <engine/private/engine.h>
 #include <engine/task_storage.h>
-#include <engine/cpus_configuration.h>
+#include <engine/cpus_config.h>
 
 using namespace ihft::engine;
 using namespace ihft::engine::impl;
@@ -37,7 +37,7 @@ namespace
 
 TEST_CASE("engine - not enough CPU")
 {
-    auto const cpus_res = cpus_configuration::parse<test_platform>({{"alpha", 7}, {"omega", 9}});
+    auto const cpus_res = cpus_config::parse<test_platform>({{"alpha", 7}, {"omega", 9}});
     REQUIRE(cpus_res);
     auto const& cpus = cpus_res.value();
 
@@ -58,7 +58,7 @@ TEST_CASE("engine - not enough CPU")
 
 TEST_CASE("engine - duplicated tasks")
 {
-    auto const cpus_res = cpus_configuration::parse<test_platform>({{"alpha", 7}, {"omega", 9}});
+    auto const cpus_res = cpus_config::parse<test_platform>({{"alpha", 7}, {"omega", 9}});
     REQUIRE(cpus_res);
     auto const& cpus = cpus_res.value();
 
@@ -78,7 +78,7 @@ TEST_CASE("engine - duplicated tasks")
 
 TEST_CASE("engine - invalid assignment")
 {
-    auto const cpus_res = cpus_configuration::parse<test_platform>({{"alpha", 7}, {"omega", 9}});
+    auto const cpus_res = cpus_config::parse<test_platform>({{"alpha", 7}, {"omega", 9}});
     REQUIRE(cpus_res);
     auto const& cpus = cpus_res.value();
 

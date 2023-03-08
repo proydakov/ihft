@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <engine/cpus_configuration.h>
+#include <engine/cpus_config.h>
 
 #include <misc/config_helper.h>
 
@@ -47,7 +47,7 @@ namespace
     }
 }
 
-TEST_CASE("cpus_configuration : valid config_helper")
+TEST_CASE("cpus_config : valid config_helper")
 {
     const char* const VALID_TOML_DOC =
     R"([engine]
@@ -57,13 +57,13 @@ cpu.logger = 13
 #cpu.backup = 12
 )";
 
-    temp_file file("cpus_configuration_valid.toml", VALID_TOML_DOC);
+    temp_file file("cpus_config_valid.toml", VALID_TOML_DOC);
     auto const result = config_helper::parse(file.fpath());
     REQUIRE(result);
 
     auto const& cfg = result.value();
 
-    auto const cpus_config = cpus_configuration::parse<test_isolated_platform>(cfg);
+    auto const cpus_config = cpus_config::parse<test_isolated_platform>(cfg);
     REQUIRE(cpus_config);
 
     auto const& name2cpu = cpus_config.value();
@@ -71,7 +71,7 @@ cpu.logger = 13
     REQUIRE(name2cpu.get_name_2_cpu().size() == 3);
 }
 
-TEST_CASE("cpus_configuration : invalid config_helper")
+TEST_CASE("cpus_config : invalid config_helper")
 {
     const char* const INVALID_TOML_DOC =
     R"([engine.zone]
@@ -80,39 +80,39 @@ strategy = 7
 logger = 13
 )";
 
-    temp_file file("cpus_configuration_invalid.toml", INVALID_TOML_DOC);
+    temp_file file("cpus_config_invalid.toml", INVALID_TOML_DOC);
     auto const result = config_helper::parse(file.fpath());
     REQUIRE(result);
 
     auto const& cfg = result.value();
 
-    auto const cpus_config = cpus_configuration::parse<test_isolated_platform>(cfg);
+    auto const cpus_config = cpus_config::parse<test_isolated_platform>(cfg);
     REQUIRE(!cpus_config);
 
-    REQUIRE(cpus_config.error() == "Section [engine.cpu] doesn't exist at source: cpus_configuration_invalid.toml");
+    REQUIRE(cpus_config.error() == "Section [engine.cpu] doesn't exist at source: cpus_config_invalid.toml");
 }
 
-TEST_CASE("cpus_configuration : valid")
+TEST_CASE("cpus_config : valid")
 {
-    auto const config = cpus_configuration::parse<test_isolated_platform>({
+    auto const config = cpus_config::parse<test_isolated_platform>({
         {"netio", 6}, {"strategy", 7}, {"logger", 13}
     });
 
     REQUIRE(config);
 }
 
-TEST_CASE("cpus_configuration : invalid - empty")
+TEST_CASE("cpus_config : invalid - empty")
 {
-    auto const config = cpus_configuration::parse<test_isolated_platform>({});
+    auto const config = cpus_config::parse<test_isolated_platform>({});
 
     REQUIRE(config.failed());
 
     REQUIRE(contains(config.error(), "Empty configuration"));
 }
 
-TEST_CASE("cpus_configuration : invalid - unreal cpu")
+TEST_CASE("cpus_config : invalid - unreal cpu")
 {
-    auto const config = cpus_configuration::parse<test_isolated_platform>({
+    auto const config = cpus_config::parse<test_isolated_platform>({
         {"alpha", 1024}
     });
 
@@ -121,9 +121,9 @@ TEST_CASE("cpus_configuration : invalid - unreal cpu")
     REQUIRE(contains(config.error(), "total_cpus"));
 }
 
-TEST_CASE("cpus_configuration : invalid - same core")
+TEST_CASE("cpus_config : invalid - same core")
 {
-    auto const config = cpus_configuration::parse<test_isolated_platform>({
+    auto const config = cpus_config::parse<test_isolated_platform>({
         {"alpha", 0},
         {"omega", 0}
     });
@@ -133,9 +133,9 @@ TEST_CASE("cpus_configuration : invalid - same core")
     REQUIRE(contains(config.error(), "[alpha, omega] use same core"));
 }
 
-TEST_CASE("cpus_configuration : invalid - unisolated")
+TEST_CASE("cpus_config : invalid - unisolated")
 {
-    auto const config = cpus_configuration::parse<test_unisolated_platform>({
+    auto const config = cpus_config::parse<test_unisolated_platform>({
         {"alpha", 0},
         {"omega", 1}
     });
@@ -145,9 +145,9 @@ TEST_CASE("cpus_configuration : invalid - unisolated")
     REQUIRE(contains(config.error(), "isolation"));
 }
 
-TEST_CASE("cpus_configuration : invalid - nohz_full")
+TEST_CASE("cpus_config : invalid - nohz_full")
 {
-    auto const config = cpus_configuration::parse<test_unnohz_full_platform>({
+    auto const config = cpus_config::parse<test_unnohz_full_platform>({
         {"alpha", 0},
         {"omega", 1}
     });
@@ -157,9 +157,9 @@ TEST_CASE("cpus_configuration : invalid - nohz_full")
     REQUIRE(contains(config.error(), "nohz_full"));
 }
 
-TEST_CASE("cpus_configuration : invalid - rcu_nocbs")
+TEST_CASE("cpus_config : invalid - rcu_nocbs")
 {
-    auto const config = cpus_configuration::parse<test_unrcu_nocbs_platform>({
+    auto const config = cpus_config::parse<test_unrcu_nocbs_platform>({
         {"alpha", 0},
         {"omega", 1}
     });

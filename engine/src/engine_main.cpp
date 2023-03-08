@@ -1,7 +1,7 @@
 #include <engine/engine_main.h>
 #include <engine/private/engine.h>
 #include <engine/private/logical_cpu.h>
-#include <engine/cpus_configuration.h>
+#include <engine/cpus_config.h>
 #include <engine/task_storage.h>
 
 #include <platform/platform.h>
@@ -58,7 +58,7 @@ namespace
 
 namespace ihft::engine
 {
-    int engine_main(int const argc, char const * const argv[], register_tasks_callback_t register_tasks, invalid_configuration_callback_t invalid_cfg)
+    int engine_main(int const argc, char const * const argv[], register_tasks_callback_t register_tasks, invalid_config_callback_t invalid_cfg)
     {
         // we are going to use a pure C++ application
         std::ios::sync_with_stdio(false);
@@ -102,7 +102,7 @@ namespace ihft::engine
         std::cout << "parsing cpu configuration..." << std::endl;
 
         auto const& helper = helper_res.value();
-        auto const cpu_cfg_res = cpus_configuration::parse<platform::trait>(helper);
+        auto const cpu_cfg_res = cpus_config::parse<platform::trait>(helper);
         if (!cpu_cfg_res)
         {
             usage();
@@ -146,7 +146,11 @@ namespace ihft::engine
                 return EXIT_FAILURE;
             }
 
-            register_tasks(cpu_cfg, storage, g_until);
+            if (not register_tasks(cpu_cfg, storage, g_until))
+            {
+                std::cerr << "can't register tasks" << std::endl;
+                return EXIT_FAILURE;
+            }
         }
 
         if (!g_until)

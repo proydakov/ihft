@@ -1,5 +1,5 @@
 ihft_add_benchmark(benchmark_function_ref)
-target_link_libraries(benchmark_function_ref PRIVATE ihft_types)
+target_link_libraries(benchmark_function_ref PRIVATE ihft_types ihft_compiler)
 
 ihft_add_benchmark(benchmark_memory_access)
 target_link_libraries(benchmark_memory_access PRIVATE ihft_compiler)

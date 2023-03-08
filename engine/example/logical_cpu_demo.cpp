@@ -44,7 +44,11 @@ int main(int const argc, char const * const argv[])
         std::cout << "step1" << std::endl;
 
         logical_cpu cpu(cpu_id, cpu_name);
-        cpu.bind();
+        if (not cpu.bind())
+        {
+            std::cout << "Can't bind <cpu_id> <cpu_name>" << cpu_id << " " << cpu_name << std::endl;
+            return EXIT_FAILURE;
+        }
 
         delta1 = calc_cpu_cycle();
     }

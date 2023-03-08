@@ -5,7 +5,7 @@
 namespace ihft::platform
 {
 
-void process_cpu_list(std::string_view cpus, std::function<void(unsigned)> const& functor)
+void process_cpu_list(std::string_view cpus, types::function_ref<void(unsigned)> functor)
 {
     size_t from{};
     size_t next{};

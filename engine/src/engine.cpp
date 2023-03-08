@@ -7,7 +7,7 @@
 
 namespace ihft::engine::impl
 {
-    engine::engine_result_t engine::create(cpus_configuration cfg, task_storage storage, std::atomic_bool const& until)
+    engine::engine_result_t engine::create(cpus_config cfg, task_storage storage, std::atomic_bool const& until)
     {
         std::string const error("Invalid configuration. ");
 
@@ -36,7 +36,7 @@ namespace ihft::engine::impl
         return engine(std::move(cfg), std::move(storage), until);
     }
 
-    engine::engine(cpus_configuration cfg, task_storage storage, std::atomic_bool const& until)
+    engine::engine(cpus_config cfg, task_storage storage, std::atomic_bool const& until)
         : m_joined(false)
     {
         for (auto const& [name, cpu] : cfg.get_name_2_cpu())

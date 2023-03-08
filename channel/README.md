@@ -54,6 +54,6 @@ make_reader_thread([consumer = std::move(consumer)](){
 
 ## Examples
 
-[Command line echo example](example/echo.cpp)
+[echo example](example/echo.cpp)
 
-[Command line ping_pong example](example/ping_pong.cpp)
+[ping_pong example](example/ping_pong.cpp)

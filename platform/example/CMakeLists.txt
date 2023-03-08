@@ -16,3 +16,12 @@ add_executable(platform_sysjitter sysjitter.cpp)
 target_link_libraries(platform_sysjitter ihft_platform)
 target_link_libraries(platform_sysjitter ihft_compiler)
 target_link_libraries(platform_sysjitter ihft_constant)
+
+add_executable(platform_greek_alphabet greek_alphabet.cpp)
+target_link_libraries(platform_greek_alphabet ihft_platform)
+
+add_executable(platform_china_cities china_cities.cpp)
+target_link_libraries(platform_china_cities ihft_platform)
+
+add_executable(platform_bogatyr bogatyr.cpp)
+target_link_libraries(platform_bogatyr ihft_platform)
