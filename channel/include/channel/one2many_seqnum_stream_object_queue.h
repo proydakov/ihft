@@ -2,6 +2,7 @@
 
 #include "private/allocator_holder.h"
 #include "private/one2many_seqnum_stream_queue_impl.h"
+#include "concepts.h"
 
 #include <atomic>
 #include <memory>
@@ -16,21 +17,21 @@ namespace ihft::channel
 class channel_factory;
 
 // guard
-template<typename event_t, typename counter_t>
+template<complex_event event_t, seqnum_counter counter_t>
 class one2many_seqnum_stream_object_guard;
 
 // reader
-template<typename event_t, typename counter_t>
+template<complex_event event_t, seqnum_counter counter_t>
 class one2many_seqnum_stream_object_reader;
 
 // queue
-template<typename event_t, typename content_allocator_t, typename counter_t>
+template<complex_event event_t, typename content_allocator_t, seqnum_counter counter_t>
 class one2many_seqnum_stream_object_queue;
 
 // implementation
 
 // guard
-template<typename event_t, typename counter_t>
+template<complex_event event_t, seqnum_counter counter_t>
 class one2many_seqnum_stream_object_guard final
 {
 public:
@@ -80,7 +81,7 @@ private:
     counter_t m_owner;
 };
 
-template<typename event_t, typename counter_t>
+template<complex_event event_t, seqnum_counter counter_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_reader final
 {
 public:
@@ -137,7 +138,7 @@ private:
     counter_t m_id;
 };
 
-template<typename event_t, typename content_allocator_t = impl::empty_allocator, typename counter_t = std::uint64_t>
+template<complex_event event_t, typename content_allocator_t = impl::empty_allocator, seqnum_counter counter_t = std::uint64_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_object_queue final : public impl::allocator_holder<content_allocator_t>
 {
 public:
@@ -154,7 +155,7 @@ public:
 
     bool try_write(event_t&& event) noexcept
     {
-        static_assert(std::is_nothrow_move_constructible<event_t>::value);
+        static_assert(std::is_nothrow_move_constructible_v<event_t>);
         counter_t const counter = static_cast<counter_t>(m_impl.readers_count()) + counter_type::CONSTRUCTED_DATA_MARK;
         return m_impl.try_write(std::move(event), counter);
     }
@@ -180,7 +181,6 @@ private:
     one2many_seqnum_stream_object_queue(std::size_t n)
         : m_impl(impl::channel_helper::to2pow<counter_t>(n))
     {
-        static_assert(std::is_unsigned<counter_t>::value);
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
@@ -190,7 +190,6 @@ private:
         : impl::allocator_holder<content_allocator_t>(content_allocator.get())
         , m_impl(impl::channel_helper::to2pow<counter_t>(n), std::move(content_allocator))
     {
-        static_assert(std::is_unsigned<counter_t>::value);
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 

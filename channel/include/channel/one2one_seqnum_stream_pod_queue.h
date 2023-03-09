@@ -1,6 +1,7 @@
 #pragma once
 
 #include "private/one2one_seqnum_stream_queue_impl.h"
+#include "concepts.h"
 
 #include <atomic>
 #include <memory>
@@ -13,17 +14,17 @@ namespace ihft::channel
 // predeclaration
 
 // reader
-template<typename event_t, typename counter_t>
+template<plain_event event_t, seqnum_counter counter_t>
 class one2one_seqnum_stream_pod_reader;
 
 // queue
-template<typename event_t, typename counter_t>
+template<plain_event event_t, seqnum_counter counter_t>
 class one2one_seqnum_stream_pod_queue;
 
 // implementation
 
 // reader
-template<typename event_t, typename counter_t>
+template<plain_event event_t, seqnum_counter counter_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_reader final
 {
 public:
@@ -83,7 +84,7 @@ private:
 };
 
 // queue
-template<typename event_t, typename counter_t = std::uint64_t>
+template<plain_event event_t, seqnum_counter counter_t = std::uint64_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2one_seqnum_stream_pod_queue final
 {
 public:
@@ -100,7 +101,6 @@ public:
 
     bool try_write(event_t&& event) noexcept
     {
-        static_assert(std::is_nothrow_move_constructible_v<event_t>);
         return m_impl.try_write(std::move(event));
     }
 
@@ -123,8 +123,6 @@ private:
     one2one_seqnum_stream_pod_queue(std::size_t n)
         : m_impl(impl::channel_helper::to2pow<counter_t>(n))
     {
-        static_assert(std::is_unsigned<counter_t>::value);
-        static_assert(std::is_trivially_copyable<event_t>::value);
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
     }
 
