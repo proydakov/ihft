@@ -1,6 +1,6 @@
 # ifth::engine
 
-This module contains an main function for *ihft* applications.
+This module contains a main function for *ihft* applications.
 
 ```
 namespace ihft::engine

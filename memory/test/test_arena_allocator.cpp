@@ -109,7 +109,7 @@ TEST_CASE("uint64_t placing")
     std::destroy_at(p1);
 }
 
-TEST_CASE("struct with extra data")
+TEST_CASE("struct with tail extra data")
 {
     using alloc_t = arena_allocator::typed_arena_allocator<char>;
     using astring = std::basic_string<char, std::char_traits<char>, alloc_t>;
@@ -137,5 +137,9 @@ TEST_CASE("struct with extra data")
     REQUIRE(data.name == "Proydakov Evgeny Alexandrovich");
     REQUIRE(data.location == "Moscow");
 
-    REQUIRE(std::string_view(data.extra_data, 30) == "Proydakov Evgeny Alexandrovich");
+    constexpr size_t data_size = 30;
+
+    REQUIRE(std::string_view(data.extra_data, data_size) == "Proydakov Evgeny Alexandrovich");
+
+    REQUIRE(data.arena.used() >= data_size);
 }

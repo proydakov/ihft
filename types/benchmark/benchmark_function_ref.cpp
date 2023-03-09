@@ -11,13 +11,10 @@ namespace
     // call types
     using function_ref = ihft::types::function_ref<uint64_t(uint64_t&, uint64_t)>;
     using function_std = std::function<uint64_t(uint64_t&, uint64_t)>;
-}
 
-namespace
-{
     // simple plain_function
 
-    uint64_t plain_function(uint64_t& origin, uint64_t val)
+    IHFT_NOINLINE uint64_t plain_function(uint64_t& origin, uint64_t val)
     {
         origin += val;
         return origin;
@@ -36,7 +33,7 @@ TEST_CASE("call plain_function benchmark")
 
 TEST_CASE("call function_ref for plain_function benchmark")
 {
-    function_ref plaing_function_ref = plain_function;
+    function_ref plaing_function_ref{plain_function};
 
     uint64_t counter = 0;
 
@@ -48,7 +45,7 @@ TEST_CASE("call function_ref for plain_function benchmark")
 
 TEST_CASE("call std_function for plain_function benchmark")
 {
-    function_std plain_std_function = plain_function;
+    function_std plain_std_function{plain_function};
 
     uint64_t counter = 0;
 
@@ -88,7 +85,7 @@ TEST_CASE("construct + call function_ref for huge_lambda benchmark")
 
     BENCHMARK("construct function_ref()")
     {
-        function_ref plaing_function_ref = huge_lambda;
+        function_ref plaing_function_ref{huge_lambda};
         return plaing_function_ref(counter, 1);
     };
 }
@@ -99,7 +96,7 @@ TEST_CASE("construct + call std_function for huge_lambda benchmark")
 
     BENCHMARK("construct std_function()")
     {
-        function_std plain_std_function = huge_lambda;
+        function_std plain_std_function{huge_lambda};
         return plain_std_function(counter, 1);
     };
 }

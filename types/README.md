@@ -21,3 +21,7 @@ namespace ihft::types
 template<typename Ret, typename ... Params>
 class function_ref<Ret(Params...)> final
 ```
+
+## Benchmarks
+
+[function_ref benchmark](benchmark/benchmark_function_ref.cpp)

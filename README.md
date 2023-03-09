@@ -116,6 +116,10 @@ IHFT is microframework & laboratory for low latency applications.
 
 [Engine](engine/README.md)
 
+[Memory](memory/README.md)
+
+[Misc](misc/README.md)
+
 [Platform](platform/README.md)
 
 [Types](types/README.md)
