@@ -75,7 +75,7 @@ struct arena_allocator
     arena_allocator& operator=(arena_allocator&&) noexcept = delete;
 
     template<typename T>
-    typed_arena_allocator<T> typed_allocator()
+    typed_arena_allocator<T> typed_allocator() noexcept
     {
         return typed_arena_allocator<T>(*this);
     }
@@ -84,9 +84,14 @@ struct arena_allocator
     // This method doesn't call any dtors
     // The user must call dtors itself before
 
-    void reset()
+    void reset() noexcept
     {
         m_current_arena_ptr = static_cast<char*>(m_origin_arena_ptr);
+    }
+
+    size_t used() const noexcept
+    {
+        return static_cast<size_t>(m_current_arena_ptr - m_origin_arena_ptr);
     }
 
 private:

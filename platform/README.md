@@ -15,18 +15,18 @@ It contains a lot of methods for detecting system configuration or change some r
 
 ## Examples
 
-[Command line set_thread_cpu example](example/set_thread_cpu.cpp)
+[set_thread_cpu example](example/set_thread_cpu.cpp)
 
-[Command line set_thread_name example](example/set_thread_name.cpp)
+[set_thread_name example](example/set_thread_name.cpp)
 
-[Command line get_platform_info example](example/get_platform_info.cpp)
+[get_platform_info example](example/get_platform_info.cpp)
 
-[Command line core_2_core_latancy example](example/core_2_core_latancy.cpp)
+[core_2_core_latancy example](example/core_2_core_latancy.cpp)
 
-[Command line sysjitter example](example/sysjitter.cpp)
+[sysjitter example](example/sysjitter.cpp)
 
-[Command line bogatyr example](example/bogatyr.cpp)
+[bogatyr example](example/bogatyr.cpp)
 
-[Command line greek_alphabet example](example/greek_alphabet.cpp)
+[greek_alphabet example](example/greek_alphabet.cpp)
 
-[Command line china_cities example](example/china_cities.cpp)
+[china_cities example](example/china_cities.cpp)

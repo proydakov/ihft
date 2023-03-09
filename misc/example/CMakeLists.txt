@@ -8,4 +8,4 @@ endif()
 add_executable(misc_config_helper_demo config_helper_demo.cpp)
 target_link_libraries(misc_config_helper_demo ihft_misc)
 
-add_executable(sigaction_demo sigaction_demo.cpp)
+add_executable(misc_sigaction_demo sigaction_demo.cpp)
