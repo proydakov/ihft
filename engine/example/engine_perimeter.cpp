@@ -39,10 +39,10 @@ namespace
             "Роутер",
             "Арк-9",
             "Пионер",
-            "Странник",
+            "Cтранник",
             "Орган",
             "Банч",
-            "Экзистор",
+            "Eкзистор",
             "Кластер"
         };
 
@@ -60,7 +60,7 @@ namespace
         {
             if (ihft::platform::trait::get_cpu_isolation_status(c))
             {
-                output << "cpu." << *it << " = " << c << '\n';
+                output << "cpu." << '"' << *it << '"' << " = " << c << '\n';
                 it++;
             }
         }
