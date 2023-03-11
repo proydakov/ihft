@@ -1,7 +1,7 @@
 #pragma once
 
 #include "private/one2one_seqnum_stream_queue_impl.h"
-#include "concepts.h"
+#include "concept.h"
 
 #include <atomic>
 #include <memory>

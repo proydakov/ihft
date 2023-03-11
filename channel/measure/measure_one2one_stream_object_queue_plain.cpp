@@ -4,7 +4,7 @@
 
 using namespace ihft::channel;
 
-int main(int argc, char* argv[])
+int main(int const argc, char const* argv[])
 {
     return test_main<one2one_seqnum_stream_object_queue<data_t>, perf_plain_test, true>(argc, argv);
 }

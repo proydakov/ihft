@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <memory>
+#include <vector>
 #include <optional>
 
 namespace ihft::channel
@@ -24,12 +24,28 @@ public:
         {
         }
 
+        template <size_t I>
+        auto& get() &
+        {
+            static_assert(I < 2);
+            if constexpr (I == 0) return producer;
+            else if constexpr (I == 1) return consumers;
+        }
+
         queue_t producer;
         std::vector<typename queue_t::reader_type> consumers;
     };
 
     template<typename queue_t>
-    static std::optional<producer_and_consumers<queue_t>> make(std::size_t queue_capacity, std::size_t readers_count)
+    using pc_t = producer_and_consumers<queue_t>;
+
+    template<typename queue_t>
+    using opc_t = std::optional<pc_t<queue_t>>;
+
+    // factory methods
+
+    template<typename queue_t>
+    static opc_t<queue_t> make(std::size_t queue_capacity, std::size_t readers_count)
     {
         if (0 == readers_count)
         {
@@ -54,15 +70,15 @@ public:
         return result;
     }
 
-    template<typename queue_t, typename content_allocator_t, typename deleter_t = std::default_delete<content_allocator_t>>
-    static std::optional<producer_and_consumers<queue_t>> make(std::size_t queue_capacity, std::size_t readers_count, std::unique_ptr<content_allocator_t, deleter_t> content_allocator)
+    template<typename queue_t, typename ca_t, typename d_t = std::default_delete<ca_t>>
+    static opc_t<queue_t> make(size_t queue_capacity, size_t readers_count, std::unique_ptr<ca_t, d_t> content_allocator)
     {
         if (0 == readers_count)
         {
             return std::nullopt;
         }
 
-        auto result = std::make_optional<producer_and_consumers<queue_t>>(queue_capacity, std::move(content_allocator));
+        auto result = std::make_optional<pc_t<queue_t>>(queue_capacity, std::move(content_allocator));
         if (not result)
         {
             return std::nullopt;
