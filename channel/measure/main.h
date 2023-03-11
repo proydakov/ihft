@@ -170,14 +170,15 @@ int test_main(int argc, char* argv[],
     }
 
     // TEST details
-    auto const cpus = [&](){
+    auto const cpus = [&]()
+    {
         std::vector<unsigned> result;
         if (argc > 1)
         {
             auto const cpus = std::string_view(argv[1]);
             if (cpus != std::string_view("#"))
             {
-                ihft::platform::process_cpu_list(cpus, [&](unsigned cpu) mutable
+                ihft::platform::process_cpu_list(cpus, [&result](unsigned cpu) mutable
                 {
                     result.emplace_back(cpu);
                 });
@@ -186,7 +187,8 @@ int test_main(int argc, char* argv[],
         return result;
     }();
 
-    auto const NUM_READERS = [&](){
+    auto const NUM_READERS = [&]()
+    {
         auto const readers = static_cast<std::size_t>(argc > 2 ? std::stoul(argv[2]) : num_readers);
         return SINGLE_READER ? 1 : std::max(std::size_t{1}, readers);
     }();
@@ -214,13 +216,7 @@ int test_main(int argc, char* argv[],
         }
     }
 
-    std::cout << "TEST: 1 writer, "
-        << std::to_string(NUM_READERS) << " readers, "
-        << std::to_string(TOTAL_EVENTS) << " total events, "
-        << QUEUE_CAPACITY << " queue capacity"
-        << std::endl;
-
-    std::uint64_t rdtsc_start, rdtsc_end;
+    std::uint64_t rdtsc_start{}, rdtsc_end{};
     std::chrono::time_point<std::chrono::high_resolution_clock> start, stop;
 
     wait_t writerWait;
@@ -233,19 +229,25 @@ int test_main(int argc, char* argv[],
             std::cerr << "Can't create queue with: " << NUM_READERS << " reader." << std::endl;
             return EXIT_FAILURE;
         }
+
         auto& pair = *queue_with_readers;
         auto& queue = pair.producer;
         auto& readers = pair.consumers;
 
-        T controller = make_controller<T>(queue, NUM_READERS, TOTAL_EVENTS);
+        std::cout << "TEST: 1 writer, "
+            << std::to_string(NUM_READERS) << " readers, "
+            << std::to_string(TOTAL_EVENTS) << " total events, "
+            << queue.capacity() << " queue capacity"
+            << std::endl;
 
-        std::atomic<std::uint64_t> waitinig{ NUM_READERS };
+        T controller = make_controller<T>(queue, readers.size(), TOTAL_EVENTS);
+        std::atomic<std::uint64_t> waitinig{ readers.size() };
 
         auto const mask = queue.readers_mask();
         std::cout << "alive mask: " << std::bitset<sizeof(mask) * 8>(mask) << " [" << mask << "]" << std::endl;;
 
         std::vector<std::thread> threads;
-        threads.reserve(NUM_READERS);
+        threads.reserve(readers.size());
         for (std::size_t i = 0; i < NUM_READERS; i++)
         {
             threads.emplace_back(reader_method<typename Q::reader_type, T>,
@@ -276,7 +278,7 @@ int test_main(int argc, char* argv[],
 
     using microseconds_t = decltype(microseconds);
 
-    auto format_events_per_second = [](std::size_t total_enents, microseconds_t microseconds)
+    auto const format_events_per_second = [](std::size_t total_enents, microseconds_t microseconds)
     {
         double seconds_per_micros = double(total_enents) / double(microseconds);
         double base = seconds_per_micros * 1'000'000;
