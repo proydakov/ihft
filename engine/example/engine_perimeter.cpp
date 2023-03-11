@@ -12,6 +12,7 @@
 #include <algorithm>
 
 using namespace ihft::engine;
+using namespace ihft::platform;
 
 namespace
 {
@@ -42,7 +43,7 @@ namespace
             "Cтранник",
             "Орган",
             "Банч",
-            "Eкзистор",
+            "Zкзистор",
             "Кластер"
         };
 
@@ -58,15 +59,24 @@ namespace
         unsigned const cpus = std::thread::hardware_concurrency();
         for(unsigned c = 0; c < cpus and it != frames.end(); c++)
         {
-            if (ihft::platform::trait::get_cpu_isolation_status(c))
+            if (trait::get_cpu_isolation_status(c))
             {
                 output << "cpu." << '"' << *it << '"' << " = " << c << '\n';
                 it++;
             }
         }
-        output << "\n";
 
-        return true;
+        if (it == frames.begin())
+        {
+            std::cerr << "I can't find suitable isolated cores to generate the correct configuration.\n";
+            std::cerr.flush();
+            return false;
+        }
+        else
+        {
+            output << "\n";
+            return true;
+        }
     }
 }
 
@@ -76,6 +86,11 @@ int main(int const, const char * const argv[])
     std::cout << "This demo loading on any isolated CPU from config.\n";
     std::cout << "Generates several threads from configuration file.\n";
     std::cout << "And then waits for the SIGINT signal from the user.\n";
+    std::cout << "\n";
+    std::cout << "The thread names were inspired by:\n";
+    std::cout << "https://github.com/KD-lab-Open-Source/Perimeter\n";
+    std::cout << "https://store.steampowered.com/app/289440/Perimeter\n";
+
     std::cout.flush();
 
     if (not generate_valid_config())
