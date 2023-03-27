@@ -50,7 +50,39 @@ make_reader_thread([consumer = std::move(consumer)](){
 
 ## How it works
 
-> Here should be picture with a ring buffer
+Let's look at the state of a single producer single consumer cyclic buffer with a capacity of 16 in various scenarios.
+
+| Ring buffer state | Description |
+| --- | --- |
+| ![initial](/.image/channel_initial.jpeg) | Initial state. The ring buffer is empty. The writer and reader sequence number is 0. All cells of the cyclic buffer contain the service value of the sequence number, which means that there is no data in the cell yet. |
+| ![somedata](/.image/channel_somedata.jpeg) | The ring buffer contains 3 elem. The writer sequence number is 3, the reader requence number still 0. The reader can read the data three times using the `try_read()` method. |
+| ![nodata](/.image/channel_nodata.jpeg) | The ring buffer is empty. The writer and reader sequence number is 3. If `try_read()` is called, the reader will receive an empty optional `std::nullopt`. |
+| ![full](/.image/channel_full.jpeg) | The ring buffer is full. The writer call `try_write()` will return `false`. The reader can read the data of `capacity()` attempts. |
+
+### Latency
+
+During the experiment with latency calculating, the writer thread sends the current high-resolution timestamp to the ring buffer and performs an operation to synchronize the cache memory between cores `fense`. At the same time, the reader's thread(s) receive events with a timestamp, get the current high-resolution timestamp and determine the difference between receiving and sending. Readers uses the technique of calculating the maximum latency per interval to minimize memory access. [The full source code of measure.](measure/data_latency.h)
+
+Single producer and single consumer.
+
+| Experiment | Text report | Hist |
+| --- | --- | --- |
+| reader 1 | file: reader_0<br>samples: 16000000<br>percentile[50]: 80<br>percentile[75]: 80<br>percentile[80]: 80<br>percentile[95]: 90<br>percentile[99]: 90<br>percentile[99.9]: 650<br>percentile[100]: 6160 | ![img](/.image/channel_one2one.jpeg) |
+
+Single producer and two consumers.
+
+| Experiment | Text report | Hist |
+| --- | --- | --- |
+| reader 1 | file: reader_0<br>samples: 16000000<br>percentile[50]: 130<br>percentile[75]: 140<br>percentile[80]: 140<br>percentile[95]: 140<br>percentile[99]: 160<br>percentile[99.9]: 216074<br>percentile[100]: 223755 | ![img](/.image/channel_one2many2_r0.jpeg) |
+| reader 1 | file: reader_1<br>samples: 16000000<br>percentile[50]: 130<br>percentile[75]: 140<br>percentile[80]: 140<br>percentile[95]: 150<br>percentile[99]: 160<br>percentile[99.9]: 216034<br>percentile[100]: 223745 | ![img](/.image/channel_one2many2_r1.jpeg) |
+
+Single producer and three consumers.
+
+| Experiment | Text report | Hist |
+| --- | --- | --- |
+| reader 1 | file: reader_0<br>samples: 16000000<br>percentile[50]: 170<br>percentile[75]: 190<br>percentile[80]: 200<br>percentile[95]: 200<br>percentile[99]: 210<br>percentile[99.9]: 840<br>percentile[100]: 225365 | ![img](/.image/channel_one2many3_r0.jpeg) |
+| reader 2 | file: reader_1<br>samples: 16000000<br>percentile[50]: 180<br>percentile[75]: 190<br>percentile[80]: 200<br>percentile[95]: 200<br>percentile[99]: 220<br>percentile[99.9]: 810<br>percentile[100]: 215755 | ![img](/.image/channel_one2many3_r1.jpeg) |
+| reader 3 | file: reader_2<br>samples: 16000000<br>percentile[50]: 180<br>percentile[75]: 190<br>percentile[80]: 200<br>percentile[95]: 200<br>percentile[99]: 220<br>percentile[99.9]: 840<br>percentile[100]: 225385 | ![img](/.image/channel_one2many3_r1.jpeg) |
 
 ## Examples
 

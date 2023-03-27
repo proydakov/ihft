@@ -14,14 +14,13 @@ for x in range(1, len(sys.argv)):
     fig.canvas.set_window_title('Latency hist for: ' + fname)
 
     print(f"file: {fname}")
-    plt.hist(x, density=True, bins=1024)  # density=False would make counts
-    plt.ylabel('Samples')
+    plt.hist(x, density=True, bins=256, range=(0, p[3] * 2))  # density=False would make counts
     plt.xlabel('Latency (nanoseconds)');
 
     print(f"samples: {len(x)}")
     for i in range(len(q)):
         perc = q[i]
-        cycl = p[i]
+        cycl = int(p[i])
         print(f"percentile[{perc}]: {cycl}")
 
 plt.show()
