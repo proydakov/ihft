@@ -4,7 +4,7 @@ This module contains the code of basic auxiliary types that are missing in the c
 
 Type of function result. It contains result type or error type and provides cozy interface.
 
-```
+```cpp
 namespace ihft::types
 {
 
@@ -14,7 +14,7 @@ class result final
 
 The type of delegate for calling a function over an interface without ownership. It provides a similar call price, but significantly benefits in the speed of construction, because it doesn't pack an extra data in a local buffer or heap.
 
-```
+```cpp
 namespace ihft::types
 {
 

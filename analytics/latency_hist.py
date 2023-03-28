@@ -14,7 +14,7 @@ for x in range(1, len(sys.argv)):
     fig.canvas.set_window_title('Latency hist for: ' + fname)
 
     print(f"file: {fname}")
-    plt.hist(x, density=True, bins=256, range=(0, p[3] * 2))  # density=False would make counts
+    plt.hist(x, density=True, bins=256, range=(0, p[3] * 2))
     plt.xlabel('Latency (nanoseconds)');
 
     print(f"samples: {len(x)}")
