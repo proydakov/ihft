@@ -4,7 +4,7 @@
 
 ## Concept
 
-This module contains code for working with channels. Channels help us transfer data from one processor to another in real time. The IHFT implementation of channels focuses on low latency, reliability and and ease of working with code, as far as it is possible to express it in C++. Scalability is sacrificed. The current implementation uses fixed-size heap array as base for circular buffer. There is potentially an implementation on linked lists, which allows to change the capacity at runtime, however, this implementation will slow down the writer's processor in case of a resize.
+This module contains code for working with channels. Channels help us transfer data from one processor to another in real time. The IHFT implementation of channels focuses on low latency, reliability and ease of working with code, as far as it is possible to express it in C++. Scalability is sacrificed. The current implementation uses fixed-size heap array as base for circular buffer. There is potentially an implementation on linked lists, which allows to change the capacity at runtime, however, this implementation will slow down the writer's processor in case of a resize.
 
 ## Types
 
@@ -57,7 +57,7 @@ Let's look at the state of a single producer single consumer cyclic buffer with 
 | ![initial](/.image/channel_initial.jpeg) | Initial state. The ring buffer is empty. The writer and reader sequence number is 0. All cells of the cyclic buffer contain the service value of the sequence number, which means that there is no data in the cell yet. |
 | ![somedata](/.image/channel_somedata.jpeg) | The ring buffer contains 3 elem. The writer sequence number is 3, the reader requence number still 0. The reader can read the data three times using the `try_read()` method. |
 | ![nodata](/.image/channel_nodata.jpeg) | The ring buffer is empty. The writer and reader sequence number is 3. If `try_read()` is called, the reader will receive an empty optional `std::nullopt`. |
-| ![full](/.image/channel_full.jpeg) | The ring buffer is full. The writer call `try_write()` will return `false`. The reader can read the data of `capacity()` attempts. |
+| ![full](/.image/channel_full.jpeg) | The ring buffer is full. The writer call `try_write()` will return `false`. The reader can read the data of `capacity()` attempts. The writer sequence number is 19, the reader sequence number is 3. |
 
 ### Latency
 
