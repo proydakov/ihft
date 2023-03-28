@@ -82,7 +82,7 @@ Experiment: Single producer and three consumers.
 | --- | --- | --- |
 | reader 1 | file: reader_0<br>samples: 16000000<br>percentile[50]: 170<br>percentile[75]: 190<br>percentile[80]: 200<br>percentile[95]: 200<br>percentile[99]: 210<br>percentile[99.9]: 840<br>percentile[100]: 225365 | ![img](/.image/channel_one2many3_r0.jpeg) |
 | reader 2 | file: reader_1<br>samples: 16000000<br>percentile[50]: 180<br>percentile[75]: 190<br>percentile[80]: 200<br>percentile[95]: 200<br>percentile[99]: 220<br>percentile[99.9]: 810<br>percentile[100]: 215755 | ![img](/.image/channel_one2many3_r1.jpeg) |
-| reader 3 | file: reader_2<br>samples: 16000000<br>percentile[50]: 180<br>percentile[75]: 190<br>percentile[80]: 200<br>percentile[95]: 200<br>percentile[99]: 220<br>percentile[99.9]: 840<br>percentile[100]: 225385 | ![img](/.image/channel_one2many3_r1.jpeg) |
+| reader 3 | file: reader_2<br>samples: 16000000<br>percentile[50]: 180<br>percentile[75]: 190<br>percentile[80]: 200<br>percentile[95]: 200<br>percentile[99]: 220<br>percentile[99.9]: 840<br>percentile[100]: 225385 | ![img](/.image/channel_one2many3_r2.jpeg) |
 
 ## Examples
 
