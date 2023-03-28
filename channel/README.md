@@ -19,7 +19,7 @@ The module contains an implementation for four types of channels:
 
 Working with channels begins with the creation of a pair `{writer, readers}` using the factory.
 
-```
+```cpp
 channel_factory::make<Q>(capacity, readers_count) -> opt{producer, consumers}
 
 channel_factory::make<Q>(capacity, readers_count, content_allocator) -> opt{producer, consumers}
@@ -29,7 +29,7 @@ After successful creation, the user can start message passing. The developer can
 
 A typical usage scenario:
 
-```
+```cpp
 make_writer_thread([producer = std::move(producer)](){
     ...
     auto data = make_data();

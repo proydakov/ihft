@@ -4,7 +4,7 @@ This module contains an utility code for *ihft* applications.
 
 TOML-based configuration class [config_helper](include/misc/config_helper.h)
 
-```
+```cpp
 namespace ihft::misc
 {
 
@@ -15,7 +15,7 @@ class config_helper final
 
 Unix singnal helper with several methods [signal_helper](include/misc/signal_helper.h)
 
-```
+```cpp
 namespace ihft::misc
 {
 

@@ -4,7 +4,7 @@ This module provides a bridge for working with the application startup system.
 
 The main class is [ihft::platform::trait](include/platform/platform.h).
 
-```
+```cpp
 namespace ihft::platform
 {
 

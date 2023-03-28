@@ -8,7 +8,7 @@ This module contains the code of domain-specific allocators.
 
 [arena_allocator](include/memory/arena_allocator.h) is simple arena allocator. It allows you to pack arbitrary data of different types in a specific location.
 
-```
+```cpp
 using alloc_t = arena_allocator::typed_arena_allocator<char>;
 using astring = std::basic_string<char, std::char_traits<char>, alloc_t>;
 
