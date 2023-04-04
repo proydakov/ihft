@@ -21,6 +21,6 @@ for x in range(1, len(sys.argv)):
     for i in range(len(q)):
         perc = q[i]
         cycl = int(p[i])
-        print(f"percentile[{perc}]: {cycl}")
+        print(f"percentile[{perc}]: {cycl}us")
 
 plt.show()
