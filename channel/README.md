@@ -61,7 +61,7 @@ Let's look at the state of a single producer single consumer cyclic buffer with 
 
 ### Latency
 
-During the experiment with latency calculating, the writer thread sends the current high-resolution timestamp to the ring buffer and performs an operation to synchronize the cache memory between cores `fense`. By itself, writing to the queue does not lead to a `fense` call, this happens only in a specific testing scenario. At the same time, the reader's thread(s) receive events with a timestamp, get the current high-resolution timestamp and determine the difference between receiving and sending. Readers use the technique of calculating the maximum latency per interval to minimize memory access. [The full source code of measure.](measure/data_latency.h). The test program uses thread binding to isolated processors.
+During the experiment with latency calculating, the writer thread sends the current high-resolution timestamp to the ring buffer and performs an operation to synchronize the cache memory between cores `fense`. By itself, writing to the queue does not lead to a `fense` call, this happens only in a specific testing scenario. At the same time, the reader's thread(s) receive events with a timestamp, get the current high-resolution timestamp and determine the difference between receiving and sending. Readers use the technique of calculating the maximum latency per interval to minimize memory access. [The full source code of measure](measure/data_latency.h). The test program uses thread binding to isolated processors.
 
 The test machine configuration:
 
@@ -114,7 +114,7 @@ usage: ./measure_one2one_stream_pod_queue_latency <cpu-list or #> <total_events>
 
 | Reader ID | Text report | Hist |
 | --- | --- | --- |
-| reader 1 | samples: 16000000<br>percentile[50]: 80<br>percentile[75]: 80us<br>percentile[80]: 80us<br>percentile[95]: 90us<br>percentile[99]: 90us<br>percentile[99.9]: 650us<br>percentile[100]: 6160us | ![img](/.image/channel_one2one.jpeg) |
+| reader 1 | samples: 16000000<br>percentile[50]: 80us<br>percentile[75]: 80us<br>percentile[80]: 80us<br>percentile[95]: 90us<br>percentile[99]: 90us<br>percentile[99.9]: 650us<br>percentile[100]: 6160us | ![img](/.image/channel_one2one.jpeg) |
 
 Experiment: Single producer and two consumers.
 
@@ -126,7 +126,7 @@ usage: ./measure_one2many_stream_pod_queue_latency <cpu-list or #> <num_readers>
 | Reader ID | Text report | Hist |
 | --- | --- | --- |
 | reader 1 | samples: 16000000<br>percentile[50]: 130us<br>percentile[75]: 140us<br>percentile[80]: 140us<br>percentile[95]: 140us<br>percentile[99]: 160us<br>percentile[99.9]: 216074us<br>percentile[100]: 223755us | ![img](/.image/channel_one2many2_r0.jpeg) |
-| reader 1 | samples: 16000000<br>percentile[50]: 130us<br>percentile[75]: 140us<br>percentile[80]: 140us<br>percentile[95]: 150us<br>percentile[99]: 160us<br>percentile[99.9]: 216034us<br>percentile[100]: 223745us | ![img](/.image/channel_one2many2_r1.jpeg) |
+| reader 2 | samples: 16000000<br>percentile[50]: 130us<br>percentile[75]: 140us<br>percentile[80]: 140us<br>percentile[95]: 150us<br>percentile[99]: 160us<br>percentile[99.9]: 216034us<br>percentile[100]: 223745us | ![img](/.image/channel_one2many2_r1.jpeg) |
 
 Experiment: Single producer and three consumers.
 
