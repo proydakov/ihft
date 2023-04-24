@@ -5,6 +5,8 @@
 [![BSD 3 License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/proydakov/ihft/blob/master/LICENSE)
 </span>
 
+> Life is too short for malloc.
+
 IHFT is microframework & laboratory for low latency applications.
 
 # Current building status matrix
@@ -100,7 +102,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] thread sanitizer
   - [x] ub sanitizer
   - [ ] clang format
-  - [ ] regressive run of benchmarks for different CPUs/compilers
+  - [ ] benchmarking for different CPUs/compilers
 - [x] DevOps
   - [x] script for system latency optimization
 
