@@ -1,144 +1,16 @@
 #include <catch2/catch.hpp>
 #include <constant/constant.h>
+#include <logger/logger_contract.h>
+#include <logger/logger_extra_data.h>
 
 #include <tuple>
 #include <string>
 #include <utility>
 #include <sstream>
-#include <cstring>
 #include <cstddef>
 #include <type_traits>
 
-struct logger_extra_data;
-
-// Helper class.
-// It produce information how to 'represent' origin type.
-// And how to 'pack' origin into tuple & extra buffer.
-template<typename T>
-struct logger_contract
-{
-    using type = void;
-};
-
-#define DECLARE_SIMPLE_LOGGER_CONTRACT(T) \
-template<> \
-struct logger_contract<T> \
-{ \
-    using type = T; \
-\
-    static type pack(logger_extra_data&, T origin) \
-    { \
-        return origin; \
-    } \
-}
-
-DECLARE_SIMPLE_LOGGER_CONTRACT(char);
-DECLARE_SIMPLE_LOGGER_CONTRACT(signed char);
-DECLARE_SIMPLE_LOGGER_CONTRACT(unsigned char);
-
-DECLARE_SIMPLE_LOGGER_CONTRACT(short);
-DECLARE_SIMPLE_LOGGER_CONTRACT(unsigned short);
-DECLARE_SIMPLE_LOGGER_CONTRACT(int);
-DECLARE_SIMPLE_LOGGER_CONTRACT(unsigned int);
-DECLARE_SIMPLE_LOGGER_CONTRACT(long);
-DECLARE_SIMPLE_LOGGER_CONTRACT(unsigned long);
-DECLARE_SIMPLE_LOGGER_CONTRACT(long long);
-DECLARE_SIMPLE_LOGGER_CONTRACT(unsigned long long);
-
-DECLARE_SIMPLE_LOGGER_CONTRACT(float);
-DECLARE_SIMPLE_LOGGER_CONTRACT(double);
-DECLARE_SIMPLE_LOGGER_CONTRACT(long double);
-
-// Helper class.
-// It represents a wrapper on extra memory in logger slab.
-// Also it provides several helpers to place origin types in slab memory region.
-struct logger_extra_data final
-{
-    logger_extra_data(char* buffer, size_t size)
-        : m_buffer(buffer)
-        , m_size(size)
-    {
-    }
-
-    std::string_view place(std::string_view origin)
-    {
-        if (is_enought(origin.size()))
-        {
-            std::string_view data(m_buffer, origin.size());
-            std::memcpy(m_buffer, origin.data(), origin.size());
-            seek_buff(origin.size());
-            return data;
-        }
-        else
-        {
-            return "<truncated>";
-        }
-    }
-
-private:
-    bool is_enought(size_t size) const
-    {
-        return size <= m_size;
-    }
-
-    void seek_buff(size_t size)
-    {
-        m_buffer += size;
-        m_size -= size;
-    }
-
-private:
-    char* m_buffer;
-    size_t m_size;
-};
-
-#define DECLARE_STRINGVIEWLIKE_LOGGER_CONTRACT(T) \
-template<> \
-struct logger_contract<T> \
-{ \
-    using type = std::string_view; \
- \
-    static type pack(logger_extra_data& ctx, std::string_view origin) \
-    { \
-        return ctx.place(origin); \
-    } \
-}
-
-DECLARE_STRINGVIEWLIKE_LOGGER_CONTRACT(std::string);
-DECLARE_STRINGVIEWLIKE_LOGGER_CONTRACT(std::string_view);
-
-template<typename T, size_t N>
-struct logger_contract<T[N]>
-{
-    using type = std::string_view;
-
-    static type pack(logger_extra_data& ctx, std::string_view origin)
-    {
-        return ctx.place(origin);
-    }
-};
-
-template<>
-struct logger_contract<std::nullptr_t>
-{
-    using type = void*;
-
-    static type pack(logger_extra_data&, std::nullptr_t origin)
-    {
-        return origin;
-    }
-};
-
-template<typename T>
-struct logger_contract<T*>
-{
-    using type = void*;
-
-    static type pack(logger_extra_data&, T* origin)
-    {
-        return origin;
-    }
-};
+using namespace ihft::logger;
 
 // Main class.
 // It represents a smart arguments wrapper and produce an instruction
@@ -256,7 +128,7 @@ private:
 };
 
 static_assert(sizeof(logger_event::header_t) == 64);
-static_assert(sizeof(logger_event::buffer_t) == 1024 - 64);
+static_assert(sizeof(logger_event::buffer_t) == logger_event::ITEM_SIZE - 64);
 static_assert(sizeof(logger_event) == logger_event::ITEM_SIZE, "Logger event should use a single memory page.");
 
 // Unit tests
@@ -265,7 +137,7 @@ TEST_CASE("plain by value")
 {
     logger_event event(long{1024}, float{3.14f}, char{'A'});
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(1024, 3.14, A)");
@@ -279,7 +151,7 @@ TEST_CASE("plain by reference")
 
     logger_event event(ilong, iflot, ichar);
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(512, 1.57, c)");
@@ -293,7 +165,7 @@ TEST_CASE("plain by const reference")
 
     logger_event event(ilong, iflot, ichar);
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(256, 7.77, Y)");
@@ -303,7 +175,7 @@ TEST_CASE("string by value")
 {
     logger_event event(std::string{"IHFT"}, std::string{"C++"}, std::string_view{"zone"});
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(IHFT, C++, zone)");
@@ -317,7 +189,7 @@ TEST_CASE("string by reference")
 
     logger_event event(str1, str2, view);
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(hello, world, C++)");
@@ -332,7 +204,7 @@ TEST_CASE("string by const reference")
 
     logger_event event(str1, str2, view1, view2);
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(Alice's, Adventures, in, Wonderland)");
@@ -342,7 +214,7 @@ TEST_CASE("char array by value")
 {
     logger_event event("ARRAY", "is", "HERE");
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(ARRAY, is, HERE)");
@@ -355,7 +227,7 @@ TEST_CASE("char array by reference")
 
     logger_event event(arr1, arr2);
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(C++, 20)");
@@ -368,7 +240,7 @@ TEST_CASE("char array by const reference")
 
     logger_event event(arr1, arr2);
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     REQUIRE(sstream.str() == "(TEST, OPERATION)");
@@ -378,7 +250,7 @@ TEST_CASE("nullptr_t")
 {
     logger_event event(nullptr);
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     auto const str = sstream.str();
@@ -391,7 +263,20 @@ TEST_CASE("pointer")
 
     logger_event event(ptr);
 
-    std::stringstream sstream;
+    std::ostringstream sstream;
+    event.print_to(sstream);
+
+    auto const str = sstream.str();
+    REQUIRE((str == "(0)" || str == "(0x0)" || str == "((nil))"));
+}
+
+TEST_CASE("const pointer")
+{
+    const void* ptr = nullptr;
+
+    logger_event event(ptr);
+
+    std::ostringstream sstream;
     event.print_to(sstream);
 
     auto const str = sstream.str();
