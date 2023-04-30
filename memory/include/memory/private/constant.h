@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ihft::impl
+namespace ihft::memory::impl
 {
     constexpr unsigned _1gb_ = 1u << 30u;
     constexpr unsigned _2mb_ = 1u << 21u;

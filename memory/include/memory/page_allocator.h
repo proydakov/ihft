@@ -2,7 +2,7 @@
 
 #include "private/mmap_page_allocator.h"
 
-namespace ihft
+namespace ihft::memory
 {
 
 template<typename T = std::byte>

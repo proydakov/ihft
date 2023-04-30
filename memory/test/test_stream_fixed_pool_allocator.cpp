@@ -5,7 +5,7 @@
 #include <set>
 #include <type_traits>
 
-using namespace ihft;
+using namespace ihft::memory;
 
 struct A
 {

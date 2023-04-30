@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <string_view>
 
-using namespace ihft;
+using namespace ihft::memory;
 
 TEST_CASE("chars placing STL-api")
 {

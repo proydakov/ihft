@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ihft
+namespace ihft::memory
 {
 
 struct arena_allocator
