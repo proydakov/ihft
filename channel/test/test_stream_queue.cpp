@@ -3,8 +3,8 @@
 #include <channel/channel_factory.h>
 #include <channel/one2one_seqnum_stream_pod_queue.h>
 #include <channel/one2one_seqnum_stream_object_queue.h>
-#include <channel/one2many_seqnum_stream_pod_queue.h>
-#include <channel/one2many_seqnum_stream_object_queue.h>
+#include <channel/one2each_seqnum_stream_pod_queue.h>
+#include <channel/one2each_seqnum_stream_object_queue.h>
 
 #include <limits>
 #include <thread>
@@ -43,8 +43,8 @@ TEST_CASE("one2*_stream_queue simple methods")
 {
     one2_stream_queue_simple_methods<one2one_seqnum_stream_pod_queue<packet_t>>();
     one2_stream_queue_simple_methods<one2one_seqnum_stream_object_queue<packet_t>>();
-    one2_stream_queue_simple_methods<one2many_seqnum_stream_pod_queue<packet_t>>();
-    one2_stream_queue_simple_methods<one2many_seqnum_stream_object_queue<packet_t>>();
+    one2_stream_queue_simple_methods<one2each_seqnum_stream_pod_queue<packet_t>>();
+    one2_stream_queue_simple_methods<one2each_seqnum_stream_object_queue<packet_t>>();
 }
 
 template<typename Q>
@@ -65,8 +65,8 @@ TEST_CASE("one2*_stream_queue min capacity")
 {
     one2_stream_queue_min_capacity<one2one_seqnum_stream_pod_queue<packet_t>>();
     one2_stream_queue_min_capacity<one2one_seqnum_stream_object_queue<packet_t>>();
-    one2_stream_queue_min_capacity<one2many_seqnum_stream_pod_queue<packet_t>>();
-    one2_stream_queue_min_capacity<one2many_seqnum_stream_object_queue<packet_t>>();
+    one2_stream_queue_min_capacity<one2each_seqnum_stream_pod_queue<packet_t>>();
+    one2_stream_queue_min_capacity<one2each_seqnum_stream_object_queue<packet_t>>();
 }
 
 template<typename Q>
@@ -92,7 +92,7 @@ TEST_CASE("one2one_stream_queue simple reader")
 }
 
 template<typename Q>
-void one2many_stream_queue_simple_reader()
+void one2each_stream_queue_simple_reader()
 {
     constexpr std::size_t qsize = 32;
 
@@ -113,10 +113,10 @@ void one2many_stream_queue_simple_reader()
     }
 }
 
-TEST_CASE("one2many_stream_queue simple reader")
+TEST_CASE("one2each_stream_queue simple reader")
 {
-    one2many_stream_queue_simple_reader<one2many_seqnum_stream_pod_queue<packet_t>>();
-    one2many_stream_queue_simple_reader<one2many_seqnum_stream_object_queue<packet_t>>();
+    one2each_stream_queue_simple_reader<one2each_seqnum_stream_pod_queue<packet_t>>();
+    one2each_stream_queue_simple_reader<one2each_seqnum_stream_object_queue<packet_t>>();
 }
 
 template<typename Q>
@@ -155,8 +155,8 @@ TEST_CASE("one2*_stream_queue simple write + read")
 {
     one2_stream_queue_simple_write_and_read<one2one_seqnum_stream_pod_queue<packet_t>>();
     one2_stream_queue_simple_write_and_read<one2one_seqnum_stream_object_queue<packet_t>>();
-    one2_stream_queue_simple_write_and_read<one2many_seqnum_stream_pod_queue<packet_t>>();
-    one2_stream_queue_simple_write_and_read<one2many_seqnum_stream_object_queue<packet_t>>();
+    one2_stream_queue_simple_write_and_read<one2each_seqnum_stream_pod_queue<packet_t>>();
+    one2_stream_queue_simple_write_and_read<one2each_seqnum_stream_object_queue<packet_t>>();
 }
 
 template<typename Q>
@@ -191,11 +191,11 @@ void one2_stream_queue_simple_write_and_part_read()
 TEST_CASE("one2*_stream_queue simple write + part read")
 {
     one2_stream_queue_simple_write_and_part_read<one2one_seqnum_stream_object_queue<std::unique_ptr<packet_t>>>();
-    one2_stream_queue_simple_write_and_part_read<one2many_seqnum_stream_object_queue<std::unique_ptr<packet_t>>>();
+    one2_stream_queue_simple_write_and_part_read<one2each_seqnum_stream_object_queue<std::unique_ptr<packet_t>>>();
 }
 
 template<typename Q>
-void one2_stream_queue_complex_write_and_many_read_attemps()
+void one2_stream_queue_complex_write_and_each_read_attemps()
 {
     constexpr std::size_t qsize = 32;
 
@@ -221,12 +221,12 @@ void one2_stream_queue_complex_write_and_many_read_attemps()
     }
 }
 
-TEST_CASE("one2*_stream_queue complex write + many read attemps")
+TEST_CASE("one2*_stream_queue complex write + each read attemps")
 {
-    one2_stream_queue_complex_write_and_many_read_attemps<one2one_seqnum_stream_pod_queue<packet_t>>();
-    one2_stream_queue_complex_write_and_many_read_attemps<one2one_seqnum_stream_object_queue<packet_t>>();
-    one2_stream_queue_complex_write_and_many_read_attemps<one2many_seqnum_stream_pod_queue<packet_t>>();
-    one2_stream_queue_complex_write_and_many_read_attemps<one2many_seqnum_stream_object_queue<packet_t>>();
+    one2_stream_queue_complex_write_and_each_read_attemps<one2one_seqnum_stream_pod_queue<packet_t>>();
+    one2_stream_queue_complex_write_and_each_read_attemps<one2one_seqnum_stream_object_queue<packet_t>>();
+    one2_stream_queue_complex_write_and_each_read_attemps<one2each_seqnum_stream_pod_queue<packet_t>>();
+    one2_stream_queue_complex_write_and_each_read_attemps<one2each_seqnum_stream_object_queue<packet_t>>();
 }
 
 template<typename Q>
@@ -303,6 +303,6 @@ void one2_stream_guard_queue_overflow()
 TEST_CASE("one2_stream_guard_queue_cycle_seqnum_overflow")
 {
     one2_stream_guard_queue_overflow<one2one_seqnum_stream_object_queue<std::size_t, ihft::channel::impl::empty_allocator, std::uint8_t>>();
-    one2_stream_guard_queue_overflow<one2many_seqnum_stream_object_queue<std::size_t, ihft::channel::impl::empty_allocator, std::uint8_t>>();
+    one2_stream_guard_queue_overflow<one2each_seqnum_stream_object_queue<std::size_t, ihft::channel::impl::empty_allocator, std::uint8_t>>();
 }
 */
