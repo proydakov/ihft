@@ -6,7 +6,7 @@
 
 #include <sys/mman.h>
 
-namespace ihft::impl
+namespace ihft::memory::impl
 {
 
 //

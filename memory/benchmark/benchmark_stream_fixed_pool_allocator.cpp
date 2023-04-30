@@ -24,7 +24,7 @@ allocate(1)                                    100         54541          0 ns
 
  */
 
-using namespace ihft;
+using namespace ihft::memory;
 
 struct A
 {

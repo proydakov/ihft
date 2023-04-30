@@ -7,7 +7,7 @@
 #include <limits>
 #include <iostream>
 
-using namespace ihft;
+using namespace ihft::memory;
 
 namespace
 {

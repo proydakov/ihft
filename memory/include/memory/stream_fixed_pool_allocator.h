@@ -5,7 +5,7 @@
 #include <memory>
 #include <type_traits>
 
-namespace ihft
+namespace ihft::memory
 {
     template<typename T, typename RegionAllocator = std::allocator<T>>
     class stream_fixed_pool_allocator
