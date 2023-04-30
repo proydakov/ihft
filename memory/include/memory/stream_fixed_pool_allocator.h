@@ -55,7 +55,7 @@ namespace ihft
 
         // STL-like interface
 
-        [[nodiscard]] T* allocate(std::size_t n) noexcept
+        [[nodiscard]] inline T* allocate(std::size_t n) noexcept
         {
             if (n == 1) [[likely]]
             {
