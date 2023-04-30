@@ -1,7 +1,7 @@
 #pragma once
 
-#include "private/one2many_seqnum_stream_queue_impl.h"
-#include "concept.h"
+#include "private/one2each_seqnum_stream_queue_impl.h"
+#include "channel_concept.h"
 
 #include <atomic>
 #include <memory>
@@ -15,29 +15,29 @@ namespace ihft::channel
 
 // reader
 template<plain_event event_t, seqnum_counter counter_t>
-class one2many_seqnum_stream_pod_reader;
+class one2each_seqnum_stream_pod_reader;
 
 // queue
 template<plain_event event_t, seqnum_counter counter_t>
-class one2many_seqnum_stream_pod_queue;
+class one2each_seqnum_stream_pod_queue;
 
 // implementation
 
 // reader
 template<plain_event event_t, seqnum_counter counter_t>
-class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_reader final
+class alignas(constant::CPU_CACHE_LINE_SIZE) one2each_seqnum_stream_pod_reader final
 {
 public:
     using event_type = event_t;
-    using ring_buffer_t = impl::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
-    using counter_type = impl::one2many_seqnum_queue_constant<counter_t>;
+    using ring_buffer_t = impl::one2each_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using counter_type = impl::one2each_seqnum_queue_constant<counter_t>;
 
 public:
-    one2many_seqnum_stream_pod_reader(one2many_seqnum_stream_pod_reader&&) noexcept = default;
+    one2each_seqnum_stream_pod_reader(one2each_seqnum_stream_pod_reader&&) noexcept = default;
 
-    one2many_seqnum_stream_pod_reader& operator=(one2many_seqnum_stream_pod_reader&&) noexcept = delete;
-    one2many_seqnum_stream_pod_reader(const one2many_seqnum_stream_pod_reader&) = delete;
-    one2many_seqnum_stream_pod_reader& operator=(const one2many_seqnum_stream_pod_reader&) = delete;
+    one2each_seqnum_stream_pod_reader& operator=(one2each_seqnum_stream_pod_reader&&) noexcept = delete;
+    one2each_seqnum_stream_pod_reader(const one2each_seqnum_stream_pod_reader&) = delete;
+    one2each_seqnum_stream_pod_reader& operator=(const one2each_seqnum_stream_pod_reader&) = delete;
 
     std::optional<event_t> try_read() noexcept
     {
@@ -63,7 +63,7 @@ public:
     }
 
 private:
-    one2many_seqnum_stream_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t id) noexcept
+    one2each_seqnum_stream_pod_reader(ring_buffer_t storage, std::size_t storage_mask, counter_t id) noexcept
         : m_storage(std::move(storage))
         , m_next_bucket(counter_type::MIN_EVENT_SEQ_NUM & storage_mask)
         , m_storage_mask(storage_mask)
@@ -74,7 +74,7 @@ private:
     }
 
 private:
-    friend class impl::one2many_seqnum_stream_queue_impl<event_t, counter_t>;
+    friend class impl::one2each_seqnum_stream_queue_impl<event_t, counter_t>;
 
     ring_buffer_t m_storage;
     std::size_t m_next_bucket;
@@ -85,19 +85,19 @@ private:
 
 // queue
 template<plain_event event_t, seqnum_counter counter_t = std::uint64_t>
-class alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_stream_pod_queue final
+class alignas(constant::CPU_CACHE_LINE_SIZE) one2each_seqnum_stream_pod_queue final
 {
 public:
-    using reader_type = one2many_seqnum_stream_pod_reader<event_t, counter_t>;
-    using ring_buffer_t = impl::one2many_seqnum_stream_ring_buffer_t<event_t, counter_t>;
-    using bucket_type = impl::one2many_seqnum_bucket<event_t, counter_t>;
+    using reader_type = one2each_seqnum_stream_pod_reader<event_t, counter_t>;
+    using ring_buffer_t = impl::one2each_seqnum_stream_ring_buffer_t<event_t, counter_t>;
+    using bucket_type = impl::one2each_seqnum_bucket<event_t, counter_t>;
 
 public:
-    one2many_seqnum_stream_pod_queue(one2many_seqnum_stream_pod_queue&&) noexcept = default;
+    one2each_seqnum_stream_pod_queue(one2each_seqnum_stream_pod_queue&&) noexcept = default;
 
-    one2many_seqnum_stream_pod_queue& operator=(one2many_seqnum_stream_pod_queue&&) noexcept = delete;
-    one2many_seqnum_stream_pod_queue(const one2many_seqnum_stream_pod_queue&) = delete;
-    one2many_seqnum_stream_pod_queue& operator=(const one2many_seqnum_stream_pod_queue&) = delete;
+    one2each_seqnum_stream_pod_queue& operator=(one2each_seqnum_stream_pod_queue&&) noexcept = delete;
+    one2each_seqnum_stream_pod_queue(const one2each_seqnum_stream_pod_queue&) = delete;
+    one2each_seqnum_stream_pod_queue& operator=(const one2each_seqnum_stream_pod_queue&) = delete;
 
     bool try_write(event_t&& event) noexcept
     {
@@ -121,7 +121,7 @@ public:
     }
 
 private:
-    one2many_seqnum_stream_pod_queue(std::size_t n)
+    one2each_seqnum_stream_pod_queue(std::size_t n)
         : m_impl(impl::channel_helper::to2pow<counter_t>(n))
     {
         static_assert(sizeof(decltype(*this)) <= constant::CPU_CACHE_LINE_SIZE);
@@ -135,7 +135,7 @@ private:
 private:
     friend class channel_factory;
 
-    impl::one2many_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
+    impl::one2each_seqnum_stream_queue_impl<event_t, counter_t> m_impl;
 };
 
 } // ihft

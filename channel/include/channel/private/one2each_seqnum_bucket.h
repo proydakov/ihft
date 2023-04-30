@@ -10,7 +10,7 @@ namespace ihft::channel::impl
 {
 
 template<typename T>
-struct one2many_seqnum_queue_constant
+struct one2each_seqnum_queue_constant
 {
     static_assert(std::is_unsigned_v<T>, "Counter type must be unsigned.");
 
@@ -23,30 +23,30 @@ struct one2many_seqnum_queue_constant
     enum : T { CONSTRUCTED_DATA_MARK = 1 };
 };
 
-static_assert(one2many_seqnum_queue_constant<std::uint8_t>::SEQNUM_MASK == 127ul);
-static_assert(one2many_seqnum_queue_constant<std::uint16_t>::SEQNUM_MASK == 32'767ul);
-static_assert(one2many_seqnum_queue_constant<std::uint32_t>::SEQNUM_MASK == 2'147'483'647ul);
-static_assert(one2many_seqnum_queue_constant<std::uint64_t>::SEQNUM_MASK == 9'223'372'036'854'775'807ul);
+static_assert(one2each_seqnum_queue_constant<std::uint8_t>::SEQNUM_MASK == 127ul);
+static_assert(one2each_seqnum_queue_constant<std::uint16_t>::SEQNUM_MASK == 32'767ul);
+static_assert(one2each_seqnum_queue_constant<std::uint32_t>::SEQNUM_MASK == 2'147'483'647ul);
+static_assert(one2each_seqnum_queue_constant<std::uint64_t>::SEQNUM_MASK == 9'223'372'036'854'775'807ul);
 
 // bucket
 template<typename event_t, typename counter_t>
-struct alignas(constant::CPU_CACHE_LINE_SIZE) one2many_seqnum_bucket final
+struct alignas(constant::CPU_CACHE_LINE_SIZE) one2each_seqnum_bucket final
 {
     using storage_type = typename std::aligned_storage<sizeof(event_t), alignof(event_t)>::type;
-    using counter_type = one2many_seqnum_queue_constant<counter_t>;
+    using counter_type = one2each_seqnum_queue_constant<counter_t>;
 
-    one2many_seqnum_bucket() noexcept
+    one2each_seqnum_bucket() noexcept
         : m_seqn(counter_type::DUMMY_EVENT_SEQ_NUM)
         , m_counter(counter_type::EMPTY_DATA_MARK)
     {
     }
 
-    one2many_seqnum_bucket(const one2many_seqnum_bucket&) = delete;
-    one2many_seqnum_bucket& operator=(const one2many_seqnum_bucket&) = delete;
-    one2many_seqnum_bucket(one2many_seqnum_bucket&&) = delete;
-    one2many_seqnum_bucket& operator=(one2many_seqnum_bucket&&) = delete;
+    one2each_seqnum_bucket(const one2each_seqnum_bucket&) = delete;
+    one2each_seqnum_bucket& operator=(const one2each_seqnum_bucket&) = delete;
+    one2each_seqnum_bucket(one2each_seqnum_bucket&&) = delete;
+    one2each_seqnum_bucket& operator=(one2each_seqnum_bucket&&) = delete;
 
-    ~one2many_seqnum_bucket() noexcept
+    ~one2each_seqnum_bucket() noexcept
     {
         if (m_counter != counter_type::EMPTY_DATA_MARK)
         {

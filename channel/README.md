@@ -12,8 +12,8 @@ The module contains an implementation for four types of channels:
 
 - one writer to one reader (aka single producer single consumer) for POD structs.
 - one writer to one reader (aka single producer single consumer) for complex moveable classes with RAII support.
-- one writer to many readers (aka single producer multiple consumer) for POD structs.
-- one writer to many readers (aka single producer multiple consumer) for complex moveable classes with RAII support.
+- one writer to each readers (aka single producer multiple consumer) for POD structs.
+- one writer to each readers (aka single producer multiple consumer) for complex moveable classes with RAII support.
 
 ## Quick start
 
@@ -119,27 +119,27 @@ usage: ./measure_one2one_stream_pod_queue_latency <cpu-list or #> <total_events>
 Experiment: Single producer and two consumers.
 
 ```
-./measure_one2many_stream_pod_queue_latency 6,7,8 2 512
-usage: ./measure_one2many_stream_pod_queue_latency <cpu-list or #> <num_readers> <total_events> * 10^6 <queue_capacity>
+./measure_one2each_stream_pod_queue_latency 6,7,8 2 512
+usage: ./measure_one2each_stream_pod_queue_latency <cpu-list or #> <num_readers> <total_events> * 10^6 <queue_capacity>
 ```
 
 | Reader ID | Text report | Hist |
 | --- | --- | --- |
-| reader 1 | samples: 16000000<br>percentile[50]: 130us<br>percentile[75]: 140us<br>percentile[80]: 140us<br>percentile[95]: 140us<br>percentile[99]: 160us<br>percentile[99.9]: 216074us<br>percentile[100]: 223755us | ![img](/.image/channel_one2many2_r0.jpeg) |
-| reader 2 | samples: 16000000<br>percentile[50]: 130us<br>percentile[75]: 140us<br>percentile[80]: 140us<br>percentile[95]: 150us<br>percentile[99]: 160us<br>percentile[99.9]: 216034us<br>percentile[100]: 223745us | ![img](/.image/channel_one2many2_r1.jpeg) |
+| reader 1 | samples: 16000000<br>percentile[50]: 130us<br>percentile[75]: 140us<br>percentile[80]: 140us<br>percentile[95]: 140us<br>percentile[99]: 160us<br>percentile[99.9]: 216074us<br>percentile[100]: 223755us | ![img](/.image/channel_one2each2_r0.jpeg) |
+| reader 2 | samples: 16000000<br>percentile[50]: 130us<br>percentile[75]: 140us<br>percentile[80]: 140us<br>percentile[95]: 150us<br>percentile[99]: 160us<br>percentile[99.9]: 216034us<br>percentile[100]: 223745us | ![img](/.image/channel_one2each2_r1.jpeg) |
 
 Experiment: Single producer and three consumers.
 
 ```
-/measure_one2many_stream_pod_queue_latency 6,7,8,9 3 512
-usage: ./measure_one2many_stream_pod_queue_latency <cpu-list or #> <num_readers> <total_events> * 10^6 <queue_capacity>
+/measure_one2each_stream_pod_queue_latency 6,7,8,9 3 512
+usage: ./measure_one2each_stream_pod_queue_latency <cpu-list or #> <num_readers> <total_events> * 10^6 <queue_capacity>
 ```
 
 | Reader ID | Text report | Hist |
 | --- | --- | --- |
-| reader 1 | samples: 16000000<br>percentile[50]: 170us<br>percentile[75]: 190us<br>percentile[80]: 200us<br>percentile[95]: 200us<br>percentile[99]: 210us<br>percentile[99.9]: 840us<br>percentile[100]: 225365us | ![img](/.image/channel_one2many3_r0.jpeg) |
-| reader 2 | samples: 16000000<br>percentile[50]: 180us<br>percentile[75]: 190us<br>percentile[80]: 200us<br>percentile[95]: 200us<br>percentile[99]: 220us<br>percentile[99.9]: 810us<br>percentile[100]: 215755us | ![img](/.image/channel_one2many3_r1.jpeg) |
-| reader 3 | samples: 16000000<br>percentile[50]: 180us<br>percentile[75]: 190us<br>percentile[80]: 200us<br>percentile[95]: 200us<br>percentile[99]: 220us<br>percentile[99.9]: 840us<br>percentile[100]: 225385us | ![img](/.image/channel_one2many3_r2.jpeg) |
+| reader 1 | samples: 16000000<br>percentile[50]: 170us<br>percentile[75]: 190us<br>percentile[80]: 200us<br>percentile[95]: 200us<br>percentile[99]: 210us<br>percentile[99.9]: 840us<br>percentile[100]: 225365us | ![img](/.image/channel_one2each3_r0.jpeg) |
+| reader 2 | samples: 16000000<br>percentile[50]: 180us<br>percentile[75]: 190us<br>percentile[80]: 200us<br>percentile[95]: 200us<br>percentile[99]: 220us<br>percentile[99.9]: 810us<br>percentile[100]: 215755us | ![img](/.image/channel_one2each3_r1.jpeg) |
+| reader 3 | samples: 16000000<br>percentile[50]: 180us<br>percentile[75]: 190us<br>percentile[80]: 200us<br>percentile[95]: 200us<br>percentile[99]: 220us<br>percentile[99.9]: 840us<br>percentile[100]: 225385us | ![img](/.image/channel_one2each3_r2.jpeg) |
 
 ## Examples
 
