@@ -60,10 +60,10 @@ DECLARE_SIMPLE_LOGGER_CONTRACT(long double);
 //
 // @todo : support other string types
 //
-// std::wstring            std::basic_string<wchar_t> (typedef)
+// std::wstring            std::basic_string<wchar_t>  (typedef)
 // std::u16string (C++11)  std::basic_string<char16_t> (typedef)
 // std::u32string (C++11)  std::basic_string<char32_t> (typedef)
-// std::u8string  (C++20)  std::basic_string<char8_t> (typedef)
+// std::u8string  (C++20)  std::basic_string<char8_t>  (typedef)
 //
 
 template<typename T>
