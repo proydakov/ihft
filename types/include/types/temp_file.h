@@ -7,7 +7,7 @@
 namespace ihft::types
 {
 
-class temp_file
+class temp_file final
 {
 public:
     temp_file(std::string fname, std::string_view content)
