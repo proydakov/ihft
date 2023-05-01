@@ -35,8 +35,8 @@ private:
     template<typename Tuple>
     static void print_tuple(std::ostream& os, std::string_view expr, Tuple const& t)
     {
-        constexpr auto tuple_size = std::tuple_size_v<Tuple>;
-        constexpr auto array_size = tuple_size + 1; // need extra place for tail
+        constexpr std::size_t tuple_size = std::tuple_size_v<Tuple>;
+        constexpr std::size_t array_size = tuple_size + 1; // need extra place for tail
 
         std::array<std::string_view, array_size> array;
         size_t from{}, count{}, pos{};
@@ -63,7 +63,7 @@ private:
     }
 
     template<typename T>
-    static void clean(void* raw_ptr)
+    static void clean(void* raw_ptr) noexcept
     {
         auto data_ptr = reinterpret_cast<T*>(raw_ptr);
         std::destroy_at(data_ptr);
@@ -114,7 +114,7 @@ public:
     {
     }
 
-    void print_args_to(std::ostream& stream)
+    void print_args_to(std::ostream& stream) const
     {
         header.print_args_to(stream);
     }
@@ -125,7 +125,7 @@ private:
 
     struct alignas(constant::CPU_CACHE_LINE_SIZE) header_t final
     {
-        ~header_t()
+        ~header_t() noexcept
         {
             if (data_ptr and clean_function)
             {
@@ -133,7 +133,7 @@ private:
             }
         }
 
-        void print_args_to(std::ostream& stream)
+        void print_args_to(std::ostream& stream) const
         {
             if (data_ptr and print_function)
             {

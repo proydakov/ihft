@@ -67,6 +67,11 @@ public:
         return m_bucket.get_event();
     }
 
+    event_t const& get_event() const noexcept
+    {
+        return m_bucket.get_event();
+    }
+
 private:
     bucket_type& m_bucket;
     counter_t m_owner;

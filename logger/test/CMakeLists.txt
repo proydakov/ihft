@@ -14,3 +14,7 @@ target_link_libraries(test_source_location PRIVATE ihft_logger)
 ihft_add_test(test_logger_event)
 target_link_libraries(test_logger_event PRIVATE ihft_logger)
 
+ihft_add_test(test_logger_queue)
+target_link_libraries(test_logger_queue PRIVATE ihft_channel)
+target_link_libraries(test_logger_queue PRIVATE ihft_memory)
+target_link_libraries(test_logger_queue PRIVATE ihft_logger)
