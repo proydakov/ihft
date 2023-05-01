@@ -72,8 +72,9 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] page allocator for 4KB pages
   - [x] huge page allocator for 2MB & 1GB pages
 - [x] types module
-  - [x] action result
-  - [x] function reference
+  - [x] box: placed object ownership
+  - [x] function_ref: non-owning reference to a callable
+  - [x] result: function output or error
 - [x] misc module
   - [x] simple human-readable TOML config system
   - [x] sigaction based signal handler
