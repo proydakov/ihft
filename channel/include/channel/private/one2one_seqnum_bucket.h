@@ -21,7 +21,7 @@ struct one2one_seqnum_queue_constant
     enum : T { SEQNUM_MASK = std::numeric_limits<T>::max() >> T(1) };
 };
 
-static_assert(one2one_seqnum_queue_constant<std::uint8_t>::SEQNUM_MASK == 127ul);
+static_assert(one2one_seqnum_queue_constant<std::uint8_t> ::SEQNUM_MASK == 127ul);
 static_assert(one2one_seqnum_queue_constant<std::uint16_t>::SEQNUM_MASK == 32'767ul);
 static_assert(one2one_seqnum_queue_constant<std::uint32_t>::SEQNUM_MASK == 2'147'483'647ul);
 static_assert(one2one_seqnum_queue_constant<std::uint64_t>::SEQNUM_MASK == 9'223'372'036'854'775'807ul);

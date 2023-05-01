@@ -90,5 +90,17 @@ namespace ihft::memory
                 m_next = 0;
             }
         }
+
+        // Helper section
+
+        std::size_t position() const noexcept
+        {
+            return m_next;
+        }
+
+        std::size_t capacity() const noexcept
+        {
+            return m_size;
+        }
     };
 }

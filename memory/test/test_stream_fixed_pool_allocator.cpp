@@ -21,11 +21,15 @@ TEST_CASE("test_stream_fixed_pool_allocator STL-api")
 
     stream_fixed_pool_allocator<A> allocator(size);
 
+    REQUIRE(allocator.capacity() == 17);
+
     std::set<A*> set;
 
     // size + 1 extra slab
     for(std::size_t i = 0; i < size + 1; i++)
     {
+        REQUIRE(allocator.position() == i);
+
         set.insert(allocator.allocate(1));
 
         REQUIRE( set.size() == i + 1 );
