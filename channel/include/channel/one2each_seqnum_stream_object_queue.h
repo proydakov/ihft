@@ -86,7 +86,7 @@ private:
     counter_t m_owner;
 };
 
-template<complex_event event_t, seqnum_counter counter_t>
+template<complex_event event_t, seqnum_counter counter_t = std::uint64_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2each_seqnum_stream_object_reader final
 {
 public:

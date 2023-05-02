@@ -17,7 +17,7 @@ namespace ihft::logger
 // Basic contract
 
 template<typename T>
-struct logger_contract
+struct logger_contract final
 {
     using type = void;
 };
@@ -26,7 +26,7 @@ struct logger_contract
 
 #define DECLARE_SIMPLE_LOGGER_CONTRACT(T) \
 template<> \
-struct logger_contract<T> \
+struct logger_contract<T> final \
 { \
     using type = T; \
 \
@@ -67,10 +67,10 @@ DECLARE_SIMPLE_LOGGER_CONTRACT(long double);
 //
 
 template<typename T>
-concept char_counter = std::is_same_v<T, char>;
+concept char_concept = std::is_same_v<T, char>;
 
-template<char_counter T, size_t N>
-struct logger_contract<T[N]>
+template<char_concept T, size_t N>
+struct logger_contract<T[N]> final
 {
     using type = std::string_view;
 
@@ -82,7 +82,7 @@ struct logger_contract<T[N]>
 
 #define DECLARE_STRING_VIEW_LIKE_LOGGER_CONTRACT(T) \
 template<> \
-struct logger_contract<T> \
+struct logger_contract<T> final \
 { \
     using type = std::string_view; \
  \
@@ -100,7 +100,7 @@ DECLARE_STRING_VIEW_LIKE_LOGGER_CONTRACT(std::string_view);
 // Pointer types contracts
 
 template<>
-struct logger_contract<std::nullptr_t>
+struct logger_contract<std::nullptr_t> final
 {
     using type = const void*;
 
@@ -111,7 +111,7 @@ struct logger_contract<std::nullptr_t>
 };
 
 template<typename T>
-struct logger_contract<T*>
+struct logger_contract<T*> final
 {
     using type = const void*;
 
@@ -122,7 +122,7 @@ struct logger_contract<T*>
 };
 
 template<typename T>
-struct logger_contract<const T*>
+struct logger_contract<const T*> final
 {
     using type = const void*;
 

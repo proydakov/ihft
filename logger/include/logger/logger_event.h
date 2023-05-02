@@ -15,11 +15,12 @@
 namespace ihft::logger
 {
 
-//
-// The cornerstone of logging system.
-// It represents a smart arguments wrapper and produce an instruction.
-// how to pack origin arguments into internal buffer.
-//
+///
+/// The cornerstone of logging system.
+/// It represents a smart arguments wrapper and produce an instruction.
+/// how to pack origin arguments into internal buffer.
+///
+
 struct alignas(constant::CPU_CACHE_LINE_SIZE) logger_event final
 {
     static constexpr size_t ITEM_SIZE = 4096;

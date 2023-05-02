@@ -26,6 +26,7 @@ public:
         return *m_content_allocator;
     }
 
+private:
     content_allocator_t* m_content_allocator;
 };
 

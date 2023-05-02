@@ -86,6 +86,7 @@ IHFT is microframework & laboratory for low latency applications.
   - [ ] wait-free implementation
   - [ ] std::format as formatting backend
   - [ ] std::source_location as logging info
+  - [ ] documentation with pictures
 - [ ] network module
   - [x] multicast demo
   - [x] udp demo
