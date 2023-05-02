@@ -27,7 +27,7 @@ do { \
 } \
 while(0)
 
-TEST_CASE("compiletime")
+TEST_CASE("compile_time")
 {
     using namespace std::literals;
 

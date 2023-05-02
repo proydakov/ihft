@@ -117,10 +117,15 @@ TEST_CASE("struct with tail extra data")
     struct network_data final
     {
         network_data(std::string_view iname, std::string_view ilocation)
-            : arena(extra_data)
+            : arena(get_extra(), sizeof(extra_data))
             , name(iname, arena.typed_allocator<char>())
             , location(ilocation, arena.typed_allocator<char>())
         {
+        }
+
+        char* get_extra()
+        {
+            return extra_data;
         }
 
         arena_allocator arena;

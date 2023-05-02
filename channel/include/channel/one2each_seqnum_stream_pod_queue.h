@@ -24,7 +24,7 @@ class one2each_seqnum_stream_pod_queue;
 // implementation
 
 // reader
-template<plain_event event_t, seqnum_counter counter_t>
+template<plain_event event_t, seqnum_counter counter_t = std::uint64_t>
 class alignas(constant::CPU_CACHE_LINE_SIZE) one2each_seqnum_stream_pod_reader final
 {
 public:

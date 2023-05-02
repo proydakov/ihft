@@ -42,6 +42,12 @@ public:
     {
     }
 
+    one2one_seqnum_stream_queue_impl(one2one_seqnum_stream_queue_impl&&) noexcept = default;
+
+    one2one_seqnum_stream_queue_impl& operator=(one2one_seqnum_stream_queue_impl&&) noexcept = delete;
+    one2one_seqnum_stream_queue_impl(const one2one_seqnum_stream_queue_impl&) = delete;
+    one2one_seqnum_stream_queue_impl& operator=(const one2one_seqnum_stream_queue_impl&) = delete;
+
     template<typename R>
     std::optional<R> create_reader() noexcept
     {
