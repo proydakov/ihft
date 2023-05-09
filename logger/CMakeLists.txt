@@ -13,3 +13,4 @@ target_link_libraries(ihft_logger PRIVATE ihft_memory)
 target_link_libraries(ihft_logger PRIVATE ihft_platform)
 
 add_subdirectory(test)
+add_subdirectory(benchmark)

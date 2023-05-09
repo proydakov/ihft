@@ -30,6 +30,7 @@ private:
     template<typename T>
     logger_client(T producer, bool synch) noexcept
         : m_synch(synch)
+        , m_lost{0}
     {
         static_assert(logger_client::content_s == sizeof(T));
         static_assert(logger_client::content_s == alignof(T));
@@ -47,6 +48,7 @@ private:
 
 private:
     std::atomic_bool m_synch;
+    std::uint64_t m_lost;
     void* m_impl;
     std::aligned_storage_t<content_s, content_s> m_storage;
 };

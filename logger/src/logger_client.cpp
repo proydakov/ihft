@@ -55,6 +55,10 @@ bool logger_client::try_log_event(logger_event* event) noexcept
             logger_adapter::dispatch();
         }
     }
+    else
+    {
+        m_lost++;
+    }
 
     return write;
 }
