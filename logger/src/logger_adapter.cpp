@@ -64,7 +64,7 @@ logger_adapter::logger_client_thread_guard::~logger_client_thread_guard() noexce
 
 struct logger_adapter::aimpl final
 {
-    static constexpr size_t QUEUE_SIZE = 4096;
+    static constexpr size_t QUEUE_SIZE = 32 * 1024;
 
     static void atexit_handler()
     {
