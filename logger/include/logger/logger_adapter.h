@@ -64,7 +64,7 @@ public:
     //
     // Consume logger_events from readers and process it.
     //
-    static void dispatch() noexcept;
+    static bool dispatch() noexcept;
 
     //
     // Changing the operating mode between synchronous and asynchronous.

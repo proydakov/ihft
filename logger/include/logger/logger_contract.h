@@ -32,6 +32,7 @@ struct logger_contract<T> final \
 \
     static type pack(logger_extra_data&, T origin) \
     { \
+        static_assert(std::is_trivially_copyable<T>::value); \
         return origin; \
     } \
 }
@@ -52,8 +53,6 @@ DECLARE_SIMPLE_LOGGER_CONTRACT(unsigned long long);
 DECLARE_SIMPLE_LOGGER_CONTRACT(float);
 DECLARE_SIMPLE_LOGGER_CONTRACT(double);
 DECLARE_SIMPLE_LOGGER_CONTRACT(long double);
-
-#undef DECLARE_SIMPLE_LOGGER_CONTRACT
 
 //
 // String-like types contracts

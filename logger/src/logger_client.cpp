@@ -50,7 +50,7 @@ bool logger_client::try_log_event(logger_event* event) noexcept
     if (write)
     {
         allocator.seek_to_next_slab();
-        if(m_synch.load(std::memory_order_relaxed))
+        if (m_synch.load(std::memory_order_relaxed))
         {
             logger_adapter::dispatch();
         }
