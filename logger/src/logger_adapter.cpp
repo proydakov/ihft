@@ -10,6 +10,7 @@
 #include <mutex>
 #include <cstdlib>
 #include <sstream>
+#include <iostream>
 
 namespace
 {
@@ -26,21 +27,19 @@ public:
 };
 
 template<typename S, typename L>
-void notify(L& listener, S& stream, bool& flush)
+void notify(L& listener, S& stream)
 {
     if constexpr(has_view<S>::value)
     {
         // lets go to use a view from (C++20)
         std::string_view view = stream.view();
         listener->notify(view);
-        flush = true;
     }
     else
     {
         // clang doesn't implement view() method
         std::string str = stream.str();
         listener->notify(str);
-        flush = true;
     }
 }
 
@@ -64,7 +63,7 @@ logger_adapter::logger_client_thread_guard::~logger_client_thread_guard() noexce
 
 struct logger_adapter::aimpl final
 {
-    static constexpr size_t QUEUE_SIZE = 32 * 1024;
+    static constexpr size_t QUEUE_SIZE = 4 * 1024;
 
     static void atexit_handler()
     {
@@ -76,7 +75,8 @@ struct logger_adapter::aimpl final
     }
 
     aimpl()
-        : listener(std::make_unique<impl::default_logger_listener>())
+        : m_cindex(0)
+        , listener(std::make_unique<impl::default_logger_listener>())
         , mode(logger_adapter::mode_t::synch)
     {
         unsigned const cpus = platform::trait::get_total_cpus();
@@ -86,6 +86,8 @@ struct logger_adapter::aimpl final
     }
 
     std::mutex mutex;
+
+    size_t m_cindex;
 
     std::vector<queue_t::reader_type> consumers;
     std::ostringstream sstream;
@@ -142,35 +144,49 @@ logger_adapter::~logger_adapter()
 {
 }
 
-void logger_adapter::dispatch() noexcept
+bool logger_adapter::dispatch() noexcept
 {
     if (global_instance)
     {
         auto& impl = *global_instance->m_impl;
         std::unique_lock lock(impl.mutex);
 
-        bool flush = false;
-        for(auto& source : impl.consumers)
+        size_t i = 0;
+
+        for(; i < impl.consumers.size(); i++)
         {
-            auto opt = source.try_read();
-            if (opt)
+            size_t const cindex = (impl.m_cindex + i) % impl.consumers.size();
+            queue_t::reader_type& source = impl.consumers[cindex];
+
+            if (auto opt = source.try_read(); opt)
             {
                 logger::logger_event const& event_cref = opt->get_event();
 
-                auto& stream = impl.sstream;
+                td::ostringstream& stream = impl.sstream;
                 /// @todo : reset flags, width, precession
                 stream.str(std::string{});
 
                 event_cref.print_args_to(stream);
-                notify(impl.listener, stream, flush);
+                notify(impl.listener, stream);
+
+                break;
             }
         }
 
+        bool const flush = i < impl.consumers.size();
         if (flush)
         {
             impl.listener->flush();
+            impl.m_cindex += i + 1;
+            impl.m_cindex %= impl.consumers.size();
         }
+
+        std::cout << "consumers: " << impl.consumers.size() << std::endl;
+
+        return flush;
     }
+
+    return false;
 }
 
 void logger_adapter::change_mode(mode_t newmode) noexcept
