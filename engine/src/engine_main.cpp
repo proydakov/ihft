@@ -8,14 +8,19 @@
 #include <misc/config_helper.h>
 #include <misc/signal_helper.h>
 
+#include <logger/logger_adapter.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <filesystem>
 
 using plf = ihft::platform::trait;
+using logadap = ihft::logger::logger_adapter;
 
 namespace
 {
+    const char * const LOGGER_TASK = "logger";
+
     std::atomic_bool g_until{true};
 
     void mysa_sigaction(int signal, siginfo_t*, void*)
@@ -26,7 +31,7 @@ namespace
 
     int check_system()
     {
-        if (!plf::is_scaling_governor_use_performance_mode())
+        if (not plf::is_scaling_governor_use_performance_mode())
         {
             std::cerr << "Is CPU scaling governor doesn't use performance mode." << std::endl;
             std::cerr << "Exec from root: find /sys/devices/system/cpu -name scaling_governor -exec sh -c 'echo performan" << std::endl;
@@ -58,6 +63,18 @@ namespace
 
 namespace ihft::engine
 {
+    namespace impl
+    {
+        class engine_main_helper final
+        {
+        public:
+            static void replace_task(task_storage& storage, std::string name, task_storage::task_t task)
+            {
+                storage.replace_task(std::move(name), std::move(task));
+            }
+        };
+    }
+
     int engine_main(int const argc, char const * const argv[], register_tasks_callback_t register_tasks, invalid_config_callback_t invalid_cfg)
     {
         // we are going to use a pure C++ application
@@ -83,7 +100,7 @@ namespace ihft::engine
         }
 
         std::string_view const path_to_config = argv[1];
-        if (!std::filesystem::exists(path_to_config) || !std::filesystem::is_regular_file(path_to_config))
+        if (not std::filesystem::exists(path_to_config) || !std::filesystem::is_regular_file(path_to_config))
         {
             usage();
             return EXIT_FAILURE;
@@ -92,7 +109,7 @@ namespace ihft::engine
         std::cout << "parsing config file..." << std::endl;
 
         auto const helper_res = misc::config_helper::parse(path_to_config);
-        if (!helper_res)
+        if (not helper_res)
         {
             usage();
             std::cerr << helper_res.error() << std::endl;
@@ -103,7 +120,7 @@ namespace ihft::engine
 
         auto const& helper = helper_res.value();
         auto const cpu_cfg_res = cpus_config::parse<platform::trait>(helper);
-        if (!cpu_cfg_res)
+        if (not cpu_cfg_res)
         {
             usage();
             std::cerr << cpu_cfg_res.error() << std::endl;
@@ -112,13 +129,13 @@ namespace ihft::engine
 
         std::cout << "setuping signal handlers..." << std::endl;
 
-        if (!misc::setup_sigaction_handler(&mysa_sigaction, {SIGINT}))
+        if (not misc::setup_sigaction_handler(&mysa_sigaction, {SIGINT}))
         {
             std::cerr << "can't setup signal handler for SIGINT" << std::endl;
             return EXIT_FAILURE;
         }
 
-        if (!misc::block_application_signals({SIGUSR1, SIGUSR2}))
+        if (not misc::block_application_signals({SIGUSR1, SIGUSR2}))
         {
             std::cerr << "can't block signals: SIGUSR1, SIGUSR2" << std::endl;
         }
@@ -140,7 +157,7 @@ namespace ihft::engine
             // we are going to move initialization into the first isolated cpu
             unsigned const cpu_id = cpu_cfg.get_name_2_cpu().begin()->second;
             impl::logical_cpu_impl<plf> logical_cpu(cpu_id, "main");
-            if (!logical_cpu.bind())
+            if (not logical_cpu.bind())
             {
                 std::cerr << "runtime error: can't bind thread into core" << std::endl;
                 return EXIT_FAILURE;
@@ -153,19 +170,33 @@ namespace ihft::engine
             }
         }
 
-        if (!g_until)
+        if (not g_until)
         {
             return EXIT_SUCCESS;
+        }
+
+        if (cpu_cfg.get_name_2_cpu().contains(LOGGER_TASK))
+        {
+            impl::engine_main_helper::replace_task(storage, LOGGER_TASK, []()
+            {
+                logadap::dispatch();
+                return true;
+            });
         }
 
         std::cout << "creating engine..." << std::endl;
 
         auto engine_res = impl::engine::create(cpu_cfg, std::move(storage), g_until);
-        if (!engine_res)
+        if (not engine_res)
         {
             usage();
             std::cerr << engine_res.error() << std::endl;
             return EXIT_FAILURE;
+        }
+
+        if (cpu_cfg.get_name_2_cpu().contains(LOGGER_TASK))
+        {
+            logadap::change_mode(logadap::mode_t::async);
         }
 
         std::cout << "engine joining..." << std::endl;

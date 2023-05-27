@@ -1,5 +1,11 @@
 #include <platform/platform.h>
+
 #include <thread>
+
+namespace
+{
+    static const unsigned g_cpus{std::thread::hardware_concurrency()};
+}
 
 #ifdef __linux__
 
@@ -12,6 +18,7 @@
 #include <string_view>
 
 #include <sched.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
 
@@ -19,14 +26,12 @@ namespace
 {
     static const ihft::impl::cmdline g_cmdline("/proc/cmdline");
 
-    cpu_set_t load_default_cpuset() noexcept
+    static const cpu_set_t g_default_cpuset = []()
     {
         cpu_set_t set;
         sched_getaffinity(0, sizeof(cpu_set_t), &set);
         return set;
-    }
-
-    cpu_set_t const g_default_cpuset = load_default_cpuset();
+    }();
 
     std::pair<unsigned, unsigned> get_hp_info_impl() noexcept
     {
@@ -68,10 +73,15 @@ namespace ihft::platform
 
     unsigned trait::get_total_cpus() noexcept
     {
-        return std::thread::hardware_concurrency();
+        return g_cpus;
     }
 
 #ifdef __linux__
+
+    long long trait::get_thread_id() noexcept
+    {
+        return gettid();
+    }
 
     bool trait::set_current_thread_name(const char* name) noexcept
     {
@@ -202,6 +212,14 @@ namespace ihft::platform
     }
 
 #else
+
+    long long trait::get_thread_id() noexcept
+    {
+        auto const tid = std::this_thread::get_id();
+        auto const val = std::hash<std::thread::id>()(tid);
+        static_assert(sizeof(decltype(val)) == sizeof(long long));
+        return static_cast<long long>(val);
+    }
 
     bool trait::set_current_thread_name(const char*) noexcept
     {

@@ -1,6 +1,8 @@
 #include <engine/private/engine.h>
 #include <engine/private/logical_cpu.h>
 
+#include <logger/logger_adapter.h>
+
 #include <platform/platform.h>
 
 #include <set>
@@ -42,13 +44,21 @@ namespace ihft::engine::impl
         for (auto const& [name, cpu] : cfg.get_name_2_cpu())
         {
             auto it = storage.m_tasks.find(name);
+            if (it == storage.m_tasks.end())
+            {
+                ::abort();
+            }
 
-            m_threads.emplace_back([&until, task = std::move(it->second), name = name, cpu = cpu](){
+            m_threads.emplace_back([&until, task = std::move(it->second), name = name, cpu = cpu]()
+            {
+                logger::logger_adapter::logger_client_thread_guard guard;
+
                 logical_cpu_impl<ihft::platform::trait> lcpu(cpu, name);
-                if (!lcpu.bind())
+                if (not lcpu.bind())
                 {
                     return;
                 }
+
                 while (until.load(std::memory_order_relaxed) and task());
             });
         }

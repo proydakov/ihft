@@ -31,6 +31,9 @@ struct trait
     // Get total cpus count on current machine
     static unsigned get_total_cpus() noexcept;
 
+    // Get current thread native id
+    static long long get_thread_id() noexcept;
+
     // This call locks all pages mapped into the address space of the calling process.
     // This includes the pages of the code, data, and stack segment,
     // as well as shared libraries, user space kernel data, shared memory, and memory-mapped files.

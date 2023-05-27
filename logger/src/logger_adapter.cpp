@@ -181,8 +181,6 @@ bool logger_adapter::dispatch() noexcept
             impl.m_cindex %= impl.consumers.size();
         }
 
-        std::cout << "consumers: " << impl.consumers.size() << std::endl;
-
         return flush;
     }
 

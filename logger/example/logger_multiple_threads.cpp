@@ -5,17 +5,15 @@
 #include <platform/platform.h>
 
 #include <string>
-#include <chrono>
 #include <thread>
 #include <vector>
 #include <iostream>
 
-namespace ihft::logger
-{
-DECLARE_SIMPLE_LOGGER_CONTRACT(std::thread::id);
-}
+#include <pthread.h>
+#include <x86intrin.h>
 
 using namespace ihft::logger;
+using namespace ihft::platform;
 
 constexpr size_t ITERATIONS = 1 * 1024 * 1024;
 
@@ -23,12 +21,13 @@ int main()
 {
     logger_adapter::change_mode(logger_adapter::mode_t::async);
 
-    size_t const cpus = std::thread::hardware_concurrency();
+    unsigned const cpus = std::max(1u, trait::get_total_cpus() - 1);
+    trait::set_current_thread_cpu(cpus);
 
     std::atomic<std::uint64_t> alive{};
 
     std::vector<std::thread> threads;
-    for(size_t i = 0; i < cpus; i++)
+    for(unsigned i = 0; i < cpus; i++)
     {
         alive++;
 
@@ -36,8 +35,10 @@ int main()
             logger_adapter::logger_client_thread_guard guard;
 
             std::string const tname("thread_" + std::to_string(i));
-            ihft::platform::trait::set_current_thread_name(tname.c_str());
+            trait::set_current_thread_name(tname.c_str());
+            trait::set_current_thread_cpu(i);
 
+            auto const tid = trait::get_thread_id();
             auto client = logger_client::get_this_thread_client();
 
             for(size_t j = 0; j < ITERATIONS; j++)
@@ -46,12 +47,12 @@ int main()
 
                 auto event = std::construct_at(event_slab,
                     "from id: {}, thread_id: {}, thread_name: {}, event id: {}",
-                    i, std::this_thread::get_id(), tname, j
+                    i, tid, tname, j
                 );
 
                 while(not client->try_log_event(event))
                 {
-                    std::this_thread::sleep_for(std::chrono::microseconds(25));
+                    _mm_pause();
                 }
             }
 
