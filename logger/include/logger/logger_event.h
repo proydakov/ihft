@@ -2,6 +2,7 @@
 
 #include <logger/logger_contract.h>
 #include <logger/logger_extra_data.h>
+#include <logger/private/source_location.h>
 
 #include <constant/constant.h>
 
@@ -120,6 +121,13 @@ public:
         header.print_args_to(stream);
     }
 
+    void set_source_location(impl::source_location loc)
+    {
+        header.m_file = loc.m_file;
+        header.m_func = loc.m_func;
+        header.m_line = loc.m_line;
+    }
+
 private:
     using print_function_t = void (*)(void*, std::string_view, std::ostream&);
     using clean_function_t = void (*)(void*);
@@ -134,16 +142,35 @@ private:
             }
         }
 
+        void print_header(std::ostream& os) const
+        {
+            os << "from: "
+                << m_file << '('
+                << m_line << ") `"
+                << m_func << "` : "
+            ;
+        }
+
         void print_args_to(std::ostream& stream) const
         {
+            if (not m_file.empty())
+            {
+                print_header(stream);
+            }
+
             if (data_ptr and print_function)
             {
                 print_function(data_ptr, format_expr, stream);
             }
         }
 
+        std::string_view m_file;
+        std::string_view m_func;
+        unsigned m_line = 0;
+
         std::string_view format_expr;
         void* data_ptr = nullptr;
+
         print_function_t print_function = nullptr;
         clean_function_t clean_function = nullptr;
     };
