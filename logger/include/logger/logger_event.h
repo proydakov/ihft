@@ -1,5 +1,6 @@
 #pragma once
 
+#include <logger/logger_level.h>
 #include <logger/logger_contract.h>
 #include <logger/logger_extra_data.h>
 #include <logger/private/source_location.h>
@@ -8,7 +9,9 @@
 
 #include <array>
 #include <tuple>
+#include <chrono>
 #include <memory>
+#include <iomanip>
 #include <ostream>
 #include <utility>
 #include <string_view>
@@ -25,6 +28,8 @@ namespace ihft::logger
 struct alignas(constant::CPU_CACHE_LINE_SIZE) logger_event final
 {
     static constexpr size_t ITEM_SIZE = 4096;
+
+    using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
 
 private:
     template<typename Tuple, typename Array, std::size_t... Is>
@@ -121,8 +126,10 @@ public:
         header.print_args_to(stream);
     }
 
-    void set_source_location(impl::source_location loc)
+    void set_log_point_info(log_level level, time_point_t now, impl::source_location loc)
     {
+        header.m_level = level;
+        header.m_now = now;
         header.m_file = loc.m_file;
         header.m_func = loc.m_func;
         header.m_line = loc.m_line;
@@ -142,12 +149,25 @@ private:
             }
         }
 
+        static void time_point_to_stream(std::ostream& os, time_point_t tp)
+        {
+            const auto tt = tp.time_since_epoch();
+            const time_t durS = std::chrono::duration_cast<std::chrono::seconds>(tt).count();
+            if (const std::tm * tm = (std::gmtime(&durS))) {
+                os << std::put_time(tm, "%Z %Y-%m-%d %H:%M:%S.");
+                const auto durMs = std::chrono::duration_cast<std::chrono::microseconds>(tt).count();
+                os << std::setw(3) << std::setfill('0') << static_cast<long>(durMs - durS * 1'000'000) << " ";
+            }
+        }
+
         void print_header(std::ostream& os) const
         {
-            os << "from: "
+            time_point_to_stream(os, m_now);
+
+            os << m_level << " "
                 << m_file << '('
-                << m_line << ") `"
-                << m_func << "` : "
+                << m_line << "):"
+                << m_func << " "
             ;
         }
 
@@ -163,6 +183,10 @@ private:
                 print_function(data_ptr, format_expr, stream);
             }
         }
+
+    public:
+        log_level m_level = log_level::_NONE_;
+        time_point_t m_now;
 
         std::string_view m_file;
         std::string_view m_func;

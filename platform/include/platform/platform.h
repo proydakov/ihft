@@ -32,7 +32,7 @@ struct trait
     static unsigned get_total_cpus() noexcept;
 
     // Get current thread native id
-    static long long get_thread_id() noexcept;
+    static long get_thread_id() noexcept;
 
     // This call locks all pages mapped into the address space of the calling process.
     // This includes the pages of the code, data, and stack segment,

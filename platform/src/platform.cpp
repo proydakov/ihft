@@ -78,7 +78,7 @@ namespace ihft::platform
 
 #ifdef __linux__
 
-    long long trait::get_thread_id() noexcept
+    long trait::get_thread_id() noexcept
     {
         return gettid();
     }
@@ -213,12 +213,12 @@ namespace ihft::platform
 
 #else
 
-    long long trait::get_thread_id() noexcept
+    long trait::get_thread_id() noexcept
     {
         auto const tid = std::this_thread::get_id();
         auto const val = std::hash<std::thread::id>()(tid);
-        static_assert(sizeof(decltype(val)) == sizeof(long long));
-        return static_cast<long long>(val);
+        static_assert(sizeof(decltype(val)) == sizeof(long));
+        return static_cast<long>(val);
     }
 
     bool trait::set_current_thread_name(const char*) noexcept

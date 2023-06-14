@@ -51,9 +51,9 @@ namespace ihft::engine::impl
 
             m_threads.emplace_back([&until, task = std::move(it->second), name = name, cpu = cpu]()
             {
+                logical_cpu_impl<ihft::platform::trait> lcpu(cpu, name);
                 logger::logger_adapter::logger_client_thread_guard guard;
 
-                logical_cpu_impl<ihft::platform::trait> lcpu(cpu, name);
                 if (not lcpu.bind())
                 {
                     return;

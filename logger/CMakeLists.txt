@@ -1,6 +1,7 @@
 add_library(ihft_logger
     src/logger_adapter.cpp
     src/logger_client.cpp
+    src/logger_level.cpp
     src/logger_listener.cpp
     src/default_logger_listener.cpp
 )

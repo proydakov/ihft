@@ -3,3 +3,6 @@ target_link_libraries(benchmark_logger_client_async PRIVATE ihft_logger)
 
 ihft_add_benchmark(benchmark_logger_client_synch)
 target_link_libraries(benchmark_logger_client_synch PRIVATE ihft_logger)
+
+ihft_add_benchmark(benchmark_logger_client_serrialize)
+target_link_libraries(benchmark_logger_client_serrialize PRIVATE ihft_logger)
