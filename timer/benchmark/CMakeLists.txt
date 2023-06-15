@@ -1,0 +1,2 @@
+ihft_add_benchmark(benchmark_timer)
+target_link_libraries(benchmark_timer PRIVATE ihft_timer)

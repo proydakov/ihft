@@ -1,5 +1,6 @@
 #pragma once
 
+#include <timer/timer.h>
 #include <constant/constant.h>
 #include <compiler/compiler.h>
 #include <channel/channel_factory.h>
@@ -17,8 +18,6 @@
 #include <iostream>
 #include <algorithm>
 #include <type_traits>
-
-#include <x86intrin.h>
 
 using plat_t = ihft::platform::trait;
 using cpus_t = std::vector<unsigned>;
@@ -122,7 +121,7 @@ int test_main(int const argc, char const* argv[])
 
     namespace chrono = std::chrono;
 
-    std::uint64_t rdtsc_start{}, rdtsc_end{};
+    std::uint64_t cpu_counter_start{}, cpu_counter_end{};
     chrono::time_point<chrono::high_resolution_clock> start{}, stop{};
 
     wait_t writerWait;
@@ -165,7 +164,7 @@ int test_main(int const argc, char const* argv[])
         }
 
         {
-            rdtsc_start = __rdtsc();
+            cpu_counter_start = ihft::timer::cpu_counter();
             start = chrono::high_resolution_clock::now();
 
             threads.emplace_back(writer_method<Q, T>,
@@ -182,7 +181,7 @@ int test_main(int const argc, char const* argv[])
                 t.join();
             }
 
-            rdtsc_end = __rdtsc();
+            cpu_counter_end = ihft::timer::cpu_counter();
             stop = chrono::high_resolution_clock::now();
         }
     }
@@ -212,7 +211,7 @@ int test_main(int const argc, char const* argv[])
     };
 
     auto const nanoseconds = chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
-    auto const rdtsc_delta = rdtsc_end - rdtsc_start;
+    auto const cpu_counter_delta = cpu_counter_end - cpu_counter_start;
 
     std::cout << "W WAIT: " << writerWait.waitCounter << ' ' << calc_percent(writerWait.waitCounter) << "\n";
     for (auto const& stat : readersWait)
@@ -222,10 +221,10 @@ int test_main(int const argc, char const* argv[])
     std::cout << "\n";
 
     std::cout << "TIME: " << double(nanoseconds) / double(1'000'000'000) << " seconds\n";
-    std::cout << "TIME: " << rdtsc_delta << " cycles\n";
+    std::cout << "TIME: " << cpu_counter_delta << " cycles\n";
     std::cout << "PERF: " << format_events_per_second(total_events, nanoseconds) << " events/second\n";
     std::cout << "PERF: " << double(double(nanoseconds) / double(total_events)) << " nanoseconds/event\n";
-    std::cout << "PERF: " << double(double(rdtsc_delta) / double(total_events)) << " cycles/event\n";
+    std::cout << "PERF: " << double(double(cpu_counter_delta) / double(total_events)) << " cycles/event\n";
 
     return 0;
 }

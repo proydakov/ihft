@@ -1,6 +1,7 @@
 #include <logger/logger_event.h>
 #include <logger/logger_client.h>
 #include <logger/logger_adapter.h>
+#include <timer/timer.h>
 
 #include <platform/platform.h>
 
@@ -12,6 +13,7 @@
 #include <pthread.h>
 #include <x86intrin.h>
 
+using namespace ihft::timer;
 using namespace ihft::logger;
 using namespace ihft::platform;
 
@@ -52,7 +54,7 @@ int main()
 
                 while(not client->try_log_event(event))
                 {
-                    _mm_pause();
+                    cpu_pause();
                 }
             }
 

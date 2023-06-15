@@ -71,6 +71,9 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] stream fixed pool allocator
   - [x] page allocator for 4KB pages
   - [x] huge page allocator for 2MB & 1GB pages
+- [x] timer module
+  - [x] native cpu_counter
+  - [x] native cpu_pause
 - [x] types module
   - [x] box: placed object ownership
   - [x] function_ref: non-owning reference to a callable

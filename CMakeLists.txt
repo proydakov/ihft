@@ -18,6 +18,7 @@ enable_testing()
 
 add_subdirectory(compiler)
 add_subdirectory(constant)
+add_subdirectory(timer)
 add_subdirectory(types)
 add_subdirectory(misc)
 add_subdirectory(memory)
