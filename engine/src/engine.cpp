@@ -54,6 +54,8 @@ namespace ihft::engine::impl
                 logical_cpu_impl<ihft::platform::trait> lcpu(cpu, name);
                 logger::logger_adapter::logger_client_thread_guard guard;
 
+                logger::logger_adapter::set_thread_name(name.c_str());
+
                 if (not lcpu.bind())
                 {
                     return;

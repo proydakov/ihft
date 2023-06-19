@@ -31,11 +31,20 @@ private:
     logger_client(T producer, bool synch) noexcept
         : m_synch(synch)
         , m_lost{0}
+        , m_thread_id{0}
     {
         static_assert(logger_client::content_s == sizeof(T));
         static_assert(logger_client::content_s == alignof(T));
 
         m_impl = std::construct_at(reinterpret_cast<T*>(&m_storage), std::move(producer));
+        m_thread_name[0] = 'u';
+        m_thread_name[1] = 'n';
+        m_thread_name[2] = 'k';
+        m_thread_name[3] = 'n';
+        m_thread_name[4] = 'o';
+        m_thread_name[5] = 'w';
+        m_thread_name[6] = 'n';
+        m_thread_name[7] = '\0';
         set_this_thread_client(this);
     }
 
@@ -44,11 +53,27 @@ private:
         m_synch.store(synch);
     }
 
+    void set_thread_id(long id)
+    {
+        m_thread_id = id;
+    }
+
+    void set_thread_name(const char (&tname)[16])
+    {
+        static_assert(sizeof(tname) == sizeof(m_thread_name));
+        for (size_t i = 0; i < sizeof(tname); i++)
+        {
+            m_thread_name[i] = tname[i];
+        }
+    }
+
     static void set_this_thread_client(logger_client*) noexcept;
 
 private:
     std::atomic_bool m_synch;
     std::uint64_t m_lost;
+    long m_thread_id;
+    char m_thread_name[16];
     void* m_impl;
     std::aligned_storage_t<content_s, content_s> m_storage;
 };

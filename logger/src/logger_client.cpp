@@ -45,6 +45,8 @@ bool logger_client::try_log_event(logger_event* event) noexcept
 
     assert(event == allocator.active_slab());
 
+    event->set_thread_info(m_thread_id, m_thread_name);
+
     bool const write = ptr->try_write(types::box<logger::logger_event>(event));
 
     if (write)

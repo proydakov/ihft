@@ -135,6 +135,17 @@ public:
         header.m_line = loc.m_line;
     }
 
+    void set_thread_info(long id, char const (&tname)[16])
+    {
+        header.m_thread_id = id;
+        static_assert(sizeof(tname) == sizeof(header.m_thread_name));
+        for (size_t i = 0; i < sizeof(tname) - 1; i++)
+        {
+            header.m_thread_name[i] = tname[i];
+        }
+        header.m_thread_name[15] = '\0';
+    }
+
 private:
     using print_function_t = void (*)(void*, std::string_view, std::ostream&);
     using clean_function_t = void (*)(void*);
@@ -164,8 +175,14 @@ private:
         {
             time_point_to_stream(os, m_now);
 
-            os << m_level << " "
-                << m_file << '('
+            os << m_level << " ";
+
+            if (m_thread_id)
+            {
+                os << "[" << m_thread_name << ":" << m_thread_id << "] ";
+            }
+
+            os << m_file << '('
                 << m_line << "):"
                 << m_func << " "
             ;
@@ -187,6 +204,9 @@ private:
     public:
         log_level m_level = log_level::_NONE_;
         time_point_t m_now;
+
+        long m_thread_id = 0;
+        char m_thread_name[16];
 
         std::string_view m_file;
         std::string_view m_func;

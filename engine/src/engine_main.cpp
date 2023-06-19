@@ -156,12 +156,16 @@ namespace ihft::engine
             // the correct cpus configuration can't be empty
             // we are going to move initialization into the first isolated cpu
             unsigned const cpu_id = cpu_cfg.get_name_2_cpu().begin()->second;
-            impl::logical_cpu_impl<plf> logical_cpu(cpu_id, "main");
+            std::string const tname_main("main");
+
+            impl::logical_cpu_impl<plf> logical_cpu(cpu_id, tname_main);
             if (not logical_cpu.bind())
             {
                 std::cerr << "runtime error: can't bind thread into core" << std::endl;
                 return EXIT_FAILURE;
             }
+
+            logger::logger_adapter::set_thread_name(tname_main.c_str());
 
             if (not register_tasks(cpu_cfg, storage, g_until))
             {

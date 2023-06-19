@@ -54,6 +54,7 @@ logger_adapter::logger_client_thread_guard::logger_client_thread_guard()
     if (nullptr == client)
     {
         m_client = logger_adapter::register_logger_client(global_instance);
+        m_client->set_thread_id(platform::trait::get_thread_id());
     }
 }
 
@@ -137,7 +138,8 @@ std::shared_ptr<logger_client> logger_adapter::register_logger_client(logger_ada
 logger_adapter::logger_adapter()
     : m_impl(std::make_unique<aimpl>())
 {
-    register_logger_client(this);
+    auto client = register_logger_client(this);
+    client->set_thread_id(platform::trait::get_thread_id());
 }
 
 logger_adapter::~logger_adapter()
@@ -203,6 +205,17 @@ void logger_adapter::change_mode(mode_t newmode) noexcept
                 p->set_mode(newmode == mode_t::synch);
             }
         }
+    }
+}
+
+void logger_adapter::set_thread_name(const char * const tname) noexcept
+{
+    auto client = logger_client::get_this_thread_client();
+    if (nullptr != client)
+    {
+        char array[16];
+        strncpy(array, tname, strnlen(tname, sizeof(array)));
+        client->set_thread_name(array);
     }
 }
 

@@ -73,7 +73,15 @@ public:
 
     static void change_mode(mode_t) noexcept;
 
+    //
+    // Replace global logger_listener instanse.
+    //
     static void replace_listener(std::unique_ptr<logger_listener>) noexcept;
+
+    //
+    // Change thread name for this thread
+    //
+    static void set_thread_name(const char * const tname) noexcept;
 
 private:
     logger_adapter();
