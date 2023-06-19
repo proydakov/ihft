@@ -4,7 +4,7 @@
 
 # Offline mode:
 # cmake -DFETCHCONTENT_UPDATES_DISCONNECTED=ON ..
-# More details here
+# More details here:
 # https://stackoverflow.com/questions/67408357/how-to-avoid-update-checks-with-cmake-fetchcontent
 
 cmake_minimum_required(VERSION 3.12.0)

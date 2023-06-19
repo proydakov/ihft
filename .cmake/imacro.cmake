@@ -1,7 +1,3 @@
-###############################################################################
-# Copyright (c) 2020 Evgeny Proydakov <lord.tiran@gmail.com>
-###############################################################################
-
 function(ihft_build_report)
     set(BUILD_INFO_BAR "====================================================================================")
     set(NOOP_STRING "")
@@ -40,6 +36,8 @@ function(ihft_build_report)
     message(STATUS ${NOOP_STRING})
 endfunction()
 
+###############################################################################
+
 function(ihft_add_test NAME)
     if (IHFT_BUILD_UNITTESTS)
         add_executable(${NAME} ${NAME}.cpp)
@@ -50,6 +48,8 @@ function(ihft_add_test NAME)
         add_executable(${NAME} EXCLUDE_FROM_ALL ${NAME}.cpp)
     endif()
 endfunction()
+
+###############################################################################
 
 function(ihft_add_benchmark NAME)
     if (IHFT_BUILD_UNITTESTS)
