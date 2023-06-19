@@ -34,7 +34,7 @@ namespace
 
 TEST_CASE("log simple event")
 {
-    auto uniq = std::make_unique<test_logger_listener>();
+    auto uniq = std::make_shared<test_logger_listener>();
 
     REQUIRE( uniq );
 

@@ -1,7 +1,7 @@
 #pragma once
 
 //
-// @TODO:
+// @todo:
 //
 // use https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size
 //

@@ -1,8 +1,8 @@
 #include <logger/logger_adapter.h>
 #include <logger/logger_client.h>
 #include <logger/logger_listener.h>
-#include <logger/private/default_logger_listener.h>
 
+#include <logger/private/default_logger_listener.h>
 #include <logger/private/logger_impl.h>
 
 #include <platform/platform.h>
@@ -77,7 +77,10 @@ struct logger_adapter::aimpl final
 
     aimpl()
         : m_cindex(0)
-        , listener(std::make_unique<impl::default_logger_listener>())
+        , flags(sstream.flags())
+        , precision(sstream.precision())
+        , width(sstream.width())
+        , listener(std::make_shared<impl::default_logger_listener>())
         , mode(logger_adapter::mode_t::synch)
     {
         unsigned const cpus = platform::trait::get_total_cpus();
@@ -86,13 +89,19 @@ struct logger_adapter::aimpl final
         consumers.reserve(cpus);
     }
 
+    // state mutex
     std::mutex mutex;
 
     size_t m_cindex;
 
     std::vector<queue_t::reader_type> consumers;
     std::ostringstream sstream;
-    std::unique_ptr<logger_listener> listener;
+
+    std::ios_base::fmtflags flags;
+    std::streamsize precision;
+    std::streamsize width;
+
+    std::shared_ptr<logger_listener> listener;
 
     // rare usage
     logger_adapter::mode_t mode;
@@ -140,6 +149,7 @@ logger_adapter::logger_adapter()
 {
     auto client = register_logger_client(this);
     client->set_thread_id(platform::trait::get_thread_id());
+    set_thread_name("main");
 }
 
 logger_adapter::~logger_adapter()
@@ -151,7 +161,12 @@ bool logger_adapter::dispatch() noexcept
     if (global_instance)
     {
         auto& impl = *global_instance->m_impl;
-        std::unique_lock lock(impl.mutex);
+
+        //
+        // In general only logger task own this mutex
+        // Other mutex users are very rare guests
+        //
+        std::unique_lock ulock(impl.mutex);
 
         size_t i = 0;
 
@@ -165,19 +180,30 @@ bool logger_adapter::dispatch() noexcept
                 logger::logger_event const& event_cref = opt->get_event();
 
                 std::ostringstream& stream = impl.sstream;
-                /// @todo : reset flags, width, precession
+
+                // reset state before next formatting
+                stream.flags(impl.flags);
+                stream.precision(impl.precision);
+                stream.width(impl.width);
                 stream.str(std::string{});
 
                 event_cref.print_args_to(stream);
-                notify(impl.listener, stream);
+                auto listener = impl.listener;
+
+                // I decided to provide a some time-quant for other threads
+                ulock.unlock();
+
+                notify(listener, stream);
 
                 break;
             }
         }
 
-        bool const flush = i < impl.consumers.size();
+        bool const flush = not ulock.owns_lock();
         if (flush)
         {
+            ulock.lock();
+
             impl.listener->flush();
             impl.m_cindex += i + 1;
             impl.m_cindex %= impl.consumers.size();
@@ -213,13 +239,13 @@ void logger_adapter::set_thread_name(const char * const tname) noexcept
     auto client = logger_client::get_this_thread_client();
     if (nullptr != client)
     {
-        char array[16];
+        char array[16] = {'\0'};
         strncpy(array, tname, strnlen(tname, sizeof(array)));
         client->set_thread_name(array);
     }
 }
 
-void logger_adapter::replace_listener(std::unique_ptr<logger_listener> listener) noexcept
+void logger_adapter::replace_listener(std::shared_ptr<logger_listener> listener) noexcept
 {
     if (global_instance)
     {

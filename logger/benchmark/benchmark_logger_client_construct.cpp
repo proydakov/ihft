@@ -3,6 +3,7 @@
 
 #include <logger/logger_event.h>
 #include <logger/logger_client.h>
+#include <platform/platform.h>
 
 #include <cstring>
 
@@ -16,8 +17,10 @@ TEST_CASE("log event serrialize")
 
     auto event_slab = client->active_event_slab();
 
+    const long tid = ihft::platform::trait::get_thread_id();
+
     const char * const tname = "main";
-    char array[16];
+    char array[16] = {'\0'};
     strncpy(array, tname, strnlen(tname, sizeof(array)));
 
     BENCHMARK("log_event(C++, IHFT, 1024ul)")
@@ -29,7 +32,7 @@ TEST_CASE("log event serrialize")
             1024ul
         );
         event->set_log_point_info( log_level::INFO, std::chrono::system_clock::now(), source_location_current( ) );
-        event->set_thread_info(256, array);
+        event->set_thread_info(tid, array);
 
         std::destroy_at(event);
     };

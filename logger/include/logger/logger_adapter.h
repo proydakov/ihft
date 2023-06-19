@@ -76,7 +76,7 @@ public:
     //
     // Replace global logger_listener instanse.
     //
-    static void replace_listener(std::unique_ptr<logger_listener>) noexcept;
+    static void replace_listener(std::shared_ptr<logger_listener>) noexcept;
 
     //
     // Change thread name for this thread
