@@ -39,7 +39,7 @@ int main()
 
             auto t = std::thread([&](){
                 plf::set_current_thread_cpu(cpus[i]);
-                for (int k = 0; k < repeats; k++)
+                for(int k = 0; k < repeats; k++)
                 {
                     for(int h = 0; h < iters; h++)
                     {
@@ -52,11 +52,11 @@ int main()
             std::chrono::nanoseconds rtt = std::chrono::nanoseconds::max();
 
             plf::set_current_thread_cpu(cpus[j]);
-            for (int k = 0; k < repeats; k++)
+            for(int k = 0; k < repeats; k++)
             {
                 seq1 = seq2 = -1;
                 auto const ts1 = std::chrono::steady_clock::now();
-                for (int h = 0; h < iters; h++)
+                for(int h = 0; h < iters; h++)
                 {
                     seq1.store(h, std::memory_order_release);
                     while(seq2.load(std::memory_order_acquire) != h);
@@ -75,15 +75,15 @@ int main()
 
     std::cout << "Core <-> Core latency report. Units: (nanoseconds)\n";
     std::cout << std::setw(4) << "CPU";
-    for (size_t i = 0; i < cpus.size(); ++i)
+    for(size_t i = 0; i < cpus.size(); ++i)
     {
         std::cout << " " << std::setw(4) << cpus[i];
     }
     std::cout << "\n";
-    for (size_t i = 0; i < cpus.size(); ++i)
+    for(size_t i = 0; i < cpus.size(); ++i)
     {
         std::cout << std::setw(4) << cpus[i];
-        for (size_t j = 0; j < cpus.size(); ++j)
+        for(size_t j = 0; j < cpus.size(); ++j)
         {
             std::cout << " " << std::setw(4) << results[{i, j}].count();
         }

@@ -11,7 +11,8 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3) {
+    if (argc < 3)
+    {
        printf("Command line args should be multicast group and port\n");
        printf("(e.g. for SSDP, `sender 239.255.255.250 1900 [interface_ip]`)\n");
        return 1;
@@ -41,7 +42,8 @@ int main(int argc, char* argv[])
     //
     // now just sendto() our destination
     //
-    for (unsigned i = 0; ; i++) {
+    for(unsigned i = 0; ; i++)
+    {
         char buffer[64];
         memset(buffer, '\0', sizeof(buffer));
         snprintf(buffer, sizeof(buffer), "Hello, World! Sequence: %u", i & 0xFF);
@@ -54,7 +56,8 @@ int main(int argc, char* argv[])
             (struct sockaddr*) &addr,
             sizeof(addr)
         );
-        if (nbytes < 0) {
+        if (nbytes < 0)
+        {
             perror("sendto");
             return 1;
         }

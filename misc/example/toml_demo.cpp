@@ -57,7 +57,7 @@ int main()
     std::cout << "\nRANGLE LOOP:\n\n";
 
     // iterate & visit over the data
-    for (auto const& [k, v] : config)
+    for(auto const& [k, v] : config)
     {
         std::cout << "key: '" << k << "'\n";
         v.visit([](auto& node) noexcept

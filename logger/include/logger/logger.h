@@ -6,7 +6,7 @@
 #define IHFT_LOG_IMPL(level, pattern, ...) \
 do \
 { \
-if(auto client = ::ihft::logger::logger_client::get_this_thread_client(); client) { \
+if (auto client = ::ihft::logger::logger_client::get_this_thread_client(); client) { \
     auto slab = client->active_event_slab(); \
     auto event = std::construct_at(slab, pattern, __VA_ARGS__); \
     event->set_log_point_info( level, std::chrono::system_clock::now(), source_location_current( ) ); \

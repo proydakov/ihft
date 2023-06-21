@@ -22,7 +22,7 @@ namespace ihft::engine::impl
 
         std::set<std::string> task;
 
-        for (auto const& [name, _] : storage.get_tasks())
+        for(auto const& [name, _] : storage.get_tasks())
         {
             auto const [_it, res] = task.insert(name);
             if (!res)
@@ -41,7 +41,7 @@ namespace ihft::engine::impl
     engine::engine(cpus_config cfg, task_storage storage, std::atomic_bool const& until)
         : m_joined(false)
     {
-        for (auto const& [name, cpu] : cfg.get_name_2_cpu())
+        for(auto const& [name, cpu] : cfg.get_name_2_cpu())
         {
             auto it = storage.m_tasks.find(name);
             if (it == storage.m_tasks.end())
@@ -61,7 +61,7 @@ namespace ihft::engine::impl
                     return;
                 }
 
-                while (until.load(std::memory_order_relaxed) and task());
+                while(until.load(std::memory_order_relaxed) and task());
             });
         }
     }
@@ -75,7 +75,7 @@ namespace ihft::engine::impl
     {
         if (!m_joined)
         {
-            for (auto& t : m_threads)
+            for(auto& t : m_threads)
             {
                 t.join();
             }

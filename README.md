@@ -109,7 +109,6 @@ IHFT is microframework & laboratory for low latency applications.
   - [x] thread sanitizer
   - [x] ub sanitizer
   - [ ] clang format
-  - [ ] benchmarking for different CPUs/compilers
 - [x] DevOps
   - [x] script for system latency optimization
 

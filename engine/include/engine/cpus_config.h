@@ -37,7 +37,7 @@ public:
     {
         std::string const prefix = "Invalid configuration. ";
 
-        if(cfg.empty())
+        if (cfg.empty())
         {
             return prefix + "Empty configuration doesn't allowed, please specify at least one logical cpu.";
         }
@@ -48,28 +48,28 @@ public:
 
         for(auto const& [name, id] : cfg)
         {
-            if(id >= total_cpus)
+            if (id >= total_cpus)
             {
                 return prefix + "Core: " + std::to_string(id) + " is bigger than total_cpus: " + std::to_string(total_cpus);
             }
 
-            if(!platform::get_cpu_isolation_status(id))
+            if (!platform::get_cpu_isolation_status(id))
             {
                 return prefix + "Core: " + std::to_string(id) + " doesn't have isolation.";
             }
 
-            if(!platform::get_cpu_nohz_full_status(id))
+            if (!platform::get_cpu_nohz_full_status(id))
             {
                 return prefix + "Core: " + std::to_string(id) + " doesn't have nohz_full.";
             }
 
-            if(!platform::get_cpu_rcu_nocbs_status(id))
+            if (!platform::get_cpu_rcu_nocbs_status(id))
             {
                 return prefix + "Core: " + std::to_string(id) + " doesn't have rcu_nocbs.";
             }
 
             auto const [it, res] = uniq.insert(std::make_pair(id, name));
-            if(!res)
+            if (!res)
             {
                 return prefix + "Logic cpus: [" + it->second + ", " + name + "] use same core: " + std::to_string(id);
             }

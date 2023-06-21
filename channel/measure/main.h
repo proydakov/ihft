@@ -34,7 +34,7 @@ std::int64_t IHFT_NOINLINE reader_method_impl(std::size_t total_events, reader_t
 {
     std::int64_t waitCounter = 0;
 
-    for (std::size_t j = 0; j < total_events;)
+    for(std::size_t j = 0; j < total_events;)
     {
         //_mm_lfence();
         auto opt = r.try_read();
@@ -58,11 +58,11 @@ std::int64_t IHFT_NOINLINE writer_method_impl(std::size_t total_events, writer_t
 {
     std::int64_t waitCounter = 0;
 
-    for (std::size_t j = 0; j < total_events; j++)
+    for(std::size_t j = 0; j < total_events; j++)
     {
         auto data = c.create_data(j);
 
-        while (not w.try_write(std::move(data)))
+        while(not w.try_write(std::move(data)))
         {
             waitCounter++;
             //_mm_pause();
@@ -151,7 +151,7 @@ int test_main(int const argc, char const* argv[])
 
         std::vector<std::thread> threads;
         threads.reserve(readers.size());
-        for (std::size_t i = 0; i < num_readers; i++)
+        for(std::size_t i = 0; i < num_readers; i++)
         {
             threads.emplace_back(reader_method<typename Q::reader_type, T>,
                 std::move(readers[i]),
@@ -176,7 +176,7 @@ int test_main(int const argc, char const* argv[])
                 not cpus.empty() ? std::make_optional(cpus[0]) : std::nullopt
             );
 
-            for (auto& t : threads)
+            for(auto& t : threads)
             {
                 t.join();
             }
@@ -214,7 +214,7 @@ int test_main(int const argc, char const* argv[])
     auto const cpu_counter_delta = cpu_counter_end - cpu_counter_start;
 
     std::cout << "W WAIT: " << writerWait.waitCounter << ' ' << calc_percent(writerWait.waitCounter) << "\n";
-    for (auto const& stat : readersWait)
+    for(auto const& stat : readersWait)
     {
         std::cout << "R WAIT: " << stat.waitCounter << ' ' << calc_percent(stat.waitCounter) << "\n";
     }
@@ -323,7 +323,7 @@ void check_platform(const cpus_t& cpus)
     }
     else
     {
-        for (auto const cpu : cpus)
+        for(auto const cpu : cpus)
         {
             if (not plat_t::get_cpu_isolation_status(cpu))
             {

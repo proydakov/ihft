@@ -16,7 +16,7 @@ TEST_CASE("function")
 {
     callback_t const delayed_call = function;
 
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }
@@ -26,7 +26,7 @@ TEST_CASE("function address")
 {
     callback_t const delayed_call = &function;
 
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }
@@ -45,7 +45,7 @@ TEST_CASE("static function")
 {
     callback_t const delayed_call = helper::function;
 
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }
@@ -55,7 +55,7 @@ TEST_CASE("static function address")
 {
     callback_t const delayed_call = &helper::function;
 
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }
@@ -70,7 +70,7 @@ TEST_CASE("functor")
     };
 
     callback_t const delayed_call = functor;
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }
@@ -96,7 +96,7 @@ TEST_CASE("const functor")
         };
 
         callback_t const delayed_call = functor;
-        for (int i = 1; i <= 1024; i *= 2)
+        for(int i = 1; i <= 1024; i *= 2)
         {
             REQUIRE(delayed_call(i) == i);
         }
@@ -110,7 +110,7 @@ TEST_CASE("const functor")
         };
 
         callback_t const delayed_call = functor;
-        for (int i = 1; i <= 1024; i *= 2)
+        for(int i = 1; i <= 1024; i *= 2)
         {
             REQUIRE(delayed_call(i) == i);
         }
@@ -156,7 +156,7 @@ TEST_CASE("class operator()")
     } object;
 
     callback_t const delayed_call = object;
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }
@@ -180,7 +180,7 @@ TEST_CASE("class const operator()")
     } const object;
 
     callback_t const delayed_call = object;
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }
@@ -200,7 +200,7 @@ TEST_CASE("copy")
         REQUIRE(c2);
     }
 
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }
@@ -219,7 +219,7 @@ TEST_CASE("move")
         REQUIRE(delayed_call);
     }
 
-    for (int i = 1; i <= 1024; i *= 2)
+    for(int i = 1; i <= 1024; i *= 2)
     {
         REQUIRE(delayed_call(i) == i);
     }

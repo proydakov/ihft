@@ -33,7 +33,7 @@ namespace
         {
             auto const t2 = std::chrono::steady_clock::now();
             auto const delta = t2 - t1;
-            if(delta < res)
+            if (delta < res)
             {
                 res = delta;
             }

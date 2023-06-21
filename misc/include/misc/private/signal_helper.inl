@@ -13,7 +13,7 @@ bool setup_sigaction_handler(sa_sigaction_t action, std::initializer_list<int> s
 
     newhandler.sa_sigaction = action;
 
-    if(flags)
+    if (flags)
     {
         newhandler.sa_flags = *flags;
     }

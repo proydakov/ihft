@@ -12,10 +12,11 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3) {
-       printf("Command line args should be multicast group and port\n");
-       printf("(e.g. for SSDP, `sender 239.255.255.250 1900 [interface_ip]`)\n");
-       return 1;
+    if (argc < 3)
+    {
+        printf("Command line args should be multicast group and port\n");
+        printf("(e.g. for SSDP, `sender 239.255.255.250 1900 [interface_ip]`)\n");
+        return 1;
     }
 
     const char* const group = argv[1]; // e.g. 239.255.255.250 for SSDP
@@ -42,8 +43,8 @@ int main(int argc, char* argv[])
     //
     // now just sendto() our destination
     //
-    for (unsigned i = 0; i < 1'000'000'000; i++) {
-
+    for(unsigned i = 0; i < 1'000'000'000; i++)
+    {
         struct timespec tp;
         clock_gettime(CLOCK_REALTIME, &tp);
         long const start_micro = tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec;
@@ -56,7 +57,8 @@ int main(int argc, char* argv[])
             (struct sockaddr*) &addr,
             sizeof(addr)
         );
-        if (nbytes < 0) {
+        if (nbytes < 0)
+        {
             perror("sendto");
             return 1;
         }

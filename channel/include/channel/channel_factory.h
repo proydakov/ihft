@@ -58,7 +58,7 @@ public:
             return std::nullopt;
         }
         auto& pair = *result;
-        for (std::size_t i = 0; i < readers_count; i++)
+        for(std::size_t i = 0; i < readers_count; i++)
         {
             auto reader = pair.producer.create_reader();
             if (not reader)
@@ -84,7 +84,7 @@ public:
             return std::nullopt;
         }
         auto& pair = *result;
-        for (std::size_t i = 0; i < readers_count; i++)
+        for(std::size_t i = 0; i < readers_count; i++)
         {
             auto reader = pair.producer.create_reader();
             if (not reader)

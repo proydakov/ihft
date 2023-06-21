@@ -59,8 +59,10 @@ int main()
         printf("Block several signals {SIGINT}.\n");
 
     int val;
-    if(1 == scanf("%d", &val))
+    if (1 == scanf("%d", &val))
+    {
         printf("scaned: %d\n", val);
+    }
 
     return 0;
 }

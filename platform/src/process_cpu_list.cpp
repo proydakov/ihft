@@ -17,7 +17,7 @@ void process_cpu_list(std::string_view cpus, types::function_ref<void(unsigned)>
         from = next + 1;
 
         unsigned result{};
-        if(auto [p, ec] = std::from_chars(cpu.begin(), cpu.end(), result); ec == std::errc())
+        if (auto [p, ec] = std::from_chars(cpu.begin(), cpu.end(), result); ec == std::errc())
         {
             // only 1 cpu in section
             if (p == cpu.end())
@@ -33,7 +33,7 @@ void process_cpu_list(std::string_view cpus, types::function_ref<void(unsigned)>
                 }
 
                 unsigned to_result{};
-                if(auto [to_p, to_ec] = std::from_chars(p + 1, cpu.end(), to_result); to_ec == std::errc())
+                if (auto [to_p, to_ec] = std::from_chars(p + 1, cpu.end(), to_result); to_ec == std::errc())
                 {
                     for(auto i = result; i <= to_result; i++)
                     {

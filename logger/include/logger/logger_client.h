@@ -61,7 +61,7 @@ private:
     void set_thread_name(const char (&tname)[16])
     {
         static_assert(sizeof(tname) == sizeof(m_thread_name));
-        for (size_t i = 0; i < sizeof(tname); i++)
+        for(size_t i = 0; i < sizeof(tname); i++)
         {
             m_thread_name[i] = tname[i];
         }

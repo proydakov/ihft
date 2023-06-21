@@ -5,7 +5,8 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc < 4) {
+    if (argc < 4)
+    {
         printf("Usage: %s '<server_addr>' '<server_port>' 'message' '[interface]' optional\n", argv[0]);
         return EXIT_FAILURE;
     }
@@ -37,7 +38,8 @@ int main(int argc, char* argv[])
     ssize_t const len = sendto(sock, data_to_send, strlen(data_to_send), 0,
             (struct sockaddr*) &server_address, sizeof(server_address));
 
-    if (len < 0) {
+    if (len < 0)
+    {
         printf("sendto return zero");
         return 1;
     }

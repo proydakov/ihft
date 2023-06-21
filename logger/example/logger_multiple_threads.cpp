@@ -66,7 +66,7 @@ int main()
 
     while(alive.load(std::memory_order_relaxed) > 0)
     {
-        if(logger_adapter::dispatch())
+        if (logger_adapter::dispatch())
         {
             total++;
         }

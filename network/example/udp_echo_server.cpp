@@ -5,7 +5,8 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2) {
+    if (argc < 2)
+    {
         printf("Usage: %s 'port' '[interface]' optional\n", argv[0]);
         return 1;
     }
@@ -27,7 +28,8 @@ int main(int argc, char* argv[])
     socklen_t client_address_len = sizeof(client_address);
 
     // run indefinitely
-    while (true) {
+    while(true)
+    {
         char buffer[4096];
 
         // read content into buffer from an incoming client

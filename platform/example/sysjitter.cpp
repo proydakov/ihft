@@ -65,7 +65,7 @@ int main(const int argc, char* argv[])
     threads.reserve(cores);
 
     resultvec_t results(cores);
-    for (auto& vec : results)
+    for(auto& vec : results)
     {
         vec.reserve(param.nsamples);
     }
@@ -81,7 +81,7 @@ int main(const int argc, char* argv[])
 
     auto const until = cclock_t::now() + param.runtime;
 
-    for (unsigned i = 1; i < cores; i++)
+    for(unsigned i = 1; i < cores; i++)
     {
         threads.emplace_back([&, cpu = i]()
         {
@@ -91,7 +91,7 @@ int main(const int argc, char* argv[])
 
     valid_experiment[0] = measure(0, active_threads, results, param.threshold, until);
 
-    for (auto& t : threads)
+    for(auto& t : threads)
     {
         t.join();
     }
@@ -120,10 +120,10 @@ bool measure(unsigned cpu, sync_t& active, resultvec_t& results, nanosec_t thres
 
     active++;
 
-    while (active.load(std::memory_order_relaxed) != results.size());
+    while(active.load(std::memory_order_relaxed) != results.size());
 
     auto ts1 = cclock_t::now();
-    while (ts1 < until)
+    while(ts1 < until)
     {
         auto const ts2 = cclock_t::now();
         auto const delta = ts2 - ts1;
@@ -133,8 +133,10 @@ bool measure(unsigned cpu, sync_t& active, resultvec_t& results, nanosec_t thres
         }
         else
         {
-            if (output.size() == output.capacity()) {
-                [](unsigned cpu) IHFT_COLD {
+            if (output.size() == output.capacity())
+            {
+                [](unsigned cpu) IHFT_COLD
+                {
                     auto const str = "WARNING preallocated sample space exceeded for cpu: "
                         + std::to_string(cpu)
                         + ", increase threshold or number of samples.\n";
@@ -162,7 +164,7 @@ void trace_results(std::vector<std::atomic_bool> const& valid_experiment, result
         << offset << "pct999_ns" << " "
         << offset << "max_ns\n";
 
-    for (size_t cpu = 0; cpu < valid_experiment.size(); cpu++) {
+    for(size_t cpu = 0; cpu < valid_experiment.size(); cpu++) {
         auto& s = results[cpu];
 
         if (valid_experiment[cpu])
@@ -212,7 +214,7 @@ nanosec_t calculate_default_threshold()
     auto threshold = nanosec_t::max();
 
     auto t1 = cclock_t::now();
-    for (int i = 0; i < 10'000; i++)
+    for(int i = 0; i < 10'000; i++)
     {
         auto const t2 = cclock_t::now();
         auto const delta = t2 - t1;
@@ -231,7 +233,7 @@ nanosec_t calculate_default_threshold()
 std::optional<int> parse_options(const int argc, char* const argv[], options_t& params)
 {
     int opt{};
-    while ((opt = getopt(argc, argv, "dhr:t:s:")) != -1) {
+    while((opt = getopt(argc, argv, "dhr:t:s:")) != -1) {
         switch (opt) {
             case 'r':
                 params.runtime = std::chrono::seconds(std::stoul(optarg));

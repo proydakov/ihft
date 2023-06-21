@@ -36,17 +36,17 @@ void test_impl(temp_file const& file, std::vector<unsigned> result)
 
     for(unsigned cpu = 0; cpu < 64; cpu++)
     {
-        if(cmdline.is_isolated(cpu))
+        if (cmdline.is_isolated(cpu))
         {
             data_isolated.push_back(cpu);
         }
 
-        if(cmdline.is_nohz_fulled(cpu))
+        if (cmdline.is_nohz_fulled(cpu))
         {
             data_nohz_fulled.push_back(cpu);
         }
 
-        if(cmdline.is_rcu_nocbsed(cpu))
+        if (cmdline.is_rcu_nocbsed(cpu))
         {
             data_rcu_nocbsed.push_back(cpu);
         }

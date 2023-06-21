@@ -17,7 +17,7 @@ std::chrono::nanoseconds calc_cpu_cycle()
     {
         auto const t2 = std::chrono::steady_clock::now();
         auto const delta = t2 - t1;
-        if(delta < res)
+        if (delta < res)
         {
             res = delta;
         }

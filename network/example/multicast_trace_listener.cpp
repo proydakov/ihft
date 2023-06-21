@@ -11,7 +11,8 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3) {
+    if (argc < 3)
+    {
        printf("Command line args should be multicast group and port and [interface] optional\n");
        printf("(e.g. for SSDP, `listener 239.255.255.250 1900 [192.168.1.1]`)\n");
        return 1;
@@ -34,7 +35,8 @@ int main(int argc, char* argv[])
     //
     struct sockaddr_in addr{};
     char msgbuf[4096];
-    while (true) {
+    while(true)
+    {
         unsigned addrlen = sizeof(addr);
         ssize_t const nbytes = recvfrom(
             fd,
