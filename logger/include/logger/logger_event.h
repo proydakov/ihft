@@ -175,7 +175,7 @@ private:
         {
             time_point_to_stream(os, m_now);
 
-            os << m_level << " ";
+            os << std::setfill(' ') << std::setw(5) << m_level << " ";
 
             if (m_thread_id)
             {

@@ -1,3 +1,6 @@
 # manual example apps
-add_executable(logger_multiple_threads logger_multiple_threads.cpp)
-target_link_libraries(logger_multiple_threads ihft_logger ihft_platform ihft_timer)
+add_executable(logger_many_threads logger_many_threads.cpp)
+target_link_libraries(logger_many_threads ihft_logger ihft_platform ihft_timer)
+
+add_executable(logger_simple logger_simple.cpp)
+target_link_libraries(logger_simple ihft_logger)

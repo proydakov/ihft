@@ -215,10 +215,9 @@ namespace ihft::platform
 
     long trait::get_thread_id() noexcept
     {
-        auto const tid = std::this_thread::get_id();
-        auto const val = std::hash<std::thread::id>()(tid);
-        static_assert(sizeof(decltype(val)) == sizeof(long));
-        return static_cast<long>(val);
+        uint64_t pth_threadid = 0;
+        pthread_threadid_np(nullptr, &pth_threadid);
+        return static_cast<long>(pth_threadid);
     }
 
     bool trait::set_current_thread_name(const char*) noexcept

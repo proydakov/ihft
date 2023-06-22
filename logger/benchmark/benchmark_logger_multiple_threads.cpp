@@ -10,9 +10,6 @@
 #include <vector>
 #include <iostream>
 
-#include <pthread.h>
-#include <x86intrin.h>
-
 using namespace ihft::timer;
 using namespace ihft::logger;
 using namespace ihft::platform;
