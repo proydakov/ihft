@@ -48,9 +48,9 @@ private:
         set_this_thread_client(this);
     }
 
-    void set_mode(bool synch)
+    void set_mode(bool synch, std::memory_order order = std::memory_order_relaxed)
     {
-        m_synch.store(synch);
+        m_synch.store(synch, order);
     }
 
     void set_thread_id(long id)

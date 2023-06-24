@@ -148,7 +148,10 @@ logger_adapter::logger_adapter()
     : m_impl(std::make_unique<aimpl>())
 {
     auto client = register_logger_client(this);
-    client->set_thread_id(platform::trait::get_thread_id());
+    if (client)
+    {
+        client->set_thread_id(platform::trait::get_thread_id());
+    }
     set_thread_name("main");
 }
 
@@ -240,7 +243,7 @@ void logger_adapter::set_thread_name(const char * const tname) noexcept
     if (nullptr != client)
     {
         char array[16] = {'\0'};
-        strncpy(array, tname, strnlen(tname, sizeof(array)));
+        strncpy(array, tname, strnlen(tname, sizeof(array) - 1));
         client->set_thread_name(array);
     }
 }
