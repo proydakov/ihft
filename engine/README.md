@@ -24,6 +24,10 @@ It provides a comprehensive functionality for:
 - binding user tasks to execution threads
 - waiting for the end of the application
 
+Demonstration in Linux (htop):
+
+![perimeter](/.image/engine_perimeter.png)
+
 ## Examples
 
 [engine_perimeter example](example/engine_perimeter.cpp)
