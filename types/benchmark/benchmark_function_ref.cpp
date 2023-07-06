@@ -1,3 +1,109 @@
+/*
+
+-------------------------------------------------------------------------------
+call plain_function benchmark
+-------------------------------------------------------------------------------
+../types/benchmark/benchmark_function_ref.cpp:24
+...............................................................................
+
+benchmark name                       samples       iterations    estimated
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+plain_function(1)                              100         31419     3.1419 ms
+                                        1.32242 ns    1.30074 ns    1.36775 ns
+                                       0.152832 ns  0.0763006 ns   0.275035 ns
+
+-------------------------------------------------------------------------------
+call function_ref for plain_function benchmark
+-------------------------------------------------------------------------------
+../types/benchmark/benchmark_function_ref.cpp:34
+...............................................................................
+
+benchmark name                       samples       iterations    estimated
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+function_ref(1)                                100         20879     2.0879 ms
+                                        1.82824 ns    1.82418 ns    1.84074 ns
+                                      0.0326369 ns  0.0115059 ns  0.0703377 ns
+
+-------------------------------------------------------------------------------
+call std_function for plain_function benchmark
+-------------------------------------------------------------------------------
+../types/benchmark/benchmark_function_ref.cpp:46
+...............................................................................
+
+benchmark name                       samples       iterations    estimated
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+std_function(1)                                100         17277     3.4554 ms
+                                        2.37715 ns    2.27355 ns    2.53477 ns
+                                        0.64232 ns   0.466241 ns    0.87302 ns
+
+-------------------------------------------------------------------------------
+construct + call function_ref for compact_lambda benchmark
+-------------------------------------------------------------------------------
+../types/benchmark/benchmark_function_ref.cpp:77
+...............................................................................
+
+benchmark name                       samples       iterations    estimated
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+construct function_ref()                       100         17091     3.4182 ms
+                                        2.40609 ns    2.31412 ns     2.5528 ns
+                                       0.583353 ns   0.408288 ns    0.81632 ns
+
+-------------------------------------------------------------------------------
+construct + call std_function for compact_lambda benchmark
+-------------------------------------------------------------------------------
+../types/benchmark/benchmark_function_ref.cpp:88
+...............................................................................
+
+benchmark name                       samples       iterations    estimated
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+construct std_function()                       100         50715          0 ns
+                                       0.761417 ns   0.759938 ns   0.767547 ns
+                                      0.0126874 ns 0.000728316 ns 0.0296316 ns
+
+-------------------------------------------------------------------------------
+construct + call function_ref for huge_lambda benchmark
+-------------------------------------------------------------------------------
+../types/benchmark/benchmark_function_ref.cpp:123
+...............................................................................
+
+benchmark name                       samples       iterations    estimated
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+construct function_ref()                       100         18595      3.719 ms
+                                        1.95861 ns    1.87984 ns    2.11864 ns
+                                       0.546082 ns   0.326653 ns   0.946482 ns
+
+-------------------------------------------------------------------------------
+construct + call std_function for huge_lambda benchmark
+-------------------------------------------------------------------------------
+../types/benchmark/benchmark_function_ref.cpp:134
+...............................................................................
+
+benchmark name                       samples       iterations    estimated
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+construct std_function()                       100          1091     3.7094 ms
+                                        34.6758 ns    34.5399 ns    35.3343 ns
+                                        1.31991 ns  0.0514149 ns    3.14821 ns
+
+===============================================================================
+test cases: 7 | 7 passed
+assertions: - none -
+
+*/
+
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <catch2/catch.hpp>
 

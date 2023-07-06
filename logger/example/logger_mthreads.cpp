@@ -9,13 +9,13 @@
 
 /*
 
-UTC 2023-06-22 20:56:09.668061  INFO [thread_5:1581221] logger_many_threads.cpp(56):auto main()::(anonymous class)::operator()() const from id: 5, thread_id: 1581221, tname: thread_5, event id: 1021
-UTC 2023-06-22 20:56:09.668119  INFO [thread_0:1581216] logger_many_threads.cpp(56):auto main()::(anonymous class)::operator()() const from id: 0, thread_id: 1581216, tname: thread_0, event id: 1020
-UTC 2023-06-22 20:56:09.664770  INFO [thread_1:1581217] logger_many_threads.cpp(56):auto main()::(anonymous class)::operator()() const from id: 1, thread_id: 1581217, tname: thread_1, event id: 1024
-UTC 2023-06-22 20:56:09.668944  INFO [thread_2:1581218] logger_many_threads.cpp(56):auto main()::(anonymous class)::operator()() const from id: 2, thread_id: 1581218, tname: thread_2, event id: 1022
-UTC 2023-06-22 20:56:09.669717  INFO [thread_6:1581222] logger_many_threads.cpp(56):auto main()::(anonymous class)::operator()() const from id: 6, thread_id: 1581222, tname: thread_6, event id: 1022
-UTC 2023-06-22 20:56:09.669239  INFO [thread_3:1581219] logger_many_threads.cpp(56):auto main()::(anonymous class)::operator()() const from id: 3, thread_id: 1581219, tname: thread_3, event id: 1022
-UTC 2023-06-22 20:56:09.667791  INFO [thread_4:1581220] logger_many_threads.cpp(56):auto main()::(anonymous class)::operator()() const from id: 4, thread_id: 1581220, tname: thread_4, event id: 1022
+UTC 2023-06-22 20:56:09.668061  INFO [thread_5:1581221] logger_mthreads.cpp(56):'auto main()::(anonymous class)::operator()() const' from id: 5, thread_id: 1581221, tname: thread_5, event id: 1021
+UTC 2023-06-22 20:56:09.668119  INFO [thread_0:1581216] logger_mthreads.cpp(56):'auto main()::(anonymous class)::operator()() const' from id: 0, thread_id: 1581216, tname: thread_0, event id: 1020
+UTC 2023-06-22 20:56:09.664770  INFO [thread_1:1581217] logger_mthreads.cpp(56):'auto main()::(anonymous class)::operator()() const' from id: 1, thread_id: 1581217, tname: thread_1, event id: 1024
+UTC 2023-06-22 20:56:09.668944  INFO [thread_2:1581218] logger_mthreads.cpp(56):'auto main()::(anonymous class)::operator()() const' from id: 2, thread_id: 1581218, tname: thread_2, event id: 1022
+UTC 2023-06-22 20:56:09.669717  INFO [thread_6:1581222] logger_mthreads.cpp(56):'auto main()::(anonymous class)::operator()() const' from id: 6, thread_id: 1581222, tname: thread_6, event id: 1022
+UTC 2023-06-22 20:56:09.669239  INFO [thread_3:1581219] logger_mthreads.cpp(56):'auto main()::(anonymous class)::operator()() const' from id: 3, thread_id: 1581219, tname: thread_3, event id: 1022
+UTC 2023-06-22 20:56:09.667791  INFO [thread_4:1581220] logger_mthreads.cpp(56):'auto main()::(anonymous class)::operator()() const' from id: 4, thread_id: 1581220, tname: thread_4, event id: 1022
 
 */
 

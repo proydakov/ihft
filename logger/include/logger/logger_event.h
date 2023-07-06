@@ -126,7 +126,7 @@ public:
         header.print_args_to(stream);
     }
 
-    void set_log_point_info(log_level level, time_point_t now, impl::source_location loc)
+    void set_log_point_source_info(log_level level, time_point_t now, impl::source_location loc)
     {
         header.m_level = level;
         header.m_now = now;
@@ -135,7 +135,7 @@ public:
         header.m_line = loc.m_line;
     }
 
-    void set_thread_info(long id, char const (&tname)[16])
+    void set_log_point_thread_info(long id, char const (&tname)[16])
     {
         header.m_thread_id = id;
         static_assert(sizeof(tname) == sizeof(header.m_thread_name));
@@ -183,8 +183,8 @@ private:
             }
 
             os << m_file << '('
-                << m_line << "):"
-                << m_func << " "
+                << m_line << "):'"
+                << m_func << "' "
             ;
         }
 

@@ -2,10 +2,10 @@
 
 /*
 
-UTC 2023-06-22 20:54:32.830756 DEBUG [main:1580096] logger_simple.cpp(14):int main() Hello world !!!
-UTC 2023-06-22 20:54:32.832750  INFO [main:1580096] logger_simple.cpp(15):int main() Hello world !!!
-UTC 2023-06-22 20:54:32.832768  WARN [main:1580096] logger_simple.cpp(16):int main() Hello world !!!
-UTC 2023-06-22 20:54:32.832783 ERROR [main:1580096] logger_simple.cpp(17):int main() Hello world !!!
+UTC 2023-07-06 08:58:05.515885 DEBUG [main:1818552] logger_simple.cpp(14):'int main()' Hello world !!!
+UTC 2023-07-06 08:58:05.518553  INFO [main:1818552] logger_simple.cpp(15):'int main()' Hello world !!!
+UTC 2023-07-06 08:58:05.518573  WARN [main:1818552] logger_simple.cpp(16):'int main()' Hello world !!!
+UTC 2023-07-06 08:58:05.518587 ERROR [main:1818552] logger_simple.cpp(17):'int main()' Hello world !!!
 
 */
 
