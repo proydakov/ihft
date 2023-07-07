@@ -92,8 +92,8 @@ IHFT is microframework & laboratory for low latency applications.
   - [ ] std::source_location as log point source
   - [ ] documentation with pictures
 - [ ] network module
-  - [x] multicast demo
   - [x] udp demo
+  - [x] multicast demo
   - [ ] DPDK demo
 - [x] engine module
   - [x] logical cpu

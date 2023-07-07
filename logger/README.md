@@ -8,4 +8,4 @@
 
 ## Benchmarks
 
-[benchmark_logger_construct benchmark](benchmark/benchmark_logger_construct.cpp)
+[logger_construct benchmark](benchmark/benchmark_logger_construct.cpp)
