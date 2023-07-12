@@ -29,7 +29,8 @@ struct alignas(constant::CPU_CACHE_LINE_SIZE) logger_event final
 {
     static constexpr size_t ITEM_SIZE = 4096;
 
-    using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
+    using clock_t = std::chrono::system_clock;
+    using time_point_t = std::chrono::time_point<clock_t>;
 
 private:
     template<typename Tuple, typename Array, std::size_t... Is>
