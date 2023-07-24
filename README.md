@@ -142,9 +142,9 @@ IHFT is microframework & laboratory for low latency applications.
 
 [Compiler Flags and Options](https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html)
 
-[Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)
-
 [Agner Fog’s instruction tables](https://agner.org/optimize/instruction_tables.pdf)
+
+[Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)
 
 [WikiChip CPU information](https://en.wikichip.org/wiki/WikiChip:welcome)
 
@@ -152,9 +152,15 @@ IHFT is microframework & laboratory for low latency applications.
 
 [AMD hardware information](https://www.amd.com/ru/products/epyc-server)
 
-[TOML config file format](https://toml.io/en/)
+[LLVM Machine Code Analyzer](https://llvm.org/docs/CommandGuide/llvm-mca.html)
 
-[TCP/IP stack recommendations](http://mails.dpdk.org/archives/dev/2022-September/249265.html)
+[LIKWID tools](https://github.com/RRZE-HPC/likwid/wiki)
+
+[OpenOnload is a user-level network stack](https://github.com/Xilinx-CNS/onload)
+
+[DPDK Accelerating Network Performance](https://www.dpdk.org)
+
+[TOML config file format](https://toml.io/en/)
 
 # DevOps Links
 
