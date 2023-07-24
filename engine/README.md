@@ -1,4 +1,4 @@
-# ifth::engine
+# ihft::engine
 
 This module contains a main function for *ihft* applications.
 

@@ -1,4 +1,4 @@
-# ifth::platform
+# ihft::platform
 
 This module provides a bridge for working with the application startup system.
 

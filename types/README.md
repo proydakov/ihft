@@ -1,4 +1,4 @@
-# ifth::types
+# ihft::types
 
 This module contains the code of basic auxiliary types that are missing in the current standard library.
 

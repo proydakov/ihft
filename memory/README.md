@@ -1,4 +1,4 @@
-# ifth::memory
+# ihft::memory
 
 This module contains the code of domain-specific allocators.
 

@@ -1,4 +1,4 @@
-# ifth::compiler
+# ihft::compiler
 
 This module contains various useful compile-time constants.
 

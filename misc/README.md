@@ -1,4 +1,4 @@
-# ifth::misc
+# ihft::misc
 
 This module contains an utility code for *ihft* applications.
 

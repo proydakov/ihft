@@ -1,4 +1,4 @@
-# ifth::timer
+# ihft::timer
 
 This module contains code with a low-level function for manipulating time.
 
