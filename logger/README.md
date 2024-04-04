@@ -2,39 +2,38 @@
 
 ## Concept
 
-This module contains code for logging system.
+Logging helps us to monitor the behavior of the code with minimal overhead. The following steps occur during data logging:
 
-Logging helps us monitor the behavior of the code with minimal overhead. The following steps occur during data logging:
-
-- the current thread copies input arguments into logger_event object with a fixed internal storage for dynamic data
-- the executor thread is trying to quickly send a pointer to the logger_event event to the logging queue of this thread
-- a separate processing thread subtracts the event and performs its formatting, the finished event is dumped to disk or to the network, the logger_event destructor is called.
+- The current thread copies input arguments into logger_event object with a fixed internal storage for dynamic data
+- The executor thread is trying to quickly push a pointer to the logger_event event to the logging queue of this thread
+- A separate processing thread pops the event and performs its formatting, the finalized event is dumped to disk or to the network, the logger_event destructor is called.
 
 Briefly, this scheme can be described by the sequence:
 
-- fast copy input
-- send in queue
-- format & notify
+- Fast copy input.
+- Push in queue.
+- Format & notify.
 
 The design is based on the following requirements:
 
-- no system calls are made during the process of creating and sending events
-- writing to disk or network is performed on a separate thread
-- all threads log independently and do not compete for memory among themselves
+- No system calls are made during the process of creating and pushing events.
+- Writing to disk or network is performed on a separate thread.
+- All threads log independently and do not compete for memory.
 
-In the picture below you can clearly see all these components:
+The following picture illustrates the flow:
 
-![initial](/.image/channel_initial.jpeg)
+![initial](/.image/logger.png)
 
 ## Limitations
 
-An important limitation of the system design is that if the logging queue overflows on a particular thread, events are discarded. This means that the overload logging system does not guarantee 100% delivery of all events.
-If the logged event is too large and the compiler can calculate it, a compilation error will be thrown.
-If the logged event contains dynamic data and they will not fit into the internal fixed storage, then they will be trimmed, the trimming mechanism is set by the user in the specification of the `logger_contract` class for a specific type.
+An important limitation of the system design is that if the logging queue overflows on a particular thread, events are discarded. Thus the overloaded logging system does not guarantee that all events will be delivered.
+If compile-time estimated event size is above logger_event::ITEM_SIZE threshold a compilation error is thrown.
+Events containing dynamic data could be trimmed to fit into the internal fixed storage.
+The trimming policy is set via logger_contract<> template class specialization.
 
 ## Quick start
 
-You can use the logging system in a fairly simple way:
+One can use the logging system in a fairly simple way:
 
 ```
     IHFT_LOG_INFO("Hello {} {}!!!", "world", 1024);
@@ -46,20 +45,20 @@ As a result of executing this code, the following line will appear in the log:
     UTC 2024-07-06 08:58:05.518553  INFO [main:1818552] logger_simple.cpp(15:42):'int main()' Hello world 1024 !!!
 ```
 
-In the formatted message, we can see the following information:
+The formatted message provides the following information:
 
-- the time of sending the event
-- event logging level (Debug|Info|Warning|Error)
-- name and identifier of the sender's thread
-- the file, line and position that performed the logging
-- the name of the function that performed the logging
-- the text of the event transmitted by the user
+- The time of sending the event.
+- Event logging level (Debug|Info|Warning|Error).
+- Name and identifier of the sender's thread.
+- The file, line and position that performed the logging.
+- The name of the function that performed the logging.
+- The text of the event transmitted by the user.
 
 ## Custom types support
 
-For implementing a custom type support, you should specialize logger_contract<> for your type.
+Template class logger_contract<> specialization should be provided to log data of a custom type.
 
-See a full source of [logger_contract](example/logger_contract.cpp).
+See a full source of [logger_contract](include/logger/logger_contract.h).
 
 ## Examples
 
