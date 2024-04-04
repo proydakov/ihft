@@ -100,7 +100,7 @@ The IHFT framework requires:
   - [x] log pount source file and thread info
   - [ ] std::format as formatting backend
   - [x] std::source_location as log point source
-  - [ ] documentation with pictures
+  - [x] documentation with pictures
 - [ ] network module
   - [x] udp demo
   - [x] multicast demo
