@@ -16,8 +16,8 @@ The IHFT framework requires:
 - modern C++ compiler with -std=20 support (clang16+, gcc11+)
 - cmake build system generator
 - ninja build command line utility
-- modern computer with linux x64 system
-- dev compilation on macos x64|arm64 is also available
+- modern x64 computer with linux system
+- develop compilation on x64|arm64 macos is also available
 
 # Current building status matrix
 
