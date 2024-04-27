@@ -33,18 +33,27 @@ macro(ihft_setup_linker_flags)
         get_filename_component(TEST_CLANG_ROOT ${TEST_CLANG_ROOT} DIRECTORY)
         get_filename_component(TEST_CLANG_ROOT ${TEST_CLANG_ROOT} DIRECTORY)
 
+        set(TEST_CLANG_LIB_DIR "${TEST_CLANG_ROOT}/lib")
+        if(EXISTS "${TEST_CLANG_LIB_DIR}/x86_64-pc-linux-gnu")
+            set(TEST_CLANG_LIB_DIR "${TEST_CLANG_LIB_DIR}/x86_64-pc-linux-gnu")
+        endif()
+
         if(EXISTS "${TEST_CLANG_ROOT}/include/c++/v1/" AND
-           EXISTS "${TEST_CLANG_ROOT}/lib/libc++.a" AND EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.a" AND
-           EXISTS "${TEST_CLANG_ROOT}/lib/libc++.so" AND EXISTS "${TEST_CLANG_ROOT}/lib/libc++abi.so")
+           EXISTS "${TEST_CLANG_LIB_DIR}/libc++.a" AND EXISTS "${TEST_CLANG_LIB_DIR}/libc++abi.a" AND
+           EXISTS "${TEST_CLANG_LIB_DIR}/libc++.so" AND EXISTS "${TEST_CLANG_LIB_DIR}/libc++abi.so")
 
             message(STATUS "Detected clang root: ${TEST_CLANG_ROOT}")
             set(CLANG_ROOT ${TEST_CLANG_ROOT})
 
             add_compile_options(-nostdinc++ -I${CLANG_ROOT}/include/c++/v1)
+            set(CLANG_EXTRA_INCLUDE_DIR "${TEST_CLANG_ROOT}/include/x86_64-pc-linux-gnu/c++/v1/")
+            if(EXISTS "${CLANG_EXTRA_INCLUDE_DIR}")
+                add_compile_options(-I${CLANG_EXTRA_INCLUDE_DIR})
+            endif()
             if(IHFT_LINK_STATIC)
-                set(CLANG_EXTRA_LINKS "-stdlib=libc++ -lpthread -lc++abi -L${CLANG_ROOT}/lib")
+                set(CLANG_EXTRA_LINKS "-stdlib=libc++ -lpthread -lc++abi -L${TEST_CLANG_LIB_DIR}")
             else()
-                set(CLANG_EXTRA_LINKS "-stdlib=libc++ -lpthread -lc++abi -L${CLANG_ROOT}/lib -Wl,-rpath,${CLANG_ROOT}/lib")
+                set(CLANG_EXTRA_LINKS "-stdlib=libc++ -lpthread -lc++abi -L${TEST_CLANG_LIB_DIR} -Wl,-rpath,${TEST_CLANG_LIB_DIR}")
             endif()
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CLANG_EXTRA_LINKS}")
             set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CLANG_EXTRA_LINKS}")
