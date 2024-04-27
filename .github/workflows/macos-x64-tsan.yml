@@ -5,10 +5,10 @@ on:
   pull_request:
     branches: [master]
 env:
-  DEVELOPER_DIR: /Applications/Xcode_13.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_14.3.app/Contents/Developer
 jobs:
   cloud-ci:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
     - uses: actions/checkout@v2
     - name: install-tools
@@ -25,4 +25,4 @@ jobs:
         cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} -DIHFT_SANITIZER_THREAD=1 ..
         cmake --build .
     - name: test
-      run: cd build && ctest -R
+      run: cd build && ctest
