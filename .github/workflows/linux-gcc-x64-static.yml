@@ -12,11 +12,11 @@ jobs:
     - name: install-tools
       run: |
         sudo apt-get update
-        sudo apt-get install cmake ninja-build gcc-10 g++-10
+        sudo apt-get install cmake ninja-build gcc-11 g++-11
     - name: build
       env:
-        CC: gcc-10
-        CXX: g++-10
+        CC: gcc-11
+        CXX: g++-11
         TYPE: Release
       run: |
         $CC --version
