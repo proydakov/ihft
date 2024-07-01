@@ -179,3 +179,6 @@ IHFT is microframework & laboratory for low latency applications.
 [Erik Rigtorp personal blog](https://rigtorp.se)
 
 [Martin Thompson mechanical sympathy](https://mechanical-sympathy.blogspot.com)
+
+[Raymond Chen oldnewthing](https://devblogs.microsoft.com/oldnewthing/)
+
