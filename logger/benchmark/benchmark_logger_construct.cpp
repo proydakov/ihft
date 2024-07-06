@@ -19,8 +19,8 @@ All tests passed (1 assertion in 1 test case)
 
 */
 
-#define CATCH_CONFIG_ENABLE_BENCHMARKING
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 
 #include <logger/logger_event.h>
 #include <logger/logger_client.h>

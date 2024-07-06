@@ -11,8 +11,8 @@ include(FetchContent)
 if (IHFT_BUILD_UNITTESTS)
     FetchContent_Declare(
         Catch2
-        URL https://codeload.github.com/catchorg/Catch2/tar.gz/refs/tags/v2.13.10
-        URL_HASH MD5=7a4dd2fd14fb9f46198eb670ac7834b7
+        URL https://codeload.github.com/catchorg/Catch2/tar.gz/refs/tags/v3.6.0
+        URL_HASH MD5=86a9fec7afecaec687faaa988ac6818e
     )
     FetchContent_GetProperties(Catch2)
     if(NOT Catch2_POPULATED)
@@ -21,11 +21,16 @@ if (IHFT_BUILD_UNITTESTS)
         add_subdirectory(${catch2_SOURCE_DIR} ${catch2_BINARY_DIR})
     endif()
 
+    target_compile_options(Catch2 PRIVATE -Wno-sign-conversion)
+    target_compile_options(Catch2 PRIVATE -Wno-unused-parameter)
+    target_compile_options(Catch2 PRIVATE -Wno-conversion)
+    target_compile_options(Catch2 PRIVATE -Wno-implicit-int-float-conversion)
+
     add_library(catch2_test_main OBJECT ${PROJECT_SOURCE_DIR}/.cmake/template/catch2_test_main.cpp)
-    target_link_libraries(catch2_test_main PUBLIC Catch2::Catch2)
+    target_link_libraries(catch2_test_main PUBLIC Catch2::Catch2WithMain)
 
     add_library(catch2_benchmark_main OBJECT ${PROJECT_SOURCE_DIR}/.cmake/template/catch2_benchmark_main.cpp)
-    target_link_libraries(catch2_benchmark_main PUBLIC Catch2::Catch2)
+    target_link_libraries(catch2_benchmark_main PUBLIC Catch2::Catch2WithMain)
 endif()
 
 # toml++
