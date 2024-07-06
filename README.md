@@ -13,10 +13,11 @@ IHFT is microframework & laboratory for low latency applications.
 
 The IHFT framework requires:
 
-- modern c++ compiler with -std=20 support (clang16+, gcc11+)
+- modern C++ compiler with -std=20 support (clang16+, gcc11+)
+- cmake build system generator
 - ninja build command line utility
 - modern computer with linux x64 system
-- dev compilation on macos x64 is also available
+- dev compilation on macos x64|arm64 is also available
 
 # Current building status matrix
 
@@ -24,7 +25,7 @@ The IHFT framework requires:
 | :---: | :---: | :---: | :--: | :--: |
 | Linux(GCC11) | [![Build Status][pass-linux-gcc-x64-static]][ci-linux-gcc-x64-static] | [![Build Status][pass-linux-gcc-x64-shared]][ci-linux-gcc-x64-shared] | [![Build Status][pass-linux-gcc-x64-asan]][ci-linux-gcc-x64-asan] | [![Build Status][pass-linux-gcc-x64-tsan]][ci-linux-gcc-x64-tsan] |
 | Linux(Clang18) | [![Build Status][pass-linux-clang-x64-static]][ci-linux-clang-x64-static] | [![Build Status][pass-linux-clang-x64-shared]][ci-linux-clang-x64-shared] | [![Build Status][pass-linux-clang-x64-asan]][ci-linux-clang-x64-asan] | [![Build Status][pass-linux-clang-x64-tsan]][ci-linux-clang-x64-tsan] |
-| MacOS(Clang) | - | [![Build Status][pass-macos-x64-shared]][ci-macos-x64-shared] | [![Build Status][pass-macos-x64-asan]][ci-macos-x64-asan] | [![Build Status][pass-macos-x64-tsan]][ci-macos-x64-tsan] |
+| MacOS(Clang15) | - | [![Build Status][pass-macos-x64-shared]][ci-macos-x64-shared] | [![Build Status][pass-macos-x64-asan]][ci-macos-x64-asan] | [![Build Status][pass-macos-x64-tsan]][ci-macos-x64-tsan] |
 
 [pass-linux-gcc-x64-static]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-gcc-x64-static.yml?branch=master
 [pass-linux-gcc-x64-shared]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-gcc-x64.yml?branch=master
