@@ -182,3 +182,5 @@ IHFT is microframework & laboratory for low latency applications.
 
 [Raymond Chen oldnewthing](https://devblogs.microsoft.com/oldnewthing/)
 
+[Daniel Lemire's blog](https://lemire.me/blog/)
+
