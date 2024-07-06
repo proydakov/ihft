@@ -52,7 +52,7 @@ TEST_CASE("log event serrialize")
             "IHFT",
             1024ul
         );
-        event->set_log_point_source_info(log_level::INFO, logger_event::clock_t::now(), source_location_current());
+        event->set_log_point_source_info(log_level::INFO, logger_event::clock_t::now(), std::source_location::current());
         event->set_log_point_thread_info(tid, array);
 
         std::destroy_at(event);

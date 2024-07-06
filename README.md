@@ -98,7 +98,7 @@ The IHFT framework requires:
   - [x] wait-free implementation
   - [x] log pount source file and thread info
   - [ ] std::format as formatting backend
-  - [ ] std::source_location as log point source
+  - [x] std::source_location as log point source
   - [ ] documentation with pictures
 - [ ] network module
   - [x] udp demo
