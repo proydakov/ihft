@@ -3,7 +3,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/.cmake)
 include(ios)
 
 if(NOT ((PROJECT_OS_LINUX OR PROJECT_OS_OSX) AND PROJECT_PROC_64BIT))
-    message(FATAL_ERROR "Only Linux/MacOS amd64 cpu supported.")
+    message(FATAL_ERROR "Only Linux/MacOS amd64/arm64 cpu supported.")
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
