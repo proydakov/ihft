@@ -1,5 +1,5 @@
 #==============================================================================
-# Copyright (c) 2020 Evgeny Proydakov <lord.tiran@gmail.com>
+# Copyright (c) 2020-2024 Evgeny Proydakov <lord.tiran@gmail.com>
 #==============================================================================
 
 # Offline mode:

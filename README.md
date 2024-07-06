@@ -193,4 +193,3 @@ The IHFT framework requires:
 [Raymond Chen oldnewthing](https://devblogs.microsoft.com/oldnewthing/)
 
 [Daniel Lemire's blog](https://lemire.me/blog/)
-

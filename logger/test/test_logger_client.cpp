@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <logger/logger_event.h>
 #include <logger/logger_client.h>
