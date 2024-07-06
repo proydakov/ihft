@@ -3,7 +3,6 @@
 #include <logger/logger_level.h>
 #include <logger/logger_contract.h>
 #include <logger/logger_extra_data.h>
-#include <logger/private/source_location.h>
 
 #include <constant/constant.h>
 
@@ -15,6 +14,7 @@
 #include <ostream>
 #include <utility>
 #include <string_view>
+#include <source_location>
 
 namespace ihft::logger
 {
@@ -127,13 +127,14 @@ public:
         header.print_args_to(stream);
     }
 
-    void set_log_point_source_info(log_level level, time_point_t now, impl::source_location loc)
+    void set_log_point_source_info(log_level level, time_point_t now, std::source_location loc)
     {
         header.m_level = level;
         header.m_now = now;
-        header.m_file = loc.m_file;
-        header.m_func = loc.m_func;
-        header.m_line = loc.m_line;
+        header.m_file = loc.file_name();
+        header.m_func = loc.function_name();
+        header.m_line = loc.line();
+        header.m_column = loc.column();
     }
 
     void set_log_point_thread_info(long id, char const (&tname)[16])
@@ -184,7 +185,8 @@ private:
             }
 
             os << m_file << '('
-                << m_line << "):'"
+                << m_line << ":"
+                << m_column << "):'"
                 << m_func << "' "
             ;
         }
@@ -212,6 +214,7 @@ private:
         std::string_view m_file;
         std::string_view m_func;
         unsigned m_line = 0;
+        unsigned m_column = 0;
 
         std::string_view format_expr;
         void* data_ptr = nullptr;

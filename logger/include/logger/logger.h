@@ -27,7 +27,7 @@ if (auto client = ::ihft::logger::logger_client::get_this_thread_client(); clien
     static_assert(compiletime_placeholders_count(pattern, "{}") == compiletime_args_count(__VA_ARGS__)); \
     auto slab = client->active_event_slab(); \
     auto event = std::construct_at(slab, pattern, __VA_ARGS__); \
-    event->set_log_point_source_info(level, std::chrono::system_clock::now(), source_location_current()); \
+    event->set_log_point_source_info(level, std::chrono::system_clock::now(), std::source_location::current()); \
     client->try_log_event(event); \
 } \
 } \

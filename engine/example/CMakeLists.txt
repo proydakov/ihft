@@ -1,9 +1,9 @@
 # manual example apps
 add_executable(engine_logical_cpu_demo logical_cpu_demo.cpp)
-target_link_libraries(engine_logical_cpu_demo ihft_engine ihft_platform)
+target_link_libraries(engine_logical_cpu_demo PRIVATE ihft_engine ihft_platform)
 
 add_executable(engine_perimeter engine_perimeter.cpp)
-target_link_libraries(engine_perimeter ihft_engine ihft_platform)
+target_link_libraries(engine_perimeter PRIVATE ihft_engine ihft_platform)
 
 add_executable(engine_manual_config engine_manual_config.cpp)
-target_link_libraries(engine_manual_config ihft_engine)
+target_link_libraries(engine_manual_config PRIVATE ihft_engine)
