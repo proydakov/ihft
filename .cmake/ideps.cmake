@@ -37,8 +37,8 @@ endif()
 if (IHFT_BUILD_TOML)
     FetchContent_Declare(
         tomlplusplus
-        URL https://codeload.github.com/marzer/tomlplusplus/tar.gz/refs/tags/v3.3.0
-        URL_HASH MD5=a50999cb3ec1b05fd4ba535b5fee5e62
+        URL https://codeload.github.com/marzer/tomlplusplus/tar.gz/refs/tags/v3.4.0
+        URL_HASH MD5=c1f32ced14311fe949b9ce7cc3f7a867
     )
     FetchContent_GetProperties(tomlplusplus)
     if(NOT tomlplusplus_POPULATED)
