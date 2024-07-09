@@ -25,6 +25,6 @@ jobs:
         cmake -GNinja -DCMAKE_BUILD_TYPE=${TYPE} ..
         cmake --build .
     - name: test
-      run: cd build && ctest -R
+      run: cd build && ctest
     - name: info
       run: cd build && ./platform_get_info
