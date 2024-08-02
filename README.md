@@ -104,6 +104,8 @@ The IHFT framework requires:
 - [ ] network module
   - [x] udp demo
   - [x] multicast demo
+  - [ ] Solarflare demo
+  - [ ] Mellanox demo
   - [ ] DPDK demo
 - [x] engine module
   - [x] logical cpu
