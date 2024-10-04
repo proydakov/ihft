@@ -156,15 +156,19 @@ The IHFT framework requires:
 
 [Agner Fog’s instruction tables](https://agner.org/optimize/instruction_tables.pdf)
 
-[Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)
+[Benchmarking tips](https://llvm.org/docs/Benchmarking.html)
 
 [WikiChip CPU information](https://en.wikichip.org/wiki/WikiChip:welcome)
 
 [Intel hardware information](https://ark.intel.com)
 
-[AMD hardware information](https://www.amd.com/ru/products/epyc-server)
+[AMD hardware information](https://www.amd.com/en/products/processors/server/epyc.html)
+
+[Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)
 
 [LLVM Machine Code Analyzer](https://llvm.org/docs/CommandGuide/llvm-mca.html)
+
+[LLVM Machine Instruction Benchmark](https://llvm.org/docs/CommandGuide/llvm-exegesis.html)
 
 [LIKWID tools](https://github.com/RRZE-HPC/likwid/wiki)
 
