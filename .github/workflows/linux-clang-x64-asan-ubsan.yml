@@ -12,16 +12,16 @@ jobs:
     - name: set up clang
       uses: egor-tensin/setup-clang@v1
       with:
-       version: 18
+       version: 20
        platform: x64
     - name: install-tools
       run: |
         sudo apt-get update
-        sudo apt-get install cmake ninja-build clang-18 clang++-18 lld-18 libc++-18-dev libc++abi-18-dev libunwind-18-dev libclang-rt-18-dev
+        sudo apt-get install cmake ninja-build clang-20 clang++-20 lld-20 libc++-20-dev libc++abi-20-dev libunwind-20-dev libclang-rt-20-dev
     - name: build
       env:
-        CC: clang-18
-        CXX: clang++-18
+        CC: clang-20
+        CXX: clang++-20
         TYPE: Release
       run: |
         $CC --version
