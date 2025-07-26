@@ -45,7 +45,8 @@ public:
         m_engaged = false;
     }
 
-    ~scope_exit() {
+    ~scope_exit()
+    {
         if (m_engaged) {
             m_exit_function();
         }
@@ -53,9 +54,8 @@ public:
 
 private:
     Callable m_exit_function;
-    bool m_engaged; // False once moved-from or release()d.
+    bool m_engaged; // False once moved-from or release().
 };
-
 
 template <typename Callable>
 [[nodiscard]] scope_exit<std::decay_t<Callable>> make_scope_exit(Callable &&F)
