@@ -14,8 +14,8 @@ IHFT is microframework & laboratory for low latency applications.
 The IHFT framework requires:
 
 - modern C++ compiler with -std=20 support (clang16+, gcc11+)
-- cmake build system generator
-- ninja build command line utility
+- cmake build system generator (3.12+)
+- ninja build command line utility (1.10+)
 - modern x64 computer with linux system
 - develop compilation on x64|arm64 macos is also available
 
