@@ -171,7 +171,7 @@ namespace ihft::platform
     {
         std::ifstream file("/sys/kernel/mm/transparent_hugepage/enabled");
 
-        bool active = true;
+        bool active = file.is_open();
         std::string value;
         while(file >> value)
         {
