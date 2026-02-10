@@ -24,7 +24,7 @@ The IHFT framework requires:
 | Configuration | Static Runtime | Shared Runtime | ASAN+UBSAN | TSAN |
 | :---: | :---: | :---: | :--: | :--: |
 | Linux(GCC11) | [![Build Status][pass-linux-gcc-x64-static]][ci-linux-gcc-x64-static] | [![Build Status][pass-linux-gcc-x64-shared]][ci-linux-gcc-x64-shared] | [![Build Status][pass-linux-gcc-x64-asan]][ci-linux-gcc-x64-asan] | [![Build Status][pass-linux-gcc-x64-tsan]][ci-linux-gcc-x64-tsan] |
-| Linux(Clang18) | [![Build Status][pass-linux-clang-x64-static]][ci-linux-clang-x64-static] | [![Build Status][pass-linux-clang-x64-shared]][ci-linux-clang-x64-shared] | [![Build Status][pass-linux-clang-x64-asan]][ci-linux-clang-x64-asan] | [![Build Status][pass-linux-clang-x64-tsan]][ci-linux-clang-x64-tsan] |
+| Linux(Clang20) | [![Build Status][pass-linux-clang-x64-static]][ci-linux-clang-x64-static] | [![Build Status][pass-linux-clang-x64-shared]][ci-linux-clang-x64-shared] | [![Build Status][pass-linux-clang-x64-asan]][ci-linux-clang-x64-asan] | [![Build Status][pass-linux-clang-x64-tsan]][ci-linux-clang-x64-tsan] |
 | MacOS(Clang15) | - | [![Build Status][pass-macos-x64-shared]][ci-macos-x64-shared] | [![Build Status][pass-macos-x64-asan]][ci-macos-x64-asan] | [![Build Status][pass-macos-x64-tsan]][ci-macos-x64-tsan] |
 
 [pass-linux-gcc-x64-static]: https://img.shields.io/github/actions/workflow/status/proydakov/ihft/linux-gcc-x64-static.yml?branch=master
