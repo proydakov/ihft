@@ -21,7 +21,7 @@ The IHFT framework requires:
 
 # Current building status matrix
 
-| Configuration | Static Runtime | Shared Runtime | ASAN+UBSAN | TSAN |
+| Configuration | Static Runtime | Shared Runtime | ASAN + UBSAN | TSAN |
 | :---: | :---: | :---: | :--: | :--: |
 | Linux(GCC14) | [![Build Status][pass-linux-gcc-x64-static]][ci-linux-gcc-x64-static] | [![Build Status][pass-linux-gcc-x64-shared]][ci-linux-gcc-x64-shared] | [![Build Status][pass-linux-gcc-x64-asan]][ci-linux-gcc-x64-asan] | [![Build Status][pass-linux-gcc-x64-tsan]][ci-linux-gcc-x64-tsan] |
 | Linux(Clang20) | [![Build Status][pass-linux-clang-x64-static]][ci-linux-clang-x64-static] | [![Build Status][pass-linux-clang-x64-shared]][ci-linux-clang-x64-shared] | [![Build Status][pass-linux-clang-x64-asan]][ci-linux-clang-x64-asan] | [![Build Status][pass-linux-clang-x64-tsan]][ci-linux-clang-x64-tsan] |
