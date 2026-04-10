@@ -108,6 +108,7 @@ namespace ihft::platform
 
         if (current)
             flags |= MCL_CURRENT;
+
         if (future)
             flags |= MCL_FUTURE;
 

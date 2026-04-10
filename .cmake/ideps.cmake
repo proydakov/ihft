@@ -1,7 +1,8 @@
 message(STATUS "Downloading dependencies...")
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.23")
-    cmake_policy(SET CMP0135 OLD)
+    cmake_policy(SET CMP0135 NEW)
+    cmake_policy(SET CMP0169 OLD)
 endif()
 
 include(FetchContent)
