@@ -119,6 +119,30 @@ TEST_CASE("char array by const reference")
     REQUIRE(sstream.str() == "(Args: TEST, OPERATION)");
 }
 
+TEST_CASE("char array without null terminator")
+{
+    char arr[4] = {'a', 'b', 'c', 'd'};
+
+    logger_event event("(Args: {})", arr);
+
+    std::ostringstream sstream;
+    event.print_args_to(sstream);
+
+    REQUIRE(sstream.str() == "(Args: abcd)");
+}
+
+TEST_CASE("char array stops at embedded null")
+{
+    char arr[6] = {'a', 'b', '\0', 'x', 'y', 'z'};
+
+    logger_event event("(Args: {})", arr);
+
+    std::ostringstream sstream;
+    event.print_args_to(sstream);
+
+    REQUIRE(sstream.str() == "(Args: ab)");
+}
+
 TEST_CASE("nullptr_t")
 {
     logger_event event("({})", nullptr);
