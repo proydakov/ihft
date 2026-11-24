@@ -12,39 +12,6 @@
 #include <sstream>
 #include <iostream>
 
-namespace
-{
-
-// SFINAE test
-template <typename T>
-class has_view
-{
-    template <typename C> static std::true_type test( decltype(&C::view) );
-    template <typename C> static std::false_type test( ... );
-
-public:
-    enum { value = std::is_same<decltype(test<T>(0)), std::true_type >::value };
-};
-
-template<typename S, typename L>
-void notify(L& listener, S& stream)
-{
-    if constexpr(has_view<S>::value)
-    {
-        // lets go to use a view from (C++20)
-        std::string_view view = stream.view();
-        listener->notify(view);
-    }
-    else
-    {
-        // clang doesn't implement view() method
-        std::string str = stream.str();
-        listener->notify(str);
-    }
-}
-
-}
-
 namespace ihft::logger
 {
 
@@ -193,10 +160,13 @@ bool logger_adapter::dispatch() noexcept
                 event_cref.print_args_to(stream);
                 auto listener = impl.listener;
 
+                // We must create a copy here to avoid UB
+                std::string copy = stream.str();
+
                 // I decided to provide a some time-quant for other threads
                 ulock.unlock();
 
-                notify(listener, stream);
+                listener->notify(copy);
 
                 break;
             }
