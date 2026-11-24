@@ -127,3 +127,25 @@ TEST_CASE("process_cpu_list: handles max unsigned boundary")
     REQUIRE( collect_cpu_list("4294967295-4294967295") == std::vector<unsigned>{4294967295u} );
     REQUIRE( collect_cpu_list("4294967294-4294967295") == std::vector<unsigned>{4294967294u, 4294967295u} );
 }
+
+TEST_CASE("cmdline ignores cpu ids outside the bitset")
+{
+    // 600 >= cmdline::MAX_CPUS must be ignored instead of aborting.
+    temp_file file("cmdline_high.txt",
+        "BOOT_IMAGE=/boot/vmlinuz auto isolcpus=1-3,600 nohz_full=1-3,600 rcu_nocbs=1-3,600 quiet\r\n");
+
+    test_impl(file, {1, 2, 3});
+}
+
+TEST_CASE("cmdline out-of-range cpu query returns false")
+{
+    temp_file file("cmdline_high_query.txt",
+        "BOOT_IMAGE=/boot/vmlinuz auto isolcpus=2 nohz_full=2 rcu_nocbs=2 quiet\r\n");
+
+    ihft::impl::cmdline cmdline(file.fpath().c_str());
+
+    REQUIRE( cmdline.is_isolated(2) );
+    REQUIRE_FALSE( cmdline.is_isolated(9999) );
+    REQUIRE_FALSE( cmdline.is_nohz_fulled(9999) );
+    REQUIRE_FALSE( cmdline.is_rcu_nocbsed(9999) );
+}

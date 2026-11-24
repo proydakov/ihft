@@ -24,7 +24,12 @@ cmdline::cmdline(const char* file)
             auto const cpus = std::string_view(text).substr(index + strlen(pattern));
             ihft::platform::process_cpu_list(cpus, [&](unsigned cpu) mutable
             {
-                list.set(cpu);
+                // std::bitset::set throws for cpu >= MAX_CPUS. Ignore such ids
+                // instead of aborting during static initialization.
+                if (cmdline::is_valid_cpu(cpu))
+                {
+                    list.set(cpu);
+                }
             });
         }
     };
