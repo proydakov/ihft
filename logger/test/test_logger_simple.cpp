@@ -12,3 +12,11 @@ TEST_CASE("simple_logging")
 {
     IHFT_LOG_INFO("Hello {} !!!", "world");
 }
+
+TEST_CASE("logging without arguments")
+{
+    IHFT_LOG_DEBUG("Hello without arguments");
+    IHFT_LOG_INFO("Hello without arguments");
+    IHFT_LOG_WARN("Hello without arguments");
+    IHFT_LOG_ERROR("Hello without arguments");
+}
