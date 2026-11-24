@@ -7,17 +7,17 @@ on:
 jobs:
   cloud-ci:
     # Pin the runner image to avoid surprise OS migrations (ubuntu-latest moves).
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@v2
     - name: install-tools
       run: |
         sudo apt-get update
-        sudo apt-get install cmake ninja-build gcc-14 g++-14
+        sudo apt-get install cmake ninja-build gcc-15 g++-15
     - name: build
       env:
-        CC: gcc-14
-        CXX: g++-14
+        CC: gcc-15
+        CXX: g++-15
         TYPE: Release
       run: |
         $CC --version
