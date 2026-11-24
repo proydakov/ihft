@@ -31,6 +31,10 @@ if (IHFT_BUILD_UNITTESTS)
     target_compile_options(Catch2 PRIVATE -Wno-implicit-int-float-conversion)
     target_compile_options(Catch2 PRIVATE -Wno-uninitialized)
 
+    if(PROJECT_AARCH64_CPU)
+    target_compile_options(Catch2 PRIVATE -Wno-restrict)
+    endif()
+
     add_library(catch2_test_main OBJECT ${PROJECT_SOURCE_DIR}/.cmake/template/catch2_test_main.cpp)
     target_link_libraries(catch2_test_main PUBLIC Catch2::Catch2WithMain)
 

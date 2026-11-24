@@ -72,10 +72,16 @@ std::int64_t IHFT_NOINLINE writer_method_impl(std::size_t total_events, writer_t
         {
             //_mm_mfence();
             //_mm_sfence();
-            #if defined(__has_feature) && __has_feature(thread_sanitizer)
+            #if defined(__has_feature)
+
+            #if __has_feature(thread_sanitizer)
             // pass
+            #endif
+
             #else
+
             std::atomic_thread_fence(std::memory_order_seq_cst);
+
             #endif
         }
     }
