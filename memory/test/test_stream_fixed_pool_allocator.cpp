@@ -4,6 +4,7 @@
 
 #include <set>
 #include <type_traits>
+#include <utility>
 
 using namespace ihft::memory;
 
@@ -73,4 +74,46 @@ TEST_CASE("stream_fixed_pool_allocator array allocation")
     stream_fixed_pool_allocator<A> allocator(16);
 
     REQUIRE( allocator.allocate(2) == nullptr );
+}
+
+TEST_CASE("stream_fixed_pool_allocator move construction")
+{
+    stream_fixed_pool_allocator<A> source(16);
+
+    source.seek_to_next_slab();
+    source.seek_to_next_slab();
+
+    auto* const slab = source.active_slab();
+    auto const capacity = source.capacity();
+
+    REQUIRE( source.position() == 2 );
+
+    stream_fixed_pool_allocator<A> target(std::move(source));
+
+    REQUIRE( target.capacity() == capacity );
+    REQUIRE( target.position() == 2 );
+    REQUIRE( target.active_slab() == slab );
+
+    // The moved-from object no longer owns the region.
+    REQUIRE( source.capacity() == 0 );
+}
+
+TEST_CASE("stream_fixed_pool_allocator move assignment")
+{
+    stream_fixed_pool_allocator<A> source(8);
+    stream_fixed_pool_allocator<A> target(32);
+
+    source.seek_to_next_slab();
+
+    auto* const slab = source.active_slab();
+    auto const capacity = source.capacity();
+
+    target = std::move(source);
+
+    REQUIRE( target.capacity() == capacity );
+    REQUIRE( target.position() == 1 );
+    REQUIRE( target.active_slab() == slab );
+
+    // The moved-from object no longer owns the region.
+    REQUIRE( source.capacity() == 0 );
 }
