@@ -73,9 +73,17 @@ struct logger_contract<T[N]> final
 {
     using type = std::string_view;
 
-    static type pack(logger_extra_data& ctx, std::string_view origin)
+    static type pack(logger_extra_data& ctx, T const (&origin)[N])
     {
-        return ctx.place(origin);
+        // The array bound is known at compile time, so limit the search for
+        // the terminating null to it instead of relying on strlen (which
+        // would read past the end of a non null-terminated array).
+        size_t size = 0;
+        while (size < N && origin[size] != '\0')
+        {
+            ++size;
+        }
+        return ctx.place(std::string_view(origin, size));
     }
 };
 
