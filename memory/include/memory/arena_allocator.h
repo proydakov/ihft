@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
+
 namespace ihft::memory
 {
 
@@ -19,27 +22,25 @@ struct arena_allocator
 
         [[nodiscard]] T* allocate(size_t n) noexcept
         {
-            if constexpr(alignof(T) > 1)
-            {
-                static_assert(sizeof(void*) == sizeof(uint64_t));
-                uint64_t ost = (uint64_t)(m_arena.m_current_arena_ptr) % alignof(T);
-                if (ost > 0) [[unlikely]]
-                {
-                    m_arena.m_current_arena_ptr += alignof(T) - ost;
-                }
-            }
+            // All arithmetic is done on integer addresses: forming pointers
+            // outside the arena region would be undefined behavior.
+            auto const begin = reinterpret_cast<std::uintptr_t>(m_arena.m_origin_arena_ptr);
+            auto const end = begin + m_arena.m_arena_size;
+            auto const current = reinterpret_cast<std::uintptr_t>(m_arena.m_current_arena_ptr);
 
-            char* test = static_cast<char*>(m_arena.m_current_arena_ptr + n * sizeof(T));
-            if (test <= m_arena.m_origin_arena_ptr + m_arena.m_arena_size) [[likely]]
-            {
-                T* result = reinterpret_cast<T*>(m_arena.m_current_arena_ptr);
-                m_arena.m_current_arena_ptr = test;
-                return result;
-            }
-            else [[unlikely]]
+            auto const misalign = current % alignof(T);
+            auto const aligned = (misalign == 0) ? current : current + (alignof(T) - misalign);
+
+            // The alignment padding doesn't fit or the request is too big.
+            // Do not change the arena state in that case. The division guards
+            // against overflow of n * sizeof(T).
+            if (aligned > end || n > (end - aligned) / sizeof(T))
             {
                 return nullptr;
             }
+
+            m_arena.m_current_arena_ptr = reinterpret_cast<char*>(aligned + n * sizeof(T));
+            return reinterpret_cast<T*>(aligned);
         }
 
         void deallocate(T*, size_t) noexcept
