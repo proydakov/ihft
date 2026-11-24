@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 namespace ihft::memory
 {
@@ -19,7 +20,7 @@ namespace ihft::memory
 
         holder* m_data;
         std::size_t m_next;
-        std::size_t const m_size;
+        std::size_t m_size;
         RegionHolderAllocator m_allocator;
 
     public:
@@ -44,14 +45,42 @@ namespace ihft::memory
 
         ~stream_fixed_pool_allocator() noexcept
         {
-            m_allocator.deallocate(m_data, m_size);
+            if (m_data != nullptr)
+            {
+                m_allocator.deallocate(m_data, m_size);
+            }
         }
 
         stream_fixed_pool_allocator(const stream_fixed_pool_allocator&) = delete;
-        stream_fixed_pool_allocator(stream_fixed_pool_allocator&&) noexcept = default;
+
+        // Move transfers the ownership of the region, so the moved-from object
+        // no longer deallocates it (avoids a double free).
+        stream_fixed_pool_allocator(stream_fixed_pool_allocator&& other) noexcept
+            : m_data(std::exchange(other.m_data, nullptr))
+            , m_next(std::exchange(other.m_next, 0))
+            , m_size(std::exchange(other.m_size, 0))
+            , m_allocator(std::move(other.m_allocator))
+        {
+        }
 
         stream_fixed_pool_allocator& operator=(const stream_fixed_pool_allocator&) = delete;
-        stream_fixed_pool_allocator& operator=(stream_fixed_pool_allocator&&) noexcept = default;
+
+        stream_fixed_pool_allocator& operator=(stream_fixed_pool_allocator&& other) noexcept
+        {
+            if (this != &other)
+            {
+                if (m_data != nullptr)
+                {
+                    m_allocator.deallocate(m_data, m_size);
+                }
+
+                m_data = std::exchange(other.m_data, nullptr);
+                m_next = std::exchange(other.m_next, 0);
+                m_size = std::exchange(other.m_size, 0);
+                m_allocator = std::move(other.m_allocator);
+            }
+            return *this;
+        }
 
         // STL-like interface
 
