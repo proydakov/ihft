@@ -330,3 +330,40 @@ TEST_CASE("call by reference")
     REQUIRE(i_move == 0);
     REQUIRE(i_dtor == 1);
 }
+
+namespace
+{
+
+int invoke_function_ref(callback_t cb, int value)
+{
+    return cb(value);
+}
+
+struct overloaded_address_of final
+{
+    int operator()(int value) const noexcept
+    {
+        return value + 1;
+    }
+
+    overloaded_address_of* operator&() = delete;
+};
+
+}
+
+TEST_CASE("temporary callable is valid for the duration of a call")
+{
+    // A temporary callable passed directly to a function taking function_ref
+    // lives until the end of the full-expression, so this is safe.
+    int base = 40;
+
+    REQUIRE( invoke_function_ref([base](int value) { return value + base; }, 2) == 42 );
+}
+
+TEST_CASE("callable with overloaded operator&")
+{
+    // function_ref must use std::addressof, not operator&.
+    overloaded_address_of functor;
+
+    REQUIRE( invoke_function_ref(functor, 41) == 42 );
+}
