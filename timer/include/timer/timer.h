@@ -13,7 +13,6 @@
 // Portable fallbacks for architectures without a dedicated counter/pause hint.
 #if !defined(__x86_64__) && !defined(__aarch64__)
 #include <atomic>
-#include <chrono>
 #endif
 
 namespace ihft::timer
@@ -38,8 +37,7 @@ inline std::uint64_t cpu_counter() noexcept
     return value * 100;
     #endif
 #else
-    return static_cast<std::uint64_t>(
-        std::chrono::steady_clock::now().time_since_epoch().count());
+    return 0;
 #endif
 }
 

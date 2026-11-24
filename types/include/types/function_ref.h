@@ -25,18 +25,11 @@
 ///    at the end of that declaration and later calls read freed memory.
 ///
 
+#include <compiler/compiler.h>
+
 #include <cstdint>
 #include <memory>
 #include <utility>
-
-// Lets Clang warn (-Wdangling, an error under -Werror) when a function_ref is
-// initialized from a temporary callable that does not outlive the function_ref,
-// while still allowing a temporary to be passed to a function taking function_ref.
-#if defined(__clang__)
-#define IHFT_FUNCTION_REF_LIFETIMEBOUND [[clang::lifetimebound]]
-#else
-#define IHFT_FUNCTION_REF_LIFETIMEBOUND
-#endif
 
 namespace ihft::types
 {
@@ -64,7 +57,7 @@ public:
     (!std::is_same_v<std::remove_cvref_t<Callable>, function_ref>) &&
     // Functor must be callable and return a suitable type.
     (std::is_void_v<Ret> || std::is_convertible_v<decltype(std::declval<Callable>()(std::declval<Params>()...)), Ret>)
-    constexpr function_ref(Callable&& callable IHFT_FUNCTION_REF_LIFETIMEBOUND) noexcept
+    constexpr function_ref(Callable&& callable IHFT_LIFETIMEBOUND) noexcept
         : m_callable(reinterpret_cast<intptr_t>(std::addressof(callable)))
         , m_callback(callback<typename std::remove_reference<Callable>::type>)
     {
@@ -102,5 +95,3 @@ private:
 };
 
 }
-
-#undef IHFT_FUNCTION_REF_LIFETIMEBOUND
