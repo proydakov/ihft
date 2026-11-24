@@ -85,7 +85,13 @@ struct mmap_page_allocator
                 nullptr, number_of_pages * page_size, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB_MARK | MAP_HUGE_PAGE_SIZE_MARK, -1, 0);
 
-            if (touch_memory && p != nullptr)
+            // mmap reports a failure with MAP_FAILED ((void*)-1), not nullptr.
+            if (p == MAP_FAILED)
+            {
+                return nullptr;
+            }
+
+            if (touch_memory)
             {
                 auto ptr = reinterpret_cast<volatile char*>(p);
                 for(size_t i = 0; i < number_of_pages; i++)
@@ -105,6 +111,11 @@ struct mmap_page_allocator
 
     void deallocate_pages(T* p, size_t number_of_pages) noexcept
     {
+        if (p == nullptr)
+        {
+            return;
+        }
+
         munmap(p, number_of_pages * page_size);
     }
 
