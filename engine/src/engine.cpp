@@ -58,7 +58,7 @@ namespace ihft::engine::impl
 
                 if (not lcpu.bind())
                 {
-                    return;
+                    ::abort();
                 }
 
                 while(until.load(std::memory_order_relaxed) and task());
