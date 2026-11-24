@@ -6,6 +6,10 @@
 
 #include <sys/mman.h>
 
+#ifdef __linux__
+#include <linux/mman.h>
+#endif
+
 namespace ihft::memory::impl
 {
 
@@ -66,13 +70,20 @@ struct mmap_page_allocator
         {
             #ifdef __APPLE__
             constexpr int MAP_HUGETLB_MARK = 0;
+            constexpr int MAP_HUGE_PAGE_SIZE_MARK = 0;
             #else
             constexpr int MAP_HUGETLB_MARK = is_huge ? MAP_HUGETLB : 0;
+            // Explicitly request the huge page size, otherwise the kernel uses the system default size.
+            #if defined(MAP_HUGE_2MB) && defined(MAP_HUGE_1GB)
+            constexpr int MAP_HUGE_PAGE_SIZE_MARK = is_huge ? ((page_size == _2mb_) ? MAP_HUGE_2MB : MAP_HUGE_1GB) : 0;
+            #else
+            constexpr int MAP_HUGE_PAGE_SIZE_MARK = 0;
+            #endif
             #endif
 
             auto p = mmap(
                 nullptr, number_of_pages * page_size, PROT_READ | PROT_WRITE,
-                MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB_MARK, -1, 0);
+                MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB_MARK | MAP_HUGE_PAGE_SIZE_MARK, -1, 0);
 
             if (touch_memory && p != nullptr)
             {
