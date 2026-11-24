@@ -6,7 +6,9 @@ on:
     branches: [master]
 jobs:
   cloud-ci:
-    runs-on: ubuntu-latest
+    # Pinned to a known Ubuntu release: ubuntu-latest moved to 26.04 (resolute),
+    # where apt.llvm.org has no llvm-toolchain-resolute-20.
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - name: set up clang

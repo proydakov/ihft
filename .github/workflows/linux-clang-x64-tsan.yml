@@ -6,7 +6,9 @@ on:
     branches: [master]
 jobs:
   cloud-ci:
-    runs-on: ubuntu-latest
+    # Pinned to a known Ubuntu release: ubuntu-latest moved to 26.04 (resolute),
+    # where apt.llvm.org has no llvm-toolchain-resolute-20.
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - name: set up clang
@@ -20,8 +22,8 @@ jobs:
         sudo apt-get install cmake ninja-build clang-20 clang++-20 lld-20 libc++-20-dev libc++abi-20-dev libunwind-20-dev libclang-rt-20-dev
     - name: build
       env:
-        CC: clang-18
-        CXX: clang++-18
+        CC: clang-20
+        CXX: clang++-20
         TYPE: Release
       run: |
         $CC --version

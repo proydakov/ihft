@@ -6,7 +6,8 @@ on:
     branches: [master]
 jobs:
   cloud-ci:
-    runs-on: ubuntu-latest
+    # Pin the runner image to avoid surprise OS migrations (ubuntu-latest moves).
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v2
     - name: install-tools
