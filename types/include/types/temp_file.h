@@ -22,6 +22,9 @@ public:
         std::remove(m_fname.c_str());
     }
 
+    temp_file(temp_file const&) = delete;
+    temp_file(temp_file&&) = delete;
+
     std::string const& fpath() const noexcept
     {
         return m_fname;

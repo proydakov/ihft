@@ -69,7 +69,7 @@ TEST_CASE("check 1gb hugepages")
 
 TEST_CASE("check 2mb hugepages")
 {
-    test_impl<one_gb_huge_page_allocator<>>(ihft::platform::trait::total_2mb_hugepages(), "hugepages 2mb");
+    test_impl<two_mb_huge_page_allocator<>>(ihft::platform::trait::total_2mb_hugepages(), "hugepages 2mb");
 }
 
 #endif
