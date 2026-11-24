@@ -33,11 +33,16 @@ void process_cpu_list(std::string_view cpus, types::function_ref<void(unsigned)>
                 }
 
                 unsigned to_result{};
-                if (auto [to_p, to_ec] = std::from_chars(p + 1, cpu.end(), to_result); to_ec == std::errc())
+                auto const [to_p, to_ec] = std::from_chars(p + 1, cpu.end(), to_result);
+                if (to_ec == std::errc() && to_p == cpu.end() && result <= to_result)
                 {
-                    for(auto i = result; i <= to_result; i++)
+                    for(auto i = result;; i++)
                     {
                         functor(i);
+                        if (i == to_result)
+                        {
+                            break;
+                        }
                     }
                 }
             }
