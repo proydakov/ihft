@@ -10,9 +10,12 @@
 
 #include <logger/logger_adapter.h>
 
+#include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <filesystem>
+
+#include <unistd.h>
 
 using plf = ihft::platform::trait;
 using logadap = ihft::logger::logger_adapter;
@@ -23,10 +26,32 @@ namespace
 
     std::atomic_bool g_until{true};
 
+    static_assert(std::atomic_bool::is_always_lock_free, "Signal handler requires a lock-free atomic flag.");
+
+    // Only async-signal-safe operations are allowed inside a signal handler:
+    // a lock-free atomic store and write(2). Avoid printf/strsignal here.
+    template<std::size_t N>
+    void write_stderr(char const (&message)[N]) noexcept
+    {
+        [[maybe_unused]] auto const written = ::write(STDERR_FILENO, message, N - 1);
+    }
+
     void mysa_sigaction(int signal, siginfo_t*, void*)
     {
         g_until = false;
-        printf("Catch signal: %s. Stopping...\n", strsignal(signal));
+
+        if (signal == SIGINT)
+        {
+            write_stderr("Catch SIGINT. Stopping...\n");
+        }
+        else if (signal == SIGTERM)
+        {
+            write_stderr("Catch SIGTERM. Stopping...\n");
+        }
+        else
+        {
+            write_stderr("Catch signal. Stopping...\n");
+        }
     }
 
     int check_system()

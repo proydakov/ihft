@@ -13,10 +13,10 @@ bool setup_sigaction_handler(sa_sigaction_t action, std::initializer_list<int> s
 
     newhandler.sa_sigaction = action;
 
-    if (flags)
-    {
-        newhandler.sa_flags = *flags;
-    }
+    // A three argument handler is only invoked when SA_SIGINFO is set.
+    // Otherwise the kernel calls it through the one argument sa_handler
+    // path, leaving the siginfo/context arguments undefined.
+    newhandler.sa_flags = flags.value_or(0) | SA_SIGINFO;
 
     sigemptyset(&newhandler.sa_mask);
     for(auto const signal : signals)
