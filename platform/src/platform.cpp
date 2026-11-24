@@ -187,16 +187,34 @@ namespace ihft::platform
 
     bool trait::is_scaling_governor_use_performance_mode() noexcept
     {
-        if (not std::filesystem::exists("/sys/devices/system/cpu/cpufreq"))
+        static constexpr char const* cpufreq_path = "/sys/devices/system/cpu/cpufreq";
+
+        // Use the std::error_code overloads: the throwing ones call terminate
+        // on permission/IO errors from a noexcept function (and with
+        // -fno-exceptions they cannot be caught anyway).
+        std::error_code ec;
+
+        bool const cpufreq_exists = std::filesystem::exists(cpufreq_path, ec);
+        if (ec)
+        {
+            // The state can't be determined, so don't claim performance mode.
+            return false;
+        }
+
+        if (not cpufreq_exists)
         {
             return true;
         }
 
         size_t total_cpus = 0;
         size_t total_performance = 0;
-        for(auto const& p : std::filesystem::recursive_directory_iterator("/sys/devices/system/cpu/cpufreq"))
+
+        std::filesystem::recursive_directory_iterator it(cpufreq_path, ec);
+        std::filesystem::recursive_directory_iterator const end;
+
+        for(; not ec && it != end; it.increment(ec))
         {
-            std::string const str = p.path();
+            std::string const str = it->path();
             if (str.ends_with("/scaling_governor"))
             {
                 total_cpus++;
@@ -209,6 +227,13 @@ namespace ihft::platform
                 }
             }
         }
+
+        if (ec)
+        {
+            // A traversal error: report the conservative result.
+            return false;
+        }
+
         return total_cpus > 0 && total_cpus == total_performance;
     }
 
