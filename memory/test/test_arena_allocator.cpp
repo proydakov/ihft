@@ -2,6 +2,7 @@
 
 #include <memory/arena_allocator.h>
 
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <string>
@@ -147,4 +148,49 @@ TEST_CASE("struct with tail extra data")
     REQUIRE(std::string_view(data.extra_data, data_size) == "Proydakov Evgeny Alexandrovich");
 
     REQUIRE(data.arena.used() >= data_size);
+}
+
+TEST_CASE("failed allocation keeps arena state")
+{
+    alignas(8) char buffer[8] = { };
+
+    // origin is misaligned, so the allocator needs padding before the payload
+    arena_allocator arena(buffer + 1, sizeof(buffer) - 3);
+
+    auto typed = arena.typed_allocator<std::uint64_t>();
+
+    REQUIRE(arena.used() == 0);
+
+    // padding jumps past the end of the arena, so the allocation fails
+    REQUIRE(typed.allocate(1) == nullptr);
+    REQUIRE(arena.used() == 0);
+}
+
+TEST_CASE("failed allocation doesn't consume space")
+{
+    alignas(8) char buffer[8] = { };
+    arena_allocator arena(buffer, sizeof(buffer));
+
+    auto typed64 = arena.typed_allocator<std::uint64_t>();
+    auto typed8 = arena.typed_allocator<char>();
+
+    REQUIRE(typed64.allocate(2) == nullptr);
+    REQUIRE(arena.used() == 0);
+
+    auto p = typed8.allocate(4);
+    REQUIRE(p == buffer);
+    REQUIRE(arena.used() == 4);
+}
+
+TEST_CASE("overflow in element count is rejected")
+{
+    alignas(8) char buffer[64] = { };
+    arena_allocator arena(buffer, sizeof(buffer));
+
+    auto typed = arena.typed_allocator<std::uint16_t>();
+
+    auto const huge = (std::numeric_limits<std::size_t>::max() / sizeof(std::uint16_t)) + 1;
+
+    REQUIRE(typed.allocate(huge) == nullptr);
+    REQUIRE(arena.used() == 0);
 }
