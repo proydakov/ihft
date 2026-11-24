@@ -15,11 +15,28 @@
 /// intended for use as the type of a function parameter that is not used
 /// after the function in question returns.
 ///
-/// This class does not own the callable, so it is not in general safe to store a function_ref.
+/// Lifetime contract (matches std::function_ref):
+///  - The referenced callable must outlive the function_ref.
+///  - Passing a temporary callable (e.g. a lambda) directly to a function
+///    taking function_ref is safe: the temporary lives until the end of the
+///    full-expression, i.e. for the whole call.
+///  - Storing a function_ref built from a temporary (for example
+///    `function_ref f = [x]{...};`) is NOT safe: the temporary is destroyed
+///    at the end of that declaration and later calls read freed memory.
 ///
 
 #include <cstdint>
+#include <memory>
 #include <utility>
+
+// Lets Clang warn (-Wdangling, an error under -Werror) when a function_ref is
+// initialized from a temporary callable that does not outlive the function_ref,
+// while still allowing a temporary to be passed to a function taking function_ref.
+#if defined(__clang__)
+#define IHFT_FUNCTION_REF_LIFETIMEBOUND [[clang::lifetimebound]]
+#else
+#define IHFT_FUNCTION_REF_LIFETIMEBOUND
+#endif
 
 namespace ihft::types
 {
@@ -47,8 +64,8 @@ public:
     (!std::is_same_v<std::remove_cvref_t<Callable>, function_ref>) &&
     // Functor must be callable and return a suitable type.
     (std::is_void_v<Ret> || std::is_convertible_v<decltype(std::declval<Callable>()(std::declval<Params>()...)), Ret>)
-    constexpr function_ref(Callable&& callable) noexcept
-        : m_callable(reinterpret_cast<intptr_t>(&callable))
+    constexpr function_ref(Callable&& callable IHFT_FUNCTION_REF_LIFETIMEBOUND) noexcept
+        : m_callable(reinterpret_cast<intptr_t>(std::addressof(callable)))
         , m_callback(callback<typename std::remove_reference<Callable>::type>)
     {
     }
@@ -85,3 +102,5 @@ private:
 };
 
 }
+
+#undef IHFT_FUNCTION_REF_LIFETIMEBOUND
