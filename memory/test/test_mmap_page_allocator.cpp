@@ -57,7 +57,7 @@ namespace
 
 TEST_CASE("check 4kb pages")
 {
-    test_impl<four_4b_page_allocator<>>(std::numeric_limits<unsigned>::max(), "pages 4kb");
+    test_impl<four_kb_page_allocator<>>(std::numeric_limits<unsigned>::max(), "pages 4kb");
 }
 
 #ifdef __linux__
