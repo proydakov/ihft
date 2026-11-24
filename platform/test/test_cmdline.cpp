@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <platform/private/cmdline.h>
+#include <platform/process_cpu_list.h>
 #include <types/temp_file.h>
 
 #include <string>
@@ -95,4 +96,34 @@ TEST_CASE("test_5")
         "BOOT_IMAGE=/boot/vmlinuz-3.16.0-44-generic auto noprompt priority=critical quiet isolcpus=1A3 locale=en_US\r\n");
 
     test_impl(file, {});
+}
+
+namespace
+{
+
+std::vector<unsigned> collect_cpu_list(std::string_view cpus)
+{
+    std::vector<unsigned> result;
+    ihft::platform::process_cpu_list(cpus, [&result](unsigned cpu) { result.push_back(cpu); });
+    return result;
+}
+
+}
+
+TEST_CASE("process_cpu_list: list and ranges")
+{
+    REQUIRE( collect_cpu_list("1,2,3") == std::vector<unsigned>{1, 2, 3} );
+    REQUIRE( collect_cpu_list("1-3,5-7") == std::vector<unsigned>{1, 2, 3, 5, 6, 7} );
+}
+
+TEST_CASE("process_cpu_list: ignores malformed tokens")
+{
+    REQUIRE( collect_cpu_list("3-5junk").empty() );
+    REQUIRE( collect_cpu_list("5-3").empty() );
+}
+
+TEST_CASE("process_cpu_list: handles max unsigned boundary")
+{
+    REQUIRE( collect_cpu_list("4294967295-4294967295") == std::vector<unsigned>{4294967295u} );
+    REQUIRE( collect_cpu_list("4294967294-4294967295") == std::vector<unsigned>{4294967294u, 4294967295u} );
 }
