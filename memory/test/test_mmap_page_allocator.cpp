@@ -72,4 +72,18 @@ TEST_CASE("check 2mb hugepages")
     test_impl<two_mb_huge_page_allocator<>>(ihft::platform::trait::total_2mb_hugepages(), "hugepages 2mb");
 }
 
+TEST_CASE("huge page allocation failure returns nullptr")
+{
+    // Without configured 1GB hugepages the kernel fails mmap with MAP_FAILED.
+    // The allocator must translate it to nullptr instead of returning
+    // (void*)-1 and touching invalid memory.
+    if (ihft::platform::trait::total_1gb_hugepages() != 0)
+    {
+        return;
+    }
+
+    one_gb_huge_page_allocator<> allocator;
+    REQUIRE( allocator.allocate_pages(1) == nullptr );
+}
+
 #endif
