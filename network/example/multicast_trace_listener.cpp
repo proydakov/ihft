@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         ssize_t const nbytes = recvfrom(
             fd,
             msgbuf,
-            sizeof(msgbuf),
+            sizeof(msgbuf) - 1,
             0,
             (struct sockaddr*) &addr,
             &addrlen
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
             perror("recvfrom");
             return 1;
         }
-        msgbuf[nbytes] = '\0';
+        msgbuf[static_cast<size_t>(nbytes)] = '\0';
         printf("from: %s message: %s\n", inet_ntoa(addr.sin_addr), msgbuf);
      }
 
