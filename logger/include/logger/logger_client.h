@@ -38,14 +38,15 @@ private:
         static_assert(logger_client::content_s == alignof(T));
 
         m_impl = std::construct_at(reinterpret_cast<T*>(&m_storage), std::move(producer));
-        m_thread_name[0] = 'u';
-        m_thread_name[1] = 'n';
-        m_thread_name[2] = 'k';
-        m_thread_name[3] = 'n';
-        m_thread_name[4] = 'o';
-        m_thread_name[5] = 'w';
-        m_thread_name[6] = 'n';
-        m_thread_name[7] = '\0';
+
+        // Initialize the whole array: the event header copies the full name
+        // buffer, so the unused tail must not be indeterminate.
+        constexpr char unknown[] = "unknown";
+        static_assert(sizeof(unknown) <= sizeof(m_thread_name));
+        for (size_t i = 0; i < sizeof(m_thread_name); i++)
+        {
+            m_thread_name[i] = (i < sizeof(unknown)) ? unknown[i] : '\0';
+        }
         set_this_thread_client(this);
     }
 
