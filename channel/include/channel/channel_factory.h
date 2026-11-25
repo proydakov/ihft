@@ -84,6 +84,20 @@ public:
             return std::nullopt;
         }
         auto& pair = *result;
+
+        // The queue rounds its capacity up to a power of two. A pooled content
+        // allocator must have at least one spare slot beyond that capacity,
+        // otherwise a slot that is still queued can be handed out again after
+        // the pool wraps around.
+        if constexpr (requires { pair.producer.get_content_allocator().capacity(); })
+        {
+            auto const& allocator = pair.producer.get_content_allocator();
+            if (allocator.capacity() <= pair.producer.capacity())
+            {
+                return std::nullopt;
+            }
+        }
+
         for(std::size_t i = 0; i < readers_count; i++)
         {
             auto reader = pair.producer.create_reader();
