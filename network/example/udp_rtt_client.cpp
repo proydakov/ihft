@@ -44,17 +44,20 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    size_t const clen = (size_t)(len);
-
     // received echoed data back
     char buffer[4096];
-    recvfrom(sock, buffer, clen, 0, NULL, NULL);
+    ssize_t const received = recvfrom(sock, buffer, sizeof(buffer) - 1, 0, nullptr, nullptr);
+    if (received < 0)
+    {
+        perror("recvfrom");
+        return 1;
+    }
 
     clock_gettime(CLOCK_REALTIME, &tp);
     long const end_micro = tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec;
     long const delta = end_micro - start_micro;
 
-    buffer[len] = '\0';
+    buffer[static_cast<size_t>(received)] = '\0';
     printf("time delta: %ld nanoseconds, recieved: '%s'\n", delta, buffer);
 
     return 0;
