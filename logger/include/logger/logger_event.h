@@ -9,6 +9,7 @@
 #include <array>
 #include <tuple>
 #include <chrono>
+#include <ctime>
 #include <memory>
 #include <iomanip>
 #include <ostream>
@@ -164,12 +165,21 @@ private:
 
         static void time_point_to_stream(std::ostream& os, time_point_t tp)
         {
-            const auto tt = tp.time_since_epoch();
-            const time_t durS = std::chrono::duration_cast<std::chrono::seconds>(tt).count();
-            if (const std::tm * tm = (std::gmtime(&durS))) {
-                os << std::put_time(tm, "%Z %Y-%m-%d %H:%M:%S.");
-                const auto durMs = std::chrono::duration_cast<std::chrono::microseconds>(tt).count();
-                os << std::setw(3) << std::setfill('0') << static_cast<long>(durMs - durS * 1'000'000) << " ";
+            auto const since_epoch = tp.time_since_epoch();
+            auto const seconds = std::chrono::duration_cast<std::chrono::seconds>(since_epoch);
+            time_t const durS = static_cast<time_t>(seconds.count());
+
+            // gmtime_r writes into a caller-provided buffer; std::gmtime returns
+            // a pointer to a shared static buffer and is not thread-safe.
+            std::tm tm{};
+            if (::gmtime_r(&durS, &tm))
+            {
+                os << std::put_time(&tm, "%Z %Y-%m-%d %H:%M:%S.");
+
+                // The sub-second remainder is in [0, 999999] microseconds, so
+                // pad it to a fixed six-digit width.
+                auto const micros = std::chrono::duration_cast<std::chrono::microseconds>(since_epoch - seconds).count();
+                os << std::setw(6) << std::setfill('0') << micros << " ";
             }
         }
 
