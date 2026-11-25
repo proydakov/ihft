@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdio>
+#include <utility>
 #include <string>
 #include <fstream>
 #include <string_view>

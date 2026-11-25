@@ -9,7 +9,7 @@ jobs:
     # Pin the runner image to avoid surprise OS migrations (ubuntu-latest moves).
     runs-on: ubuntu-26.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: install-tools
       run: |
         sudo apt-get update
