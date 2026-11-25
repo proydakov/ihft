@@ -4,6 +4,7 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -29,6 +30,7 @@ std::optional<int> create_udp_server(const unsigned short server_port, const cha
     if ((bind(sock, (struct sockaddr*) &server_address, sizeof(server_address))) < 0)
     {
         printf("could not bind socket\n");
+        close(sock);
         return std::nullopt;
     }
 
@@ -54,6 +56,7 @@ std::optional<int> create_udp_client(const char* const source_iface)
     if (bind(sock, (struct sockaddr*) &addr, sizeof(addr)) < 0)
     {
         perror("bind");
+        close(sock);
         return std::nullopt;
     }
 

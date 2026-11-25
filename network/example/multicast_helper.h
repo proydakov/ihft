@@ -32,6 +32,7 @@ std::optional<int> create_multicast_sender(const char* const source_iface)
     if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_IF, (void*) &mreq, sizeof(mreq)) < 0)
     {
         perror("setsockopt");
+        close(fd);
         return std::nullopt;
     }
 
@@ -57,6 +58,7 @@ std::optional<int> create_multicast_listener(const char* const group, const unsi
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes)) < 0)
     {
        perror("Reusing ADDR failed");
+       close(fd);
        return std::nullopt;
     }
 
@@ -75,6 +77,7 @@ std::optional<int> create_multicast_listener(const char* const group, const unsi
     if (bind(fd, (struct sockaddr*) &addr, sizeof(addr)) < 0)
     {
         perror("bind");
+        close(fd);
         return std::nullopt;
     }
 
@@ -88,6 +91,7 @@ std::optional<int> create_multicast_listener(const char* const group, const unsi
     if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
     {
         perror("setsockopt");
+        close(fd);
         return std::nullopt;
     }
 
