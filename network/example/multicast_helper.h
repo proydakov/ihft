@@ -44,11 +44,9 @@ inline std::optional<int> create_multicast_sender(const char* const source_iface
     //
     // setup sender interface
     //
-    struct ip_mreq mreq;
-    std::memset(&mreq, 0, sizeof(mreq));
-    mreq.imr_interface = source_address;
-
-    if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_IF, &mreq, sizeof(mreq)) < 0)
+    // IP_MULTICAST_IF expects an interface address (struct in_addr), not the
+    // ip_mreq used by IP_ADD_MEMBERSHIP.
+    if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_IF, &source_address, sizeof(source_address)) < 0)
     {
         std::perror("setsockopt");
         close(fd);
