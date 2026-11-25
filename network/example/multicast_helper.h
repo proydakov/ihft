@@ -99,6 +99,13 @@ inline std::optional<int> create_multicast_listener(const char* const group, con
        return std::nullopt;
     }
 
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)) < 0)
+    {
+       std::perror("Reusing PORT failed");
+       close(fd);
+       return std::nullopt;
+    }
+
     //
     // set up destination address
     //
