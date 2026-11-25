@@ -8,12 +8,30 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <thread>
 
 using namespace ihft::channel;
 
 namespace
 {
+    // Minimal pooled allocator: only capacity() is needed to exercise the
+    // channel_factory capacity check.
+    struct dummy_pool_allocator final
+    {
+        explicit dummy_pool_allocator(std::size_t capacity) noexcept
+            : m_capacity(capacity)
+        {
+        }
+
+        std::size_t capacity() const noexcept
+        {
+            return m_capacity;
+        }
+
+        std::size_t m_capacity;
+    };
+
     struct packet_t final
     {
         std::size_t header_id{};
@@ -147,6 +165,21 @@ TEST_CASE("one2each object queue honours the reader limit")
 
     auto const too_many = channel_factory::make<queue_t>(32, max_readers + 1);
     REQUIRE_FALSE( too_many.has_value() );
+}
+
+TEST_CASE("content allocator must cover the rounded queue capacity")
+{
+    using allocator_t = dummy_pool_allocator;
+    using queue_t = one2one_seqnum_stream_object_queue<std::size_t, allocator_t>;
+
+    // 1000 rounds up to 1024; a pool of 1001 slots is not enough.
+    auto const too_small = channel_factory::make<queue_t>(1000, 1, std::make_unique<allocator_t>(1001));
+    REQUIRE_FALSE( too_small.has_value() );
+
+    // One spare slot beyond the rounded capacity is enough.
+    auto const exact = channel_factory::make<queue_t>(1024, 1, std::make_unique<allocator_t>(1025));
+    REQUIRE( exact.has_value() );
+    REQUIRE( exact->producer.capacity() == 1024 );
 }
 
 template<typename Q>
