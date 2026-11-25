@@ -119,6 +119,23 @@ TEST_CASE("one2each_stream_queue simple reader")
     one2each_stream_queue_simple_reader<one2each_seqnum_stream_object_queue<packet_t>>();
 }
 
+TEST_CASE("one2each object queue rejects readers that overflow the counter")
+{
+    using queue_t = one2each_seqnum_stream_object_queue<std::size_t, impl::empty_allocator, std::uint8_t>;
+
+    // For uint8 the writer stores (readers + CONSTRUCTED_DATA_MARK), so the
+    // last valid value is max - CONSTRUCTED_DATA_MARK readers.
+    constexpr std::size_t max_readers =
+        static_cast<std::size_t>(std::numeric_limits<std::uint8_t>::max())
+        - static_cast<std::size_t>(queue_t::counter_type::CONSTRUCTED_DATA_MARK);
+
+    auto const max_ok = channel_factory::make<queue_t>(32, max_readers);
+    REQUIRE( max_ok.has_value() );
+
+    auto const too_many = channel_factory::make<queue_t>(32, max_readers + 1);
+    REQUIRE_FALSE( too_many.has_value() );
+}
+
 template<typename Q>
 void one2_stream_queue_simple_write_and_read()
 {
