@@ -24,6 +24,11 @@ public:
     logger_event* active_event_slab() noexcept;
     bool try_log_event(logger_event*) noexcept;
 
+    // Counts failed try_log_event() attempts. A failed event stays pending and
+    // may still be written later, so this is not necessarily the number of
+    // records that were actually lost.
+    std::uint64_t lost_events() const noexcept;
+
 private:
     friend class logger_adapter;
 
@@ -73,7 +78,7 @@ private:
 
 private:
     std::atomic_bool m_synch;
-    std::uint64_t m_lost;
+    std::atomic<std::uint64_t> m_lost;
     bool m_pending;
     long m_thread_id;
     char m_thread_name[16];

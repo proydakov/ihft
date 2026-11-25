@@ -24,6 +24,11 @@ void logger_client::set_this_thread_client(logger_client* ctx) noexcept
     tls_client = ctx;
 }
 
+std::uint64_t logger_client::lost_events() const noexcept
+{
+    return m_lost.load(std::memory_order_relaxed);
+}
+
 logger_client::~logger_client()
 {
     set_this_thread_client(nullptr);
@@ -82,7 +87,7 @@ bool logger_client::try_log_event(logger_event* event) noexcept
         // or the destructor will destroy it if it is never written.
         box.release();
         m_pending = true;
-        m_lost++;
+        m_lost.fetch_add(1, std::memory_order_relaxed);
     }
 
     return write;
