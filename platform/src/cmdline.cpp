@@ -1,6 +1,5 @@
 #include <platform/private/cmdline.h>
 #include <platform/process_cpu_list.h>
-#include <constant/constant.h>
 
 #include <cstring>
 #include <fstream>
@@ -10,7 +9,7 @@
 namespace ihft::impl
 {
 
-static_assert(sizeof(cmdline) == 3 * constant::CPU_CACHE_LINE_SIZE);
+static_assert(sizeof(cmdline) == 3 * sizeof(std::bitset<cmdline::MAX_CPUS>), "cmdline must contain exactly three cpu bitsets");
 
 cmdline::cmdline(const char* file)
 {

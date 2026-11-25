@@ -3,13 +3,21 @@
 #include <bitset>
 #include <cstddef>
 
+#ifdef __linux__
+#include <sched.h>
+#endif
+
 namespace ihft::impl
 {
 
 class cmdline
 {
 public:
-    static constexpr std::size_t MAX_CPUS = 512;
+    static constexpr std::size_t MAX_CPUS = 1024;
+
+#ifdef __linux__
+    static_assert(MAX_CPUS == static_cast<std::size_t>(CPU_SETSIZE), "MAX_CPUS must match CPU_SETSIZE");
+#endif
 
     explicit cmdline(const char* file);
 
