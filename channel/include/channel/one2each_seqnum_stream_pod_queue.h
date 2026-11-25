@@ -48,7 +48,12 @@ public:
             m_next_seq_num++;
             m_next_bucket = m_next_seq_num & m_storage_mask;
             std::optional<event_t> opt(std::in_place, bucket.get_event());
-            bucket.m_counter.fetch_sub(1, std::memory_order_release);
+
+            // acq_rel: the acquire half chains this decrement with those of
+            // all other readers, so the writer's acquire-load of zero happens
+            // after every reader finished copying. With release only, just the
+            // last reader's copy would be ordered before the slot is reused.
+            bucket.m_counter.fetch_sub(1, std::memory_order_acq_rel);
             return opt;
         }
         else
