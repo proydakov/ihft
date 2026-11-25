@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     const unsigned short server_port = (unsigned short) atoi(argv[1]);
     const char* const source_iface = (argc == 3) ? argv[2] : nullptr;
 
-    auto const opt = create_udp_server(server_port, source_iface);
+    auto const opt = ihft::network::create_udp_server(server_port, source_iface);
     if (!opt)
     {
         return 1;

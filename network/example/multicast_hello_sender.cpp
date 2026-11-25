@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     const unsigned short port = (unsigned short) atoi(argv[2]); // 0 if error, which is an invalid port
     const char* const source_iface = (argc == 4 ? argv[3] : nullptr);
 
-    auto const opt = create_multicast_sender(source_iface);
+    auto const opt = ihft::network::create_multicast_sender(source_iface);
     if (!opt)
     {
         return 1;

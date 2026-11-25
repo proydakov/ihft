@@ -9,7 +9,10 @@
 #include <stdio.h>
 #include <string.h>
 
-std::optional<int> create_udp_server(const unsigned short server_port, const char* const source_iface)
+namespace ihft::network
+{
+
+inline std::optional<int> create_udp_server(const unsigned short server_port, const char* const source_iface)
 {
     // open socket
     int const sock = socket(PF_INET, SOCK_DGRAM, 0);
@@ -37,7 +40,7 @@ std::optional<int> create_udp_server(const unsigned short server_port, const cha
     return sock;
 }
 
-std::optional<int> create_udp_client(const char* const source_iface)
+inline std::optional<int> create_udp_client(const char* const source_iface)
 {
     // open socket
     int const sock = socket(PF_INET, SOCK_DGRAM, 0);
@@ -62,3 +65,5 @@ std::optional<int> create_udp_client(const char* const source_iface)
 
     return sock;
 }
+
+} // namespace ihft::network

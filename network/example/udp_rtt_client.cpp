@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     const char* const data_to_send = argv[3];
     const char* const source_iface = (argc == 5) ? argv[4] : nullptr;
 
-    auto const opt = create_udp_client(source_iface);
+    auto const opt = ihft::network::create_udp_client(source_iface);
     if (!opt)
     {
         return 1;
