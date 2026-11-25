@@ -47,8 +47,12 @@ int main(int argc, char* argv[])
     addr.sin_port = htons(*server_port);
 
     struct timespec tp;
-    ::clock_gettime(CLOCK_REALTIME, &tp);
-    long const start_micro = tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec;
+    if (::clock_gettime(CLOCK_REALTIME, &tp) != 0)
+    {
+        std::perror("clock_gettime");
+        return EXIT_FAILURE;
+    }
+    long const start_ns = tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec;
 
     // send data
     ssize_t const len = sendto(sock, data_to_send, std::strlen(data_to_send), 0,
@@ -69,9 +73,13 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    ::clock_gettime(CLOCK_REALTIME, &tp);
-    long const end_micro = tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec;
-    long const delta = end_micro - start_micro;
+    if (::clock_gettime(CLOCK_REALTIME, &tp) != 0)
+    {
+        std::perror("clock_gettime");
+        return EXIT_FAILURE;
+    }
+    long const end_ns = tp.tv_sec * 1000 * 1000 * 1000 + tp.tv_nsec;
+    long const delta = end_ns - start_ns;
 
     buffer[static_cast<size_t>(received)] = '\0';
     std::printf("time delta: %ld nanoseconds, received: '%s'\n", delta, buffer);
