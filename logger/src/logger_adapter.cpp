@@ -21,7 +21,10 @@ logger_adapter::logger_client_thread_guard::logger_client_thread_guard()
     if (nullptr == client)
     {
         m_client = logger_adapter::register_logger_client(global_instance);
-        m_client->set_thread_id(platform::trait::get_thread_id());
+        if (m_client)
+        {
+            m_client->set_thread_id(platform::trait::get_thread_id());
+        }
     }
 }
 
