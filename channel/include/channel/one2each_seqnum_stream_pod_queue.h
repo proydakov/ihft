@@ -92,6 +92,8 @@ public:
     using ring_buffer_t = impl::one2each_seqnum_stream_ring_buffer_t<event_t, counter_t>;
     using bucket_type = impl::one2each_seqnum_bucket<event_t, counter_t>;
 
+    static constexpr std::size_t MAX_READERS = static_cast<std::size_t>(impl::one2each_seqnum_queue_constant<counter_t>::MAX_READERS);
+
 public:
     one2each_seqnum_stream_pod_queue(one2each_seqnum_stream_pod_queue&&) noexcept = default;
 

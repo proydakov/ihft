@@ -3,6 +3,8 @@
 #include "ring_buffer_factory.h"
 #include "one2each_seqnum_bucket.h"
 
+#include <limits>
+
 namespace ihft::channel::impl
 {
 
@@ -52,7 +54,7 @@ public:
     std::optional<R> create_reader() noexcept
     {
         auto const next_id = m_next_reader_id++;
-        if (next_id != counter_type::DUMMY_READER_ID)
+        if (next_id < counter_type::MAX_READERS)
         {
             return R(m_storage, m_storage_mask, next_id);
         }
@@ -93,7 +95,13 @@ public:
 
     std::size_t readers_mask() const noexcept
     {
-        return (~((~std::size_t(0)) << m_next_reader_id));
+        constexpr std::size_t bits = std::numeric_limits<std::size_t>::digits;
+        auto const count = static_cast<std::size_t>(m_next_reader_id);
+
+        // MAX_READERS equals the size_t width, so the full mask can't be
+        // produced by a shift (shifting by the width is undefined).
+        return (count >= bits) ? std::numeric_limits<std::size_t>::max()
+                               : ((std::size_t{1} << count) - 1);
     }
 
     std::size_t readers_count() const noexcept

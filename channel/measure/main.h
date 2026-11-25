@@ -119,7 +119,18 @@ int test_main(int const argc, char const* argv[])
         return EXIT_SUCCESS;
     }
 
-    auto const& [cpus, num_readers, total_events, queue_request_capacity] = parse_args<SINGLE_READER>(argc, argv);
+    auto const parsed_args = parse_args<SINGLE_READER>(argc, argv);
+
+    auto const& cpus = std::get<0>(parsed_args);
+    std::size_t num_readers = std::get<1>(parsed_args);
+    auto const total_events = std::get<2>(parsed_args);
+    auto const queue_request_capacity = std::get<3>(parsed_args);
+
+    // one2each queues cap the number of parallel readers.
+    if constexpr (requires { Q::MAX_READERS; })
+    {
+        num_readers = std::min(num_readers, static_cast<std::size_t>(Q::MAX_READERS));
+    }
 
     if (not cpus.empty() and cpus.size() != (num_readers + 1))
     {
