@@ -169,9 +169,9 @@ namespace ihft::engine
 
         std::cout << "setuping signal handlers..." << std::endl;
 
-        if (not misc::setup_sigaction_handler(&mysa_sigaction, {SIGINT}))
+        if (not misc::setup_sigaction_handler(&mysa_sigaction, {SIGINT, SIGTERM}))
         {
-            std::cerr << "can't setup signal handler for SIGINT" << std::endl;
+            std::cerr << "can't setup signal handlers for SIGINT/SIGTERM" << std::endl;
             return EXIT_FAILURE;
         }
 
