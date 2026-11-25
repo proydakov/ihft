@@ -152,6 +152,7 @@ bool logger_adapter::dispatch() noexcept
                 std::ostringstream& stream = impl.sstream;
 
                 // reset state before next formatting
+                stream.clear();
                 stream.flags(impl.flags);
                 stream.precision(impl.precision);
                 stream.width(impl.width);
