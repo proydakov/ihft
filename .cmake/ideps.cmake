@@ -12,7 +12,7 @@ include(FetchContent)
 #set(FETCHCONTENT_QUIET FALSE)
 
 # catch2
-if (IHFT_BUILD_UNITTESTS)
+if (IHFT_BUILD_UNITTESTS OR IHFT_BUILD_BENCHMARKS)
     FetchContent_Declare(
         Catch2
         URL https://codeload.github.com/catchorg/Catch2/tar.gz/refs/tags/v3.6.0
@@ -32,7 +32,7 @@ if (IHFT_BUILD_UNITTESTS)
     target_compile_options(Catch2 PRIVATE -Wno-uninitialized)
 
     if(PROJECT_AARCH64_CPU)
-    target_compile_options(Catch2 PRIVATE -Wno-restrict)
+        target_compile_options(Catch2 PRIVATE -Wno-restrict)
     endif()
 
     add_library(catch2_test_main OBJECT ${PROJECT_SOURCE_DIR}/.cmake/template/catch2_test_main.cpp)

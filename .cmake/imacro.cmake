@@ -52,7 +52,7 @@ endfunction()
 ###############################################################################
 
 function(ihft_add_benchmark NAME)
-    if (IHFT_BUILD_UNITTESTS)
+    if (IHFT_BUILD_BENCHMARKS)
         add_executable(${NAME} ${NAME}.cpp)
         target_link_libraries(${NAME} PRIVATE catch2_benchmark_main)
     else()
