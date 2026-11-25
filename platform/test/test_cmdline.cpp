@@ -130,9 +130,9 @@ TEST_CASE("process_cpu_list: handles max unsigned boundary")
 
 TEST_CASE("cmdline ignores cpu ids outside the bitset")
 {
-    // 600 >= cmdline::MAX_CPUS must be ignored instead of aborting.
+    // 1100 >= cmdline::MAX_CPUS (1024) must be ignored instead of aborting.
     temp_file file("cmdline_high.txt",
-        "BOOT_IMAGE=/boot/vmlinuz auto isolcpus=1-3,600 nohz_full=1-3,600 rcu_nocbs=1-3,600 quiet\r\n");
+        "BOOT_IMAGE=/boot/vmlinuz auto isolcpus=1-3,1100 nohz_full=1-3,1100 rcu_nocbs=1-3,1100 quiet\r\n");
 
     test_impl(file, {1, 2, 3});
 }
