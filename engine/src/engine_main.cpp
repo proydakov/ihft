@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <filesystem>
+#include <system_error>
 
 #include <unistd.h>
 
@@ -125,7 +126,21 @@ namespace ihft::engine
         }
 
         std::string_view const path_to_config = argv[1];
-        if (not std::filesystem::exists(path_to_config) || !std::filesystem::is_regular_file(path_to_config))
+        std::filesystem::path const config_path(path_to_config);
+
+        // Use the std::error_code overloads: the throwing ones call terminate
+        // on permission/IO errors (the project is built with -fno-exceptions).
+        std::error_code ec;
+
+        bool const config_exists = std::filesystem::exists(config_path, ec);
+        if (ec || not config_exists)
+        {
+            usage();
+            return EXIT_FAILURE;
+        }
+
+        bool const config_is_regular = std::filesystem::is_regular_file(config_path, ec);
+        if (ec || not config_is_regular)
         {
             usage();
             return EXIT_FAILURE;
