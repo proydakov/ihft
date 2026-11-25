@@ -48,6 +48,14 @@ public:
         return m_ptr != nullptr;
     }
 
+    // Relinquish ownership without destroying the object.
+    T* release() noexcept
+    {
+        T* const ptr = m_ptr;
+        m_ptr = nullptr;
+        return ptr;
+    }
+
     operator T const& () const noexcept
     {
         return *m_ptr;

@@ -31,6 +31,7 @@ private:
     logger_client(T producer, bool synch) noexcept
         : m_synch(synch)
         , m_lost{0}
+        , m_pending{false}
         , m_thread_id{0}
     {
         static_assert(logger_client::content_s == sizeof(T));
@@ -72,6 +73,7 @@ private:
 private:
     std::atomic_bool m_synch;
     std::uint64_t m_lost;
+    bool m_pending;
     long m_thread_id;
     char m_thread_name[16];
     void* m_impl;
