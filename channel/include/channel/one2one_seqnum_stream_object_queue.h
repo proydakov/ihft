@@ -29,6 +29,12 @@ class one2one_seqnum_stream_object_queue;
 // implementation
 
 // guard
+//
+// Non-owning view of one ring-buffer bucket. The guard deliberately stores only
+// a bucket reference: taking a shared_ptr copy for every try_read() would add
+// atomic refcount operations to the hot path. The storage is kept alive by the
+// reader and queue owners, so the guard must not outlive the reader that
+// produced it.
 template<complex_event event_t, seqnum_counter counter_t>
 class one2one_seqnum_stream_object_guard final
 {

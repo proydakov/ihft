@@ -24,6 +24,11 @@ public:
     logger_event* active_event_slab() noexcept;
     bool try_log_event(logger_event*) noexcept;
 
+    // Counts failed try_log_event() attempts. A failed event stays pending and
+    // may still be written later, so this is not necessarily the number of
+    // records that were actually lost.
+    std::uint64_t lost_events() const noexcept;
+
 private:
     friend class logger_adapter;
 
@@ -38,14 +43,15 @@ private:
         static_assert(logger_client::content_s == alignof(T));
 
         m_impl = std::construct_at(reinterpret_cast<T*>(&m_storage), std::move(producer));
-        m_thread_name[0] = 'u';
-        m_thread_name[1] = 'n';
-        m_thread_name[2] = 'k';
-        m_thread_name[3] = 'n';
-        m_thread_name[4] = 'o';
-        m_thread_name[5] = 'w';
-        m_thread_name[6] = 'n';
-        m_thread_name[7] = '\0';
+
+        // Initialize the whole array: the event header copies the full name
+        // buffer, so the unused tail must not be indeterminate.
+        constexpr char unknown[] = "unknown";
+        static_assert(sizeof(unknown) <= sizeof(m_thread_name));
+        for (size_t i = 0; i < sizeof(m_thread_name); i++)
+        {
+            m_thread_name[i] = (i < sizeof(unknown)) ? unknown[i] : '\0';
+        }
         set_this_thread_client(this);
     }
 
@@ -72,7 +78,7 @@ private:
 
 private:
     std::atomic_bool m_synch;
-    std::uint64_t m_lost;
+    std::atomic<std::uint64_t> m_lost;
     bool m_pending;
     long m_thread_id;
     char m_thread_name[16];

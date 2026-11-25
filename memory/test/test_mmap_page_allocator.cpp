@@ -4,6 +4,7 @@
 #include <memory/page_allocator.h>
 #include <memory/huge_page_allocator.h>
 
+#include <cstdint>
 #include <limits>
 #include <iostream>
 
@@ -53,6 +54,17 @@ namespace
         static_assert(sizeof(size_t) == sizeof(void*), "Please cleanup tests below");
         REQUIRE( ((size_t)(page) & (allocator_t::page_size - 1)) == 0 );
     }
+}
+
+TEST_CASE("mmap allocator rejects overflowing requests")
+{
+    four_kb_page_allocator<> byte_allocator;
+    REQUIRE( byte_allocator.allocate_pages(std::numeric_limits<std::size_t>::max()) == nullptr );
+    REQUIRE( byte_allocator.allocate(std::numeric_limits<std::size_t>::max()) == nullptr );
+
+    four_kb_page_allocator<std::uint64_t> word_allocator;
+    auto const too_many_words = std::numeric_limits<std::size_t>::max() / sizeof(std::uint64_t) + 1;
+    REQUIRE( word_allocator.allocate(too_many_words) == nullptr );
 }
 
 TEST_CASE("check 4kb pages")
