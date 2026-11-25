@@ -4,28 +4,44 @@
 // ./network_multicast_sender 239.255.255.251 27335 192.168.88.50
 //
 
+#include "arg_helper.h"
 #include "multicast_helper.h"
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include <unistd.h>
 
 int main(int argc, char* argv[])
 {
     if (argc < 3)
     {
-       printf("Command line args should be multicast group and port\n");
-       printf("(e.g. for SSDP, `sender 239.255.255.250 1900 [interface_ip]`)\n");
-       return 1;
+       std::printf("Command line args should be multicast group and port\n");
+       std::printf("(e.g. for SSDP, `sender 239.255.255.250 1900 [interface_ip]`)\n");
+       return EXIT_FAILURE;
     }
 
     const char* const group = argv[1]; // e.g. 239.255.255.250 for SSDP
-    const unsigned short port = (unsigned short) atoi(argv[2]); // 0 if error, which is an invalid port
+    auto const port = ihft::network::parse_port(argv[2]);
+    if (not port)
+    {
+        std::printf("invalid port: %s\n", argv[2]);
+        return EXIT_FAILURE;
+    }
     const char* const source_iface = (argc == 4 ? argv[3] : nullptr);
+
+    auto const group_address = ihft::network::parse_ipv4(group);
+    if (not group_address)
+    {
+        std::printf("invalid multicast group: %s\n", group);
+        return EXIT_FAILURE;
+    }
 
     auto const opt = ihft::network::create_multicast_sender(source_iface);
     if (!opt)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     const int fd = opt.value();
@@ -34,10 +50,10 @@ int main(int argc, char* argv[])
     // set up destination address
     //
     struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
+    std::memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = inet_addr(group);
-    addr.sin_port = htons(port);
+    addr.sin_addr = *group_address;
+    addr.sin_port = htons(*port);
 
     //
     // now just sendto() our destination
@@ -45,8 +61,8 @@ int main(int argc, char* argv[])
     for(unsigned i = 0; ; i++)
     {
         char buffer[64];
-        memset(buffer, '\0', sizeof(buffer));
-        snprintf(buffer, sizeof(buffer), "Hello, World! Sequence: %u", i & 0xFF);
+        std::memset(buffer, '\0', sizeof(buffer));
+        std::snprintf(buffer, sizeof(buffer), "Hello, World! Sequence: %u", i & 0xFF);
 
         ssize_t const nbytes = sendto(
             fd,
@@ -58,8 +74,8 @@ int main(int argc, char* argv[])
         );
         if (nbytes < 0)
         {
-            perror("sendto");
-            return 1;
+            std::perror("sendto");
+            return EXIT_FAILURE;
         }
 
         constexpr int delay_secs = 1;
@@ -67,5 +83,5 @@ int main(int argc, char* argv[])
         sleep(delay_secs); // Unix sleep is seconds
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

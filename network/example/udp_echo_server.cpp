@@ -1,30 +1,38 @@
+#include "arg_helper.h"
 #include "udp_helper.h"
 
-#include <stdlib.h>
-#include <stdbool.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 int main(int argc, char* argv[])
 {
     if (argc < 2)
     {
-        printf("Usage: %s 'port' '[interface]' optional\n", argv[0]);
-        return 1;
+        std::printf("Usage: %s 'port' '[interface]' optional\n", argv[0]);
+        return EXIT_FAILURE;
     }
 
-    const unsigned short server_port = (unsigned short) atoi(argv[1]);
+    auto const server_port = ihft::network::parse_port(argv[1]);
+    if (not server_port)
+    {
+        std::printf("invalid port: %s\n", argv[1]);
+        return EXIT_FAILURE;
+    }
+
     const char* const source_iface = (argc == 3) ? argv[2] : nullptr;
 
-    auto const opt = ihft::network::create_udp_server(server_port, source_iface);
+    auto const opt = ihft::network::create_udp_server(*server_port, source_iface);
     if (!opt)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     auto const sock = opt.value();
 
     // socket address used to store client address
     struct sockaddr_in client_address;
-    memset(&client_address, 0, sizeof(client_address));
+    std::memset(&client_address, 0, sizeof(client_address));
     socklen_t client_address_len = sizeof(client_address);
 
     // run indefinitely
@@ -40,7 +48,7 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        size_t const clen = (size_t)(len);
+        size_t const clen = static_cast<size_t>(len);
 
         // send same content back to the client ("echo")
         sendto(sock, buffer, clen, 0, (struct sockaddr*)&client_address, sizeof(client_address));
@@ -49,8 +57,8 @@ int main(int argc, char* argv[])
         size_t const term = (clen < sizeof(buffer)) ? clen : (sizeof(buffer) - 1);
         buffer[term] = '\0';
         // inet_ntoa prints user friendly representation of the ip address
-        printf("received: '%s' from client %s:%d\n", buffer, inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
+        std::printf("received: '%s' from client %s:%d\n", buffer, inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
