@@ -43,7 +43,7 @@ struct options_t
 void help();
 nanosec_t calculate_default_threshold();
 std::optional<int> parse_options(const int argc, char* const argv[], options_t& opt);
-bool measure(unsigned cpu, sync_t& active, resultvec_t&, nanosec_t threshold, time_point_t until);
+bool measure(unsigned cpu, sync_t& active, std::atomic_bool& failed, resultvec_t&, nanosec_t threshold, time_point_t until);
 void trace_results(std::vector<std::atomic_bool> const&, resultvec_t&, options_t const&);
 
 int main(const int argc, char* argv[])
@@ -60,6 +60,12 @@ int main(const int argc, char* argv[])
     param.threshold = nanosec_t::max() == param.threshold ? calculate_default_threshold() : param.threshold;
 
     std::size_t const cores = std::thread::hardware_concurrency();
+
+    if (cores == 0)
+    {
+        std::cerr << "can't detect cpu count\n";
+        return EXIT_FAILURE;
+    }
 
     std::vector<std::thread> threads;
     threads.reserve(cores);
@@ -78,6 +84,7 @@ int main(const int argc, char* argv[])
     }
 
     sync_t active_threads = 0;
+    std::atomic_bool failed{false};
 
     auto const until = cclock_t::now() + param.runtime;
 
@@ -85,11 +92,11 @@ int main(const int argc, char* argv[])
     {
         threads.emplace_back([&, cpu = i]()
         {
-            valid_experiment[cpu] = measure(cpu, active_threads, results, param.threshold, until);
+            valid_experiment[cpu] = measure(cpu, active_threads, failed, results, param.threshold, until);
         });
     }
 
-    valid_experiment[0] = measure(0, active_threads, results, param.threshold, until);
+    valid_experiment[0] = measure(0, active_threads, failed, results, param.threshold, until);
 
     for(auto& t : threads)
     {
@@ -98,16 +105,17 @@ int main(const int argc, char* argv[])
 
     trace_results(valid_experiment, results, param);
 
-    return 0;
+    return failed.load(std::memory_order_relaxed) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-bool measure(unsigned cpu, sync_t& active, resultvec_t& results, nanosec_t threshold, time_point_t until)
+bool measure(unsigned cpu, sync_t& active, std::atomic_bool& failed, resultvec_t& results, nanosec_t threshold, time_point_t until)
 {
     auto& output = results[cpu];
 
     if (!ihft::platform::trait::set_current_thread_cpu(cpu))
     {
         std::cerr << "can't set thread cpu" << std::endl;
+        failed.store(true, std::memory_order_relaxed);
         return false;
     }
 
@@ -115,12 +123,18 @@ bool measure(unsigned cpu, sync_t& active, resultvec_t& results, nanosec_t thres
     if (!ihft::platform::trait::set_current_thread_name(tname.c_str()))
     {
         std::cerr << "can't set thread name" << std::endl;
+        failed.store(true, std::memory_order_relaxed);
         return false;
     }
 
     active++;
 
-    while(active.load(std::memory_order_relaxed) != results.size());
+    while(active.load(std::memory_order_relaxed) != results.size() && !failed.load(std::memory_order_relaxed));
+
+    if (failed.load(std::memory_order_relaxed))
+    {
+        return false;
+    }
 
     auto ts1 = cclock_t::now();
     while(ts1 < until)
@@ -157,6 +171,17 @@ void trace_results(std::vector<std::atomic_bool> const& valid_experiment, result
     auto const offset = std::setw(12);
     auto const thof = std::setw(15);
 
+    auto const percentile = [](samples_t const& s, double q) -> nanosec_t::rep
+    {
+        if (s.empty())
+        {
+            return nanosec_t::rep{0};
+        }
+
+        auto const index = std::min(static_cast<std::size_t>(static_cast<double>(s.size()) * q), s.size() - 1);
+        return s[index].count();
+    };
+
     std::cout << cpuof << "cpu" << " "
         << thof << "threshold_ns" << " "
         << offset << "hiccups" << " "
@@ -173,8 +198,8 @@ void trace_results(std::vector<std::atomic_bool> const& valid_experiment, result
             std::cout << cpuof << cpu << " "
               << thof << param.threshold.count() << " "
               << offset << s.size() << " "
-              << offset << s[static_cast<size_t>(static_cast<double>(s.size()) * 0.99)].count() << " "
-              << offset << s[static_cast<size_t>(static_cast<double>(s.size()) * 0.999)].count() << " "
+              << offset << percentile(s, 0.99) << " "
+              << offset << percentile(s, 0.999) << " "
               << offset << (!s.empty() ? s.back().count() : 0);
 
             if (param.dump)
