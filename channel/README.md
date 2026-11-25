@@ -48,6 +48,10 @@ make_reader_thread([consumer = std::move(consumer)](){
 });
 ```
 
+### Reader guard lifetime
+
+For object queues `try_read()` returns a move-only guard. The guard is intentionally a non-owning reference to one ring-buffer bucket: adding a `shared_ptr` copy to every successful read would put atomic refcount operations on the hot path. The ring buffer is kept alive by the reader and queue owners. A guard must not outlive the reader that produced it, so do not store guards in long-lived containers and destroy them before the reader/queue goes out of scope.
+
 ## How it works
 
 Let's look at the state of a single producer single consumer cyclic buffer with a capacity of 16 in various scenarios.
