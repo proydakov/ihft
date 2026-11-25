@@ -26,11 +26,18 @@ namespace
 {
     static const ihft::impl::cmdline g_cmdline("/proc/cmdline");
 
-    static const cpu_set_t g_default_cpuset = []()
+    struct default_cpuset_t final
     {
         cpu_set_t set;
-        sched_getaffinity(0, sizeof(cpu_set_t), &set);
-        return set;
+        bool valid;
+    };
+
+    static const default_cpuset_t g_default_cpuset = []()
+    {
+        default_cpuset_t result{};
+        CPU_ZERO(&result.set);
+        result.valid = (0 == sched_getaffinity(0, sizeof(cpu_set_t), &result.set));
+        return result;
     }();
 
     std::pair<unsigned, unsigned> get_hp_info_impl() noexcept
@@ -90,6 +97,11 @@ namespace ihft::platform
 
     bool trait::set_current_thread_cpu(unsigned cpu) noexcept
     {
+        if (cpu >= static_cast<unsigned>(CPU_SETSIZE))
+        {
+            return false;
+        }
+
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
         CPU_SET(static_cast<unsigned long>(cpu), &cpuset);
@@ -99,7 +111,12 @@ namespace ihft::platform
 
     bool trait::reset_current_thread_cpu() noexcept
     {
-        return 0 == sched_setaffinity(0, sizeof(cpu_set_t), &g_default_cpuset);
+        if (not g_default_cpuset.valid)
+        {
+            return false;
+        }
+
+        return 0 == sched_setaffinity(0, sizeof(cpu_set_t), &g_default_cpuset.set);
     }
 
     bool trait::lock_memory_pages(bool current, bool future) noexcept
