@@ -83,3 +83,14 @@ TEST_CASE("format success 4")
 
     REQUIRE(stream.str() == "arg1: 'a', arg2: 3.14, arg3: 'e', arg4: {}, arg5: '{}'");
 }
+
+TEST_CASE("format success 5")
+{
+    auto const t = std::tuple<bool, bool>(true, false);
+    std::string_view const expr = "arg1: '{}', arg2: {}";
+
+    std::ostringstream stream;
+    format(stream, expr, t);
+
+    REQUIRE(stream.str() == "arg1: '1', arg2: 0");
+}

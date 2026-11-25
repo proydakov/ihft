@@ -139,4 +139,17 @@ struct logger_contract<const T*> final
     }
 };
 
+// boolean
+
+template<>
+struct logger_contract<bool> final
+{
+    using type = std::string_view;
+
+    static type pack(logger_extra_data&, bool origin)
+    {
+        return origin ? "true" : "false";
+    }
+};
+
 }

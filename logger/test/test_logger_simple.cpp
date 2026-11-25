@@ -13,6 +13,11 @@ TEST_CASE("simple_logging")
     IHFT_LOG_INFO("Hello {} !!!", "world");
 }
 
+TEST_CASE("simple_logging bool")
+{
+    IHFT_LOG_INFO("boolean: {} - {} !!!", true, false);
+}
+
 TEST_CASE("logging without arguments")
 {
     IHFT_LOG_DEBUG("Hello without arguments");
