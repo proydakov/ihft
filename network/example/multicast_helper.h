@@ -10,7 +10,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-std::optional<int> create_multicast_sender(const char* const source_iface)
+namespace ihft::network
+{
+
+inline std::optional<int> create_multicast_sender(const char* const source_iface)
 {
     //
     // create what looks like an ordinary UDP socket
@@ -29,7 +32,7 @@ std::optional<int> create_multicast_sender(const char* const source_iface)
     memset(&mreq, 0, sizeof(mreq));
     mreq.imr_interface.s_addr = source_iface ? inet_addr(source_iface) : htonl(INADDR_ANY);
 
-    if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_IF, (void*) &mreq, sizeof(mreq)) < 0)
+    if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_IF, &mreq, sizeof(mreq)) < 0)
     {
         perror("setsockopt");
         close(fd);
@@ -39,7 +42,7 @@ std::optional<int> create_multicast_sender(const char* const source_iface)
     return fd;
 }
 
-std::optional<int> create_multicast_listener(const char* const group, const unsigned short port, const char* const source_iface)
+inline std::optional<int> create_multicast_listener(const char* const group, const unsigned short port, const char* const source_iface)
 {
     //
     // create what looks like an ordinary UDP socket
@@ -54,8 +57,8 @@ std::optional<int> create_multicast_listener(const char* const group, const unsi
     //
     // allow multiple sockets to use the same PORT number
     //
-    const u_int yes = 1;
-    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes)) < 0)
+    int const yes = 1;
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
     {
        perror("Reusing ADDR failed");
        close(fd);
@@ -88,7 +91,7 @@ std::optional<int> create_multicast_listener(const char* const group, const unsi
     memset(&mreq, 0, sizeof(mreq));
     mreq.imr_multiaddr.s_addr = inet_addr(group);
     mreq.imr_interface.s_addr = source_iface ? inet_addr(source_iface) : htonl(INADDR_ANY);
-    if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
+    if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0)
     {
         perror("setsockopt");
         close(fd);
@@ -97,3 +100,5 @@ std::optional<int> create_multicast_listener(const char* const group, const unsi
 
     return fd;
 }
+
+} // namespace ihft::network
