@@ -5,7 +5,6 @@
 #include "channel_concept.h"
 
 #include <atomic>
-#include <limits>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -152,6 +151,8 @@ public:
     using reader_type = one2each_seqnum_stream_object_reader<event_t, counter_t>;
     using counter_type = impl::one2each_seqnum_queue_constant<counter_t>;
 
+    static constexpr std::size_t MAX_READERS = static_cast<std::size_t>(counter_type::MAX_READERS);
+
 public:
     one2each_seqnum_stream_object_queue(one2each_seqnum_stream_object_queue&&) noexcept = default;
 
@@ -201,19 +202,6 @@ private:
 
     std::optional<reader_type> create_reader() noexcept
     {
-        // The writer encodes the number of readers as
-        // (readers + CONSTRUCTED_DATA_MARK) in counter_t. Reject a reader that
-        // would make it wrap around to EMPTY_DATA_MARK (0), because then the
-        // slot would look empty immediately after being published.
-        constexpr std::size_t max_readers =
-            static_cast<std::size_t>(std::numeric_limits<counter_t>::max())
-            - static_cast<std::size_t>(counter_type::CONSTRUCTED_DATA_MARK);
-
-        if (m_impl.readers_count() >= max_readers)
-        {
-            return std::nullopt;
-        }
-
         return m_impl.template create_reader<reader_type>();
     }
 

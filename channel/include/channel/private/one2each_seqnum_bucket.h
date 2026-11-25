@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <cstddef>
 #include <limits>
 #include <type_traits>
 
@@ -18,6 +19,9 @@ struct one2each_seqnum_queue_constant
     enum : T { DUMMY_EVENT_SEQ_NUM = std::numeric_limits<T>::max() };
     enum : T { MIN_READER_ID = 0 };
     enum : T { DUMMY_READER_ID = 255 };
+    // 64 parallel consumers is plenty. readers_mask() saturates at this count
+    // because shifting by the size_t bit width would be undefined.
+    enum : T { MAX_READERS = 64 };
     enum : T { SEQNUM_MASK = std::numeric_limits<T>::max() >> T(1) };
     enum : T { EMPTY_DATA_MARK = 0 };
     enum : T { CONSTRUCTED_DATA_MARK = 1 };
@@ -27,6 +31,9 @@ static_assert(one2each_seqnum_queue_constant<std::uint8_t> ::SEQNUM_MASK == 127u
 static_assert(one2each_seqnum_queue_constant<std::uint16_t>::SEQNUM_MASK == 32'767ul);
 static_assert(one2each_seqnum_queue_constant<std::uint32_t>::SEQNUM_MASK == 2'147'483'647ul);
 static_assert(one2each_seqnum_queue_constant<std::uint64_t>::SEQNUM_MASK == 9'223'372'036'854'775'807ul);
+static_assert(static_cast<std::size_t>(one2each_seqnum_queue_constant<std::uint64_t>::MAX_READERS)
+              <= static_cast<std::size_t>(std::numeric_limits<std::size_t>::digits),
+              "readers_mask() must fit the size_t width");
 
 // bucket
 template<typename event_t, typename counter_t>

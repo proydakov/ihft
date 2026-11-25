@@ -6,6 +6,7 @@
 #include <channel/one2each_seqnum_stream_pod_queue.h>
 #include <channel/one2each_seqnum_stream_object_queue.h>
 
+#include <algorithm>
 #include <limits>
 #include <thread>
 
@@ -96,7 +97,7 @@ void one2each_stream_queue_simple_reader()
 {
     constexpr std::size_t qsize = 32;
 
-    auto const cpus = std::thread::hardware_concurrency();
+    auto const cpus = std::min<std::size_t>(std::thread::hardware_concurrency(), Q::MAX_READERS);
 
     auto opt = channel_factory::make<Q>(qsize, cpus);
     REQUIRE( opt.has_value() );
@@ -107,7 +108,7 @@ void one2each_stream_queue_simple_reader()
     REQUIRE( queue.readers_count() == cpus );
 
     // create valid readers
-    for(unsigned i = 0; i < cpus; i++)
+    for(std::size_t i = 0; i < cpus; i++)
     {
         REQUIRE( readers[i].get_id() == i );
     }
@@ -119,18 +120,30 @@ TEST_CASE("one2each_stream_queue simple reader")
     one2each_stream_queue_simple_reader<one2each_seqnum_stream_object_queue<packet_t>>();
 }
 
-TEST_CASE("one2each object queue rejects readers that overflow the counter")
+TEST_CASE("one2each queue limits the number of readers")
 {
-    using queue_t = one2each_seqnum_stream_object_queue<std::size_t, impl::empty_allocator, std::uint8_t>;
+    using queue_t = one2each_seqnum_stream_pod_queue<packet_t>;
 
-    // For uint8 the writer stores (readers + CONSTRUCTED_DATA_MARK), so the
-    // last valid value is max - CONSTRUCTED_DATA_MARK readers.
-    constexpr std::size_t max_readers =
-        static_cast<std::size_t>(std::numeric_limits<std::uint8_t>::max())
-        - static_cast<std::size_t>(queue_t::counter_type::CONSTRUCTED_DATA_MARK);
+    constexpr std::size_t max_readers = queue_t::MAX_READERS;
 
     auto const max_ok = channel_factory::make<queue_t>(32, max_readers);
     REQUIRE( max_ok.has_value() );
+    REQUIRE( max_ok->producer.readers_count() == max_readers );
+    REQUIRE( max_ok->producer.readers_mask() == std::numeric_limits<std::size_t>::max() );
+
+    auto const too_many = channel_factory::make<queue_t>(32, max_readers + 1);
+    REQUIRE_FALSE( too_many.has_value() );
+}
+
+TEST_CASE("one2each object queue honours the reader limit")
+{
+    using queue_t = one2each_seqnum_stream_object_queue<std::size_t, impl::empty_allocator, std::uint8_t>;
+
+    constexpr std::size_t max_readers = queue_t::MAX_READERS;
+
+    auto const max_ok = channel_factory::make<queue_t>(32, max_readers);
+    REQUIRE( max_ok.has_value() );
+    REQUIRE( max_ok->producer.readers_count() == max_readers );
 
     auto const too_many = channel_factory::make<queue_t>(32, max_readers + 1);
     REQUIRE_FALSE( too_many.has_value() );
