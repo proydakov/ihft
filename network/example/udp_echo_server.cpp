@@ -1,6 +1,7 @@
 #include "arg_helper.h"
 #include "udp_helper.h"
 
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -45,7 +46,13 @@ int main(int argc, char* argv[])
 
         if (len < 0)
         {
-            continue;
+            if (errno == EINTR)
+            {
+                continue;
+            }
+
+            std::perror("recvfrom");
+            return EXIT_FAILURE;
         }
 
         size_t const clen = static_cast<size_t>(len);
