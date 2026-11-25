@@ -30,6 +30,11 @@ struct logger_extra_data final
 
     std::string_view place(std::string_view origin)
     {
+        if (origin.empty())
+        {
+            return std::string_view(m_buffer, 0);
+        }
+
         if (is_enought(origin.size()))
         {
             std::string_view data(m_buffer, origin.size());
