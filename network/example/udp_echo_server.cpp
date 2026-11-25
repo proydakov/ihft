@@ -33,7 +33,6 @@ int main(int argc, char* argv[])
     // socket address used to store client address
     struct sockaddr_in client_address;
     std::memset(&client_address, 0, sizeof(client_address));
-    socklen_t client_address_len = sizeof(client_address);
 
     // run indefinitely
     while(true)
@@ -41,6 +40,7 @@ int main(int argc, char* argv[])
         char buffer[4096];
 
         // read content into buffer from an incoming client
+        socklen_t client_address_len = sizeof(client_address);
         ssize_t const len = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr*)&client_address, &client_address_len);
 
         if (len < 0)
@@ -51,7 +51,12 @@ int main(int argc, char* argv[])
         size_t const clen = static_cast<size_t>(len);
 
         // send same content back to the client ("echo")
-        sendto(sock, buffer, clen, 0, (struct sockaddr*)&client_address, sizeof(client_address));
+        ssize_t const sent = sendto(sock, buffer, clen, 0, (struct sockaddr*)&client_address, sizeof(client_address));
+        if (sent < 0)
+        {
+            std::perror("sendto");
+            continue;
+        }
 
         // recvfrom may fill the whole buffer, so keep the terminator in bounds.
         size_t const term = (clen < sizeof(buffer)) ? clen : (sizeof(buffer) - 1);
