@@ -61,12 +61,18 @@ public:
         if (m_owner != counter_type::DUMMY_READER_ID)
         {
             auto constexpr release_etalon(counter_type::CONSTRUCTED_DATA_MARK + 1);
-            auto const before = m_bucket.m_counter.fetch_sub(1, std::memory_order_relaxed);
+
+            // acq_rel: the acquire half orders all readers' accesses to the
+            // event before this decrement, and the release half (with the
+            // release store below) hands the slot back to the writer.
+            auto const before = m_bucket.m_counter.fetch_sub(1, std::memory_order_acq_rel);
 
             if (before == release_etalon)
             {
                 m_bucket.get_event().~event_t();
-                m_bucket.m_counter.store(counter_type::EMPTY_DATA_MARK, std::memory_order_relaxed);
+
+                // Publish the destruction to the writer's acquire-load.
+                m_bucket.m_counter.store(counter_type::EMPTY_DATA_MARK, std::memory_order_release);
             }
         }
     }
