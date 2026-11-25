@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "engine_bogatyr",
+            "name": "platform_bogatyr",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/build/engine_bogatyr",
+            "program": "${workspaceFolder}/build/platform_bogatyr",
             "args": [],
             "cwd": "${workspaceFolder}"
         }
