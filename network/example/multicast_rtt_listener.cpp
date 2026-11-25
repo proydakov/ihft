@@ -9,6 +9,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 
 int main(int argc, char* argv[])
@@ -65,8 +66,7 @@ int main(int argc, char* argv[])
         long start_micro = 0;
         if (nbytes == sizeof(start_micro))
         {
-            long const* start_micro_ptr = (long const*) msgbuf;
-            start_micro = *start_micro_ptr;
+            std::memcpy(&start_micro, msgbuf, sizeof(start_micro));
             long const delta = end_micro - start_micro;
 
             std::printf("from: %s time delta: %ld nanoseconds\n", inet_ntoa(addr.sin_addr), delta);
