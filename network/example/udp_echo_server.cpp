@@ -45,7 +45,9 @@ int main(int argc, char* argv[])
         // send same content back to the client ("echo")
         sendto(sock, buffer, clen, 0, (struct sockaddr*)&client_address, sizeof(client_address));
 
-        buffer[len] = '\0';
+        // recvfrom may fill the whole buffer, so keep the terminator in bounds.
+        size_t const term = (clen < sizeof(buffer)) ? clen : (sizeof(buffer) - 1);
+        buffer[term] = '\0';
         // inet_ntoa prints user friendly representation of the ip address
         printf("received: '%s' from client %s:%d\n", buffer, inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
     }
